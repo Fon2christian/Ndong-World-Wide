@@ -134,9 +134,12 @@ export default function CarDashboard() {
 
                 {/* Contact Button */}
                 <div className="car-card__actions">
-                  <button className="btn btn--primary btn--small">
+                  <a
+                    href={`mailto:info@ndongworldwide.com?subject=Inquiry about ${encodeURIComponent(car.brand)} ${encodeURIComponent(car.model)} (${car.year})&body=${encodeURIComponent(`Hello,\n\nI am interested in the ${car.brand} ${car.model} (${car.year}) listed at $${car.price.toLocaleString()}.\n\nPlease contact me with more information.\n\nThank you.`)}`}
+                    className="btn btn--primary btn--small"
+                  >
                     Contact Seller
-                  </button>
+                  </a>
                 </div>
               </div>
             </article>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
@@ -9,10 +9,9 @@ export default function AdminLogin() {
   const { login, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in (use Navigate component to avoid render side-effects)
   if (isAdmin) {
-    navigate("/admin");
-    return null;
+    return <Navigate to="/admin" replace />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {

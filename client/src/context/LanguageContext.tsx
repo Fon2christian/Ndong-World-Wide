@@ -10,10 +10,16 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const VALID_LANGUAGES: Language[] = ["en", "fr", "ja"];
+
+function isValidLanguage(value: string | null): value is Language {
+  return value !== null && VALID_LANGUAGES.includes(value as Language);
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem("language");
-    return (saved as Language) || "en";
+    return isValidLanguage(saved) ? saved : "en";
   });
 
   const setLanguage = (lang: Language) => {

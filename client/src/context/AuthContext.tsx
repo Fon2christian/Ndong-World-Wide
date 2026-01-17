@@ -15,15 +15,19 @@ const ADMIN_CREDENTIALS = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  // Initialize synchronously from localStorage to prevent redirect on refresh
+  const [isAdmin, setIsAdmin] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("isAdmin") === "true";
+  });
 
-  // Check localStorage on mount
+  // Keep useEffect for any future side effects or cross-tab sync
   useEffect(() => {
     const adminSession = localStorage.getItem("isAdmin");
-    if (adminSession === "true") {
+    if (adminSession === "true" && !isAdmin) {
       setIsAdmin(true);
     }
-  }, []);
+  }, [isAdmin]);
 
   const login = (username: string, password: string): boolean => {
     if (
