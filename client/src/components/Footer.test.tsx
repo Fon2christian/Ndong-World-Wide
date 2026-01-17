@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render } from '../test/test-utils'
 import Footer from './Footer'
@@ -18,6 +18,11 @@ describe('Footer', () => {
   beforeEach(() => {
     localStorage.clear()
     mockNavigate.mockClear()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('rendering', () => {
@@ -94,13 +99,135 @@ describe('Footer', () => {
     })
 
     it('should navigate to home and scroll when Tyres Provision is clicked', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<Footer />)
 
       const tyresProvisionBtn = screen.getByRole('button', { name: /tyres provision/i })
       await user.click(tyresProvisionBtn)
 
       expect(mockNavigate).toHaveBeenCalledWith('/')
+    })
+
+    it('should navigate to home when Wheels Provision is clicked', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+      render(<Footer />)
+
+      const wheelsProvisionBtn = screen.getByRole('button', { name: /wheels provision/i })
+      await user.click(wheelsProvisionBtn)
+
+      expect(mockNavigate).toHaveBeenCalledWith('/')
+    })
+
+    it('should navigate to home when Our Mission is clicked', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+      render(<Footer />)
+
+      const missionBtn = screen.getByRole('button', { name: /our mission/i })
+      await user.click(missionBtn)
+
+      expect(mockNavigate).toHaveBeenCalledWith('/')
+    })
+  })
+
+  describe('scrollToSection functionality', () => {
+    it('should scroll to element and add highlight class when element exists', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      // Create a mock element
+      const mockElement = document.createElement('div')
+      mockElement.id = 'car-provision'
+      mockElement.getBoundingClientRect = vi.fn().mockReturnValue({
+        top: 500,
+        height: 200,
+      })
+      document.body.appendChild(mockElement)
+
+      const mockScrollTo = vi.fn()
+      window.scrollTo = mockScrollTo
+      Object.defineProperty(window, 'innerHeight', { value: 800, writable: true })
+      Object.defineProperty(window, 'scrollY', { value: 0, writable: true })
+
+      render(<Footer />)
+
+      const carProvisionBtn = screen.getByRole('button', { name: /car provision/i })
+      await user.click(carProvisionBtn)
+
+      // Element should have highlight class added
+      expect(mockElement.classList.contains('section-highlight')).toBe(true)
+
+      // scrollTo should be called with smooth behavior
+      expect(mockScrollTo).toHaveBeenCalledWith({
+        top: expect.any(Number),
+        behavior: 'smooth',
+      })
+
+      // After 3 seconds, highlight should be removed
+      vi.advanceTimersByTime(3000)
+      expect(mockElement.classList.contains('section-highlight')).toBe(false)
+
+      document.body.removeChild(mockElement)
+    })
+
+    it('should retry finding element if not immediately available', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      render(<Footer />)
+
+      const carProvisionBtn = screen.getByRole('button', { name: /car provision/i })
+      await user.click(carProvisionBtn)
+
+      expect(mockNavigate).toHaveBeenCalledWith('/')
+
+      // Element doesn't exist, so it should retry
+      // Advance time to trigger retry attempts
+      vi.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
+
+      // Now add the element mid-retry
+      const mockElement = document.createElement('div')
+      mockElement.id = 'car-provision'
+      mockElement.getBoundingClientRect = vi.fn().mockReturnValue({
+        top: 500,
+        height: 200,
+      })
+      document.body.appendChild(mockElement)
+
+      const mockScrollTo = vi.fn()
+      window.scrollTo = mockScrollTo
+
+      // Advance to trigger retry that should find the element
+      vi.advanceTimersByTime(100)
+
+      expect(mockElement.classList.contains('section-highlight')).toBe(true)
+
+      document.body.removeChild(mockElement)
+    })
+
+    it('should stop retrying after max attempts when element not found', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      // Spy on getElementById to track calls
+      const getElementSpy = vi.spyOn(document, 'getElementById')
+
+      render(<Footer />)
+
+      const carProvisionBtn = screen.getByRole('button', { name: /car provision/i })
+      await user.click(carProvisionBtn)
+
+      // Clear previous calls
+      getElementSpy.mockClear()
+
+      // Advance through all 10 retry attempts (100ms each)
+      for (let i = 0; i < 15; i++) {
+        vi.advanceTimersByTime(100)
+      }
+
+      // Should have made attempts but stopped after retries exhausted
+      // The function starts with retries = 10, so max 11 calls (initial + 10 retries)
+      expect(getElementSpy.mock.calls.length).toBeLessThanOrEqual(11)
+
+      getElementSpy.mockRestore()
     })
   })
 

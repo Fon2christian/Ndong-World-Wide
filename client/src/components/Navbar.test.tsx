@@ -92,6 +92,114 @@ describe('Navbar', () => {
       await user.click(toggleButton)
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     })
+
+    it('should close mobile menu when a navigation link is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Navbar />)
+
+      const toggleButton = screen.getByLabelText('Toggle menu')
+
+      // Open the menu
+      await user.click(toggleButton)
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
+
+      // Find a link in the mobile dropdown (has navbar__dropdown-link class)
+      const mobileHomeLink = screen.getAllByRole('link', { name: /home/i }).find(
+        link => link.classList.contains('navbar__dropdown-link')
+      )
+
+      // Click the mobile menu link
+      await user.click(mobileHomeLink!)
+
+      // Menu should close
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('should close mobile menu when Market link is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Navbar />)
+
+      const toggleButton = screen.getByLabelText('Toggle menu')
+
+      // Open the menu
+      await user.click(toggleButton)
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
+
+      // Find Market link in the mobile dropdown
+      const mobileMarketLink = screen.getAllByRole('link', { name: /market/i }).find(
+        link => link.classList.contains('navbar__dropdown-link')
+      )
+
+      // Click the mobile menu link
+      await user.click(mobileMarketLink!)
+
+      // Menu should close
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('should close mobile menu when Admin Login link is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Navbar />)
+
+      const toggleButton = screen.getByLabelText('Toggle menu')
+
+      // Open the menu
+      await user.click(toggleButton)
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
+
+      // Find Admin Login link in the mobile dropdown
+      const mobileAdminLink = screen.getAllByRole('link', { name: /admin login/i }).find(
+        link => link.classList.contains('navbar__dropdown-link')
+      )
+
+      // Click the mobile menu link
+      await user.click(mobileAdminLink!)
+
+      // Menu should close
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('should show Admin Dashboard in mobile menu when logged in', async () => {
+      localStorage.setItem('isAdmin', 'true')
+      const user = userEvent.setup()
+      render(<Navbar />)
+
+      const toggleButton = screen.getByLabelText('Toggle menu')
+
+      // Open the menu
+      await user.click(toggleButton)
+
+      // Find Admin Dashboard link in the mobile dropdown
+      const mobileAdminLink = screen.getAllByRole('link', { name: /admin dashboard/i }).find(
+        link => link.classList.contains('navbar__dropdown-link')
+      )
+
+      expect(mobileAdminLink).toBeInTheDocument()
+      expect(mobileAdminLink).toHaveAttribute('href', '/admin')
+    })
+
+    it('should close mobile menu when Admin Dashboard link is clicked while logged in', async () => {
+      localStorage.setItem('isAdmin', 'true')
+      const user = userEvent.setup()
+      render(<Navbar />)
+
+      const toggleButton = screen.getByLabelText('Toggle menu')
+
+      // Open the menu
+      await user.click(toggleButton)
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
+
+      // Find Admin Dashboard link in the mobile dropdown
+      const mobileAdminLink = screen.getAllByRole('link', { name: /admin dashboard/i }).find(
+        link => link.classList.contains('navbar__dropdown-link')
+      )
+
+      // Click the mobile menu link
+      await user.click(mobileAdminLink!)
+
+      // Menu should close
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    })
   })
 
   describe('admin state', () => {
