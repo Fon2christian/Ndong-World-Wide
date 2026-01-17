@@ -15,7 +15,8 @@ export default function Footer() {
 
   const scrollToSection = (sectionId: string) => {
     navigate("/");
-    setTimeout(() => {
+
+    const attemptScroll = (retries = 10) => {
       const element = document.getElementById(sectionId);
       if (element) {
         const elementRect = element.getBoundingClientRect();
@@ -34,8 +35,12 @@ export default function Footer() {
         setTimeout(() => {
           element.classList.remove("section-highlight");
         }, 3000);
+      } else if (retries > 0) {
+        setTimeout(() => attemptScroll(retries - 1), 100);
       }
-    }, 100);
+    };
+
+    attemptScroll();
   };
 
   return (

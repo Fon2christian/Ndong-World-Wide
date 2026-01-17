@@ -1734,3 +1734,32 @@
     transform: translateX(0);
   }
 }
+
+/* ========================================
+   Accessibility: Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .mission-section,
+  .provision-section,
+  .provision-section__image,
+  .provision-section__content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .slideshow__slide {
+    transition: none;
+  }
+
+  .scroll-to-top {
+    transition: none;
+  }
+}

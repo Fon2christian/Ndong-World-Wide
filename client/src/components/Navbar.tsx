@@ -87,24 +87,13 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          {isAdmin && (
-            <li>
-              <Link
-                to="/admin"
-                className="navbar__dropdown-link navbar__link--admin"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Admin Dashboard
-              </Link>
-            </li>
-          )}
           <li>
             <Link
               to={isAdmin ? "/admin" : "/login"}
-              className="navbar__dropdown-link"
+              className={`navbar__dropdown-link ${isAdmin ? "navbar__link--admin" : ""}`}
               onClick={() => setIsMenuOpen(false)}
             >
-              {isAdmin ? "Dashboard" : "Admin Login"}
+              {isAdmin ? "Admin Dashboard" : "Admin Login"}
             </Link>
           </li>
         </ul>

@@ -53,13 +53,25 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     setForm({ ...form, [e.target.name]: value });
   };
 
-  // Handle image file upload
+  // Handle image file upload with validation
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
+    const MAX_BYTES = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = new Set(["image/png", "image/jpeg"]);
+
+    const validFiles = files.filter(
+      (file) => allowedTypes.has(file.type) && file.size <= MAX_BYTES
+    );
+
+    if (validFiles.length !== files.length) {
+      alert("Only PNG/JPG images up to 10MB are allowed.");
+    }
+
+    if (validFiles.length === 0) return;
 
     Promise.all(
-      files.map(
+      validFiles.map(
         (file) =>
           new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
@@ -250,7 +262,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
           <input
             type="file"
             multiple
-            accept="image/*"
+            accept="image/png,image/jpeg"
             onChange={handleImageChange}
           />
           <p className="form__file-upload-text">
