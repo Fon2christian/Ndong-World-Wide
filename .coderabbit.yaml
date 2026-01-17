@@ -1,0 +1,7 @@
+reviews:
+  auto_review: true
+  base_branches:
+    - main
+    - dev
+    - develop
+    - staging
