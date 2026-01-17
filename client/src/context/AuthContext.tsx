@@ -21,13 +21,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("isAdmin") === "true";
   });
 
-  // Keep useEffect for any future side effects or cross-tab sync
+  // Sync state with localStorage on storage events (cross-tab sync)
   useEffect(() => {
-    const adminSession = localStorage.getItem("isAdmin");
-    if (adminSession === "true" && !isAdmin) {
-      setIsAdmin(true);
-    }
-  }, [isAdmin]);
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "isAdmin") {
+        setIsAdmin(e.newValue === "true");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const login = (username: string, password: string): boolean => {
     if (

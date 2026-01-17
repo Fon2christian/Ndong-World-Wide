@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from './AuthContext'
 import type { ReactNode } from 'react'
 
@@ -115,6 +115,75 @@ describe('AuthContext', () => {
       expect(() => {
         renderHook(() => useAuth())
       }).toThrow('useAuth must be used within an AuthProvider')
+    })
+  })
+
+  describe('cross-tab sync via storage event', () => {
+    it('should update isAdmin to true when storage event sets isAdmin', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper })
+      expect(result.current.isAdmin).toBe(false)
+
+      // Simulate storage event from another tab
+      act(() => {
+        const storageEvent = new StorageEvent('storage', {
+          key: 'isAdmin',
+          newValue: 'true',
+          oldValue: null,
+        })
+        window.dispatchEvent(storageEvent)
+      })
+
+      await waitFor(() => {
+        expect(result.current.isAdmin).toBe(true)
+      })
+    })
+
+    it('should update isAdmin to false when storage event removes isAdmin', async () => {
+      localStorage.setItem('isAdmin', 'true')
+      const { result } = renderHook(() => useAuth(), { wrapper })
+      expect(result.current.isAdmin).toBe(true)
+
+      // Simulate storage event from another tab (logout)
+      act(() => {
+        const storageEvent = new StorageEvent('storage', {
+          key: 'isAdmin',
+          newValue: null,
+          oldValue: 'true',
+        })
+        window.dispatchEvent(storageEvent)
+      })
+
+      await waitFor(() => {
+        expect(result.current.isAdmin).toBe(false)
+      })
+    })
+
+    it('should ignore storage events for other keys', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper })
+      expect(result.current.isAdmin).toBe(false)
+
+      // Simulate storage event for a different key
+      act(() => {
+        const storageEvent = new StorageEvent('storage', {
+          key: 'otherKey',
+          newValue: 'true',
+          oldValue: null,
+        })
+        window.dispatchEvent(storageEvent)
+      })
+
+      // Should still be false
+      expect(result.current.isAdmin).toBe(false)
+    })
+
+    it('should cleanup event listener on unmount', () => {
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
+
+      const { unmount } = renderHook(() => useAuth(), { wrapper })
+      unmount()
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('storage', expect.any(Function))
+      removeEventListenerSpy.mockRestore()
     })
   })
 })
