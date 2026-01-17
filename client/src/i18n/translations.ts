@@ -1,0 +1,240 @@
+export type Language = "en" | "fr" | "ja";
+
+export const translations = {
+  en: {
+    // Navbar
+    nav: {
+      home: "Home",
+      market: "Market",
+      business: "Business",
+      flow: "Flow",
+      company: "Company",
+      contact: "Contact Us",
+    },
+    // Hero/Slideshow
+    hero: {
+      welcome: "Welcome to Ndong World Wide Trading",
+      subtitle: "Your trusted partner for quality vehicles",
+      tagline: "Quality Used Cars & Tyres, Directly From Japan to Your Driveway",
+    },
+    // Mission Section
+    mission: {
+      title: "Our Mission",
+      text: "At Ndong World Wide Trading, we are committed to delivering high-quality used vehicles and tyres directly from Japan to customers worldwide. Our mission is to provide reliable, affordable, and well-maintained automobiles that meet the highest standards of safety and performance. We believe in building lasting relationships with our clients through transparency, integrity, and exceptional customer service.",
+    },
+    // Car Provision
+    carProvision: {
+      title: "Car Provision",
+      description: "We specialize in sourcing and delivering premium quality used vehicles directly from Japan's renowned auto markets. Our extensive selection includes sedans, SUVs, trucks, and commercial vehicles - all thoroughly inspected and certified for reliability. Each vehicle undergoes rigorous quality checks to ensure it meets international standards before reaching your doorstep.",
+      features: [
+        "Certified pre-owned vehicles",
+        "Complete maintenance history",
+        "Competitive pricing",
+        "Worldwide shipping available",
+      ],
+    },
+    // Tyres Provision
+    tyresProvision: {
+      title: "Tyres Provision",
+      description: "We offer a wide selection of high-quality used tyres sourced from Japan, known for their excellent road conditions and strict vehicle maintenance standards. Our tyres are carefully inspected for tread depth, sidewall integrity, and overall condition to ensure maximum safety and performance. Whether you need tyres for passenger vehicles, SUVs, or commercial trucks, we have you covered.",
+      features: [
+        "Thoroughly inspected for safety",
+        "Multiple brands available",
+        "Various sizes and types",
+        "Affordable pricing",
+      ],
+    },
+    // Wheels Provision
+    wheelsProvision: {
+      title: "Wheels Provision",
+      description: "Upgrade your vehicle's appearance and performance with our premium selection of wheels imported directly from Japan. From elegant alloy wheels to durable steel rims, our collection features top brands and styles to match any vehicle. Each wheel is inspected for structural integrity, balance, and cosmetic condition to ensure you receive only the best quality products.",
+      features: [
+        "Alloy and steel options",
+        "Various designs and finishes",
+        "OEM and aftermarket brands",
+        "Perfect fit guarantee",
+      ],
+    },
+    // Footer
+    footer: {
+      quickLinks: "Quick Links",
+      ourServices: "Our Services",
+      address: "123 Business Street, Tokyo, Japan",
+      copyright: "Ndong World Wide Trading. All rights reserved.",
+    },
+    // Market/Dashboard
+    market: {
+      title: "Car Inventory",
+      totalCars: "Total Cars",
+      addCar: "Add New Car",
+      noCars: "No cars in inventory",
+      noDescription: "Add your first car to get started",
+      loading: "Loading...",
+    },
+    // Language
+    language: {
+      select: "Language",
+      english: "English",
+      french: "French",
+      japanese: "Japanese",
+    },
+  },
+  fr: {
+    // Navbar
+    nav: {
+      home: "Accueil",
+      market: "Marché",
+      business: "Affaires",
+      flow: "Flux",
+      company: "Entreprise",
+      contact: "Contactez-nous",
+    },
+    // Hero/Slideshow
+    hero: {
+      welcome: "Bienvenue chez Ndong World Wide Trading",
+      subtitle: "Votre partenaire de confiance pour des véhicules de qualité",
+      tagline: "Voitures et Pneus d'Occasion de Qualité, Directement du Japon à Votre Porte",
+    },
+    // Mission Section
+    mission: {
+      title: "Notre Mission",
+      text: "Chez Ndong World Wide Trading, nous nous engageons à livrer des véhicules et des pneus d'occasion de haute qualité directement du Japon aux clients du monde entier. Notre mission est de fournir des automobiles fiables, abordables et bien entretenues qui répondent aux normes les plus élevées de sécurité et de performance. Nous croyons en l'établissement de relations durables avec nos clients grâce à la transparence, l'intégrité et un service client exceptionnel.",
+    },
+    // Car Provision
+    carProvision: {
+      title: "Fourniture de Voitures",
+      description: "Nous sommes spécialisés dans l'approvisionnement et la livraison de véhicules d'occasion de qualité premium directement des marchés automobiles renommés du Japon. Notre vaste sélection comprend des berlines, des SUV, des camions et des véhicules commerciaux - tous soigneusement inspectés et certifiés pour leur fiabilité. Chaque véhicule subit des contrôles de qualité rigoureux pour s'assurer qu'il répond aux normes internationales avant d'arriver chez vous.",
+      features: [
+        "Véhicules d'occasion certifiés",
+        "Historique d'entretien complet",
+        "Prix compétitifs",
+        "Expédition mondiale disponible",
+      ],
+    },
+    // Tyres Provision
+    tyresProvision: {
+      title: "Fourniture de Pneus",
+      description: "Nous offrons une large sélection de pneus d'occasion de haute qualité provenant du Japon, connu pour ses excellentes conditions routières et ses normes strictes d'entretien des véhicules. Nos pneus sont soigneusement inspectés pour la profondeur de la bande de roulement, l'intégrité des flancs et l'état général pour assurer une sécurité et des performances maximales.",
+      features: [
+        "Soigneusement inspectés pour la sécurité",
+        "Plusieurs marques disponibles",
+        "Différentes tailles et types",
+        "Prix abordables",
+      ],
+    },
+    // Wheels Provision
+    wheelsProvision: {
+      title: "Fourniture de Roues",
+      description: "Améliorez l'apparence et les performances de votre véhicule avec notre sélection premium de roues importées directement du Japon. Des jantes en alliage élégantes aux jantes en acier durables, notre collection présente les meilleures marques et styles pour correspondre à tout véhicule.",
+      features: [
+        "Options alliage et acier",
+        "Différents designs et finitions",
+        "Marques OEM et aftermarket",
+        "Garantie d'ajustement parfait",
+      ],
+    },
+    // Footer
+    footer: {
+      quickLinks: "Liens Rapides",
+      ourServices: "Nos Services",
+      address: "123 Rue des Affaires, Tokyo, Japon",
+      copyright: "Ndong World Wide Trading. Tous droits réservés.",
+    },
+    // Market/Dashboard
+    market: {
+      title: "Inventaire des Voitures",
+      totalCars: "Total des Voitures",
+      addCar: "Ajouter une Voiture",
+      noCars: "Aucune voiture en stock",
+      noDescription: "Ajoutez votre première voiture pour commencer",
+      loading: "Chargement...",
+    },
+    // Language
+    language: {
+      select: "Langue",
+      english: "Anglais",
+      french: "Français",
+      japanese: "Japonais",
+    },
+  },
+  ja: {
+    // Navbar
+    nav: {
+      home: "ホーム",
+      market: "マーケット",
+      business: "ビジネス",
+      flow: "フロー",
+      company: "会社",
+      contact: "お問い合わせ",
+    },
+    // Hero/Slideshow
+    hero: {
+      welcome: "Ndong World Wide Tradingへようこそ",
+      subtitle: "高品質な車両のための信頼できるパートナー",
+      tagline: "日本から直接お届けする高品質な中古車とタイヤ",
+    },
+    // Mission Section
+    mission: {
+      title: "私たちの使命",
+      text: "Ndong World Wide Tradingでは、日本から世界中のお客様に高品質な中古車とタイヤを直接お届けすることに尽力しています。私たちの使命は、安全性と性能の最高基準を満たす、信頼性が高く、手頃な価格で、よく整備された自動車を提供することです。透明性、誠実さ、そして卓越したカスタマーサービスを通じて、お客様との永続的な関係を築くことを信じています。",
+    },
+    // Car Provision
+    carProvision: {
+      title: "自動車供給",
+      description: "私たちは日本の有名な自動車市場から直接、プレミアム品質の中古車を調達し、お届けすることを専門としています。セダン、SUV、トラック、商用車など、すべて徹底的に検査され、信頼性が認証されています。各車両は、お客様のもとに届く前に国際基準を満たすことを確認するための厳格な品質チェックを受けます。",
+      features: [
+        "認定中古車",
+        "完全な整備履歴",
+        "競争力のある価格",
+        "世界中への配送可能",
+      ],
+    },
+    // Tyres Provision
+    tyresProvision: {
+      title: "タイヤ供給",
+      description: "優れた道路状況と厳格な車両整備基準で知られる日本から調達した高品質な中古タイヤを幅広く取り揃えています。当社のタイヤは、トレッド深さ、サイドウォールの完全性、全体的な状態について慎重に検査され、最大の安全性とパフォーマンスを確保しています。",
+      features: [
+        "安全性を徹底的に検査",
+        "複数のブランドを用意",
+        "様々なサイズとタイプ",
+        "手頃な価格",
+      ],
+    },
+    // Wheels Provision
+    wheelsProvision: {
+      title: "ホイール供給",
+      description: "日本から直接輸入したプレミアムホイールセレクションで、車両の外観とパフォーマンスをアップグレードしましょう。エレガントなアルミホイールから耐久性のあるスチールリムまで、あらゆる車両に合うトップブランドとスタイルを取り揃えています。",
+      features: [
+        "アルミとスチールのオプション",
+        "様々なデザインと仕上げ",
+        "OEMとアフターマーケットブランド",
+        "完璧なフィット保証",
+      ],
+    },
+    // Footer
+    footer: {
+      quickLinks: "クイックリンク",
+      ourServices: "サービス",
+      address: "〒123-4567 東京都ビジネス通り123",
+      copyright: "Ndong World Wide Trading. 全著作権所有。",
+    },
+    // Market/Dashboard
+    market: {
+      title: "車両在庫",
+      totalCars: "総車両数",
+      addCar: "新しい車を追加",
+      noCars: "在庫に車がありません",
+      noDescription: "最初の車を追加して始めましょう",
+      loading: "読み込み中...",
+    },
+    // Language
+    language: {
+      select: "言語",
+      english: "英語",
+      french: "フランス語",
+      japanese: "日本語",
+    },
+  },
+};
+
+export type Translations = typeof translations.en;
