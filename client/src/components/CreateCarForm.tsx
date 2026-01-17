@@ -106,6 +106,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     console.log("Payload:", payload);
 
       let res;
+      
       if (carId) {
         // Update existing car
         res = await axios.put(`${import.meta.env.VITE_API_URL}/api/cars/${carId}`, payload);
@@ -137,16 +138,143 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
-      <input name="brand" value={form.brand} onChange={handleChange} placeholder="Brand" />
-      <input name="model" value={form.model} onChange={handleChange} placeholder="Model" />
-      <input name="year" type="number" value={form.year} onChange={handleChange} placeholder="Year" />
-      <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Price" />
-      <input name="mileage" type="number" value={form.mileage} onChange={handleChange} placeholder="Mileage" />
-      <input name="fuel" value={form.fuel} onChange={handleChange} placeholder="Fuel" />
-      <input name="transmission" value={form.transmission} onChange={handleChange} placeholder="Transmission" />
-      <input type="file" multiple onChange={handleImageChange} />
-      <button type="submit">{carId ? "Update Car" : "Create Car"}</button>
+    <form onSubmit={handleSubmit} className="form">
+      {/* Row 1: Brand & Model */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="brand">Brand</label>
+          <input
+            id="brand"
+            name="brand"
+            value={form.brand}
+            onChange={handleChange}
+            placeholder="e.g. Toyota"
+            className="form__input"
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="model">Model</label>
+          <input
+            id="model"
+            name="model"
+            value={form.model}
+            onChange={handleChange}
+            placeholder="e.g. Camry"
+            className="form__input"
+          />
+        </div>
+      </div>
+
+      {/* Row 2: Year & Price */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="year">Year</label>
+          <input
+            id="year"
+            name="year"
+            type="number"
+            value={form.year}
+            onChange={handleChange}
+            placeholder="e.g. 2023"
+            className="form__input"
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="price">Price ($)</label>
+          <input
+            id="price"
+            name="price"
+            type="number"
+            value={form.price}
+            onChange={handleChange}
+            placeholder="e.g. 25000"
+            className="form__input"
+          />
+        </div>
+      </div>
+
+      {/* Row 3: Mileage */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="mileage">Mileage (km)</label>
+          <input
+            id="mileage"
+            name="mileage"
+            type="number"
+            value={form.mileage}
+            onChange={handleChange}
+            placeholder="e.g. 50000"
+            className="form__input"
+          />
+        </div>
+      </div>
+
+      {/* Row 4: Fuel & Transmission */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="fuel">Fuel Type</label>
+          <select
+            id="fuel"
+            name="fuel"
+            value={form.fuel}
+            onChange={handleChange}
+            className="form__select"
+          >
+            <option value="">Select fuel type</option>
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+            <option value="electric">Electric</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="transmission">Transmission</label>
+          <select
+            id="transmission"
+            name="transmission"
+            value={form.transmission}
+            onChange={handleChange}
+            className="form__select"
+          >
+            <option value="">Select transmission</option>
+            <option value="automatic">Automatic</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Row 5: Image Upload */}
+      <div className="form__group">
+        <label className="form__label">Car Images</label>
+        <div className="form__file-upload">
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          <p className="form__file-upload-text">
+            <strong>Click to upload</strong> or drag and drop
+          </p>
+          <p className="form__file-upload-text">PNG, JPG up to 10MB</p>
+        </div>
+
+        {/* Image Preview */}
+        {form.images.length > 0 && (
+          <div className="form__image-preview">
+            {form.images.map((img, i) => (
+              <img key={i} src={img} alt={`Preview ${i + 1}`} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Form Actions */}
+      <div className="form__actions">
+        <button type="submit" className="btn btn--primary">
+          {carId ? "Update Car" : "Create Car"}
+        </button>
+      </div>
     </form>
   );
 }
