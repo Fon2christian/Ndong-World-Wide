@@ -9,6 +9,9 @@ import ImageSlideshow from './components/ImageSlideshow'
 import CarDashboard from './pages/CarDashboard'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import Flow from './pages/Flow'
+import Company from './pages/Company'
+import Contact from './pages/Contact'
 
 function Home() {
   return (
@@ -27,6 +30,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/market" element={<CarDashboard />} />
+            <Route path="/flow" element={<Flow />} />
+            <Route path="/company" element={<Company />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route
               path="/admin"
