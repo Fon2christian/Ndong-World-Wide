@@ -174,7 +174,7 @@ export default function ImageSlideshow() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
