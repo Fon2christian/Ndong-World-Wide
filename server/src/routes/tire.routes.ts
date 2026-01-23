@@ -40,7 +40,14 @@ router.delete("/:id", async (req: Request, res: Response) => {
 // UPDATE tire
 router.put("/:id", async (req: Request, res: Response) => {
   try {
-    const tire = await Tire.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const tire = await Tire.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!tire) {
+      return res.status(404).json({ message: "Tire not found" });
+    }
     res.json(tire);
   } catch (err) {
     res.status(400).json({ message: "Failed to update tire", error: err });

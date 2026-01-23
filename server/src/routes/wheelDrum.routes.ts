@@ -36,7 +36,14 @@ router.delete("/:id", async (req: Request, res: Response) => {
 // UPDATE wheel drum
 router.put("/:id", async (req: Request, res: Response) => {
   try {
-    const wheelDrum = await WheelDrum.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const wheelDrum = await WheelDrum.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!wheelDrum) {
+      return res.status(404).json({ message: "Wheel drum not found" });
+    }
     res.json(wheelDrum);
   } catch (err) {
     res.status(400).json({ message: "Failed to update wheel drum", error: err });
