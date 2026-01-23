@@ -53,8 +53,7 @@ export default function Contact() {
   };
 
   const handleSubmit = () => {
-    // Here you would typically send the data to a server
-    console.log("Form submitted:", formData);
+    // TODO: Send formData to server
     setStep(3);
   };
 
