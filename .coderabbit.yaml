@@ -1,5 +1,7 @@
 reviews:
   auto_review: true
+  base_branches:
+    - "**"
   tone: assertive
   review_status: true
 
