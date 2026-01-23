@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
+import { Link } from "react-router-dom";
 
 const heroImages = [
   "/assets/images/pic1.jpg",
@@ -51,11 +52,11 @@ export default function Flow() {
       {/* International Customers Section */}
       <section className="flow-section">
         <div className="flow-section-header">
-          <h2 className="flow-section-title">{t.flow.internationalTitle}</h2>
-          <p className="flow-section-subtitle">{t.flow.internationalSubtitle}</p>
+          <h2 className="flow-section-title">{t.flow.international.title}</h2>
+          <p className="flow-section-subtitle">{t.flow.international.subtitle}</p>
         </div>
         <div className="flow-steps">
-          {t.flow.steps.international.map((step, index) => (
+          {t.flow.international.steps.map((step, index) => (
             <div key={index} className="flow-step">
               <div className="flow-step-number">
                 <span>{index + 1}</span>
@@ -72,11 +73,11 @@ export default function Flow() {
       {/* Local Customers Section */}
       <section className="flow-section flow-section-local">
         <div className="flow-section-header">
-          <h2 className="flow-section-title">{t.flow.localTitle}</h2>
-          <p className="flow-section-subtitle">{t.flow.localSubtitle}</p>
+          <h2 className="flow-section-title">{t.flow.local.title}</h2>
+          <p className="flow-section-subtitle">{t.flow.local.subtitle}</p>
         </div>
         <div className="flow-steps">
-          {t.flow.steps.local.map((step, index) => (
+          {t.flow.local.steps.map((step, index) => (
             <div key={index} className="flow-step">
               <div className="flow-step-number">
                 <span>{index + 1}</span>
@@ -93,9 +94,9 @@ export default function Flow() {
       {/* Contact CTA */}
       <section className="flow-cta">
         <h2 className="flow-cta-title">{t.flow.contactCta}</h2>
-        <a href="/contact" className="flow-cta-button">
+        <Link to="/contact" className="flow-cta-button">
           {t.flow.contactButton}
-        </a>
+        </Link>
       </section>
     </div>
   );
