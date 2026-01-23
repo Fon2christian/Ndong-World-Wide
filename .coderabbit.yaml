@@ -1,7 +1,13 @@
 reviews:
-  auto_review: true
+  auto_review:
+    enabled: true
+    drafts: true
   base_branches:
-    - "**"
+    - main
+    - develop
+    - "feature/*"
+    - "fix/*"
+    - "add/*"
   tone: assertive
   review_status: true
 
