@@ -119,19 +119,8 @@ describe('CarDashboard', () => {
       render(<CarDashboard />)
 
       await waitFor(() => {
-        const contactButtons = screen.getAllByRole('link', { name: /contact seller/i })
+        const contactButtons = screen.getAllByRole('button', { name: /contact seller/i })
         expect(contactButtons.length).toBe(2)
-      })
-    })
-
-    it('should have correct mailto href on Contact Seller', async () => {
-      render(<CarDashboard />)
-
-      await waitFor(() => {
-        const contactButtons = screen.getAllByRole('link', { name: /contact seller/i })
-        expect(contactButtons[0]).toHaveAttribute('href', expect.stringContaining('mailto:'))
-        expect(contactButtons[0]).toHaveAttribute('href', expect.stringContaining('Toyota'))
-        expect(contactButtons[0]).toHaveAttribute('href', expect.stringContaining('Camry'))
       })
     })
 

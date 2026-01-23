@@ -64,12 +64,26 @@ export const translations = {
     },
     // Market/Dashboard
     market: {
-      title: "Car Inventory",
+      title: "Market",
       totalCars: "Total Cars",
       addCar: "Add New Car",
       noCars: "No cars in inventory",
       noDescription: "Add your first car to get started",
       loading: "Loading...",
+      tabs: {
+        cars: "Cars",
+        newTires: "New Tires",
+        usedTires: "Used Tires",
+        wheelDrums: "Wheel Drums",
+      },
+      noItems: "No items available",
+      checkBack: "Check back later for new listings.",
+      mileage: "Mileage",
+      fuel: "Fuel",
+      transmission: "Trans.",
+      contactSeller: "Contact Seller",
+      conditionNew: "New",
+      conditionUsed: "Used",
     },
     // Language
     language: {
@@ -281,12 +295,26 @@ export const translations = {
     },
     // Market/Dashboard
     market: {
-      title: "Inventaire des Voitures",
+      title: "Marché",
       totalCars: "Total des Voitures",
       addCar: "Ajouter une Voiture",
       noCars: "Aucune voiture en stock",
       noDescription: "Ajoutez votre première voiture pour commencer",
       loading: "Chargement...",
+      tabs: {
+        cars: "Voitures",
+        newTires: "Pneus Neufs",
+        usedTires: "Pneus Usagés",
+        wheelDrums: "Tambours de Roue",
+      },
+      noItems: "Aucun article disponible",
+      checkBack: "Revenez plus tard pour de nouvelles annonces.",
+      mileage: "Kilométrage",
+      fuel: "Carburant",
+      transmission: "Trans.",
+      contactSeller: "Contacter le Vendeur",
+      conditionNew: "Neuf",
+      conditionUsed: "Usagé",
     },
     // Language
     language: {
@@ -498,12 +526,26 @@ export const translations = {
     },
     // Market/Dashboard
     market: {
-      title: "車両在庫",
+      title: "マーケット",
       totalCars: "総車両数",
       addCar: "新しい車を追加",
       noCars: "在庫に車がありません",
       noDescription: "最初の車を追加して始めましょう",
       loading: "読み込み中...",
+      tabs: {
+        cars: "車",
+        newTires: "新品タイヤ",
+        usedTires: "中古タイヤ",
+        wheelDrums: "ホイールドラム",
+      },
+      noItems: "商品がありません",
+      checkBack: "新しい商品が入荷するまでお待ちください。",
+      mileage: "走行距離",
+      fuel: "燃料",
+      transmission: "変速機",
+      contactSeller: "販売者に連絡",
+      conditionNew: "新品",
+      conditionUsed: "中古",
     },
     // Language
     language: {
