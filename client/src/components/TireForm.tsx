@@ -55,7 +55,7 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
             reader.readAsDataURL(file);
           })
       )
-    ).then((base64Images) => setForm({ ...form, images: base64Images }));
+    ).then((base64Images) => setForm((prev) => ({ ...prev, images: base64Images })));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
