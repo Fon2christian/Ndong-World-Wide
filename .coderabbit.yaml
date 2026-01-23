@@ -2,8 +2,8 @@ reviews:
   auto_review:
     enabled: true
     drafts: true
-  base_branches:
-    - ".*"
+    base_branches:
+      - ".*"
   tone: assertive
   review_status: true
 
