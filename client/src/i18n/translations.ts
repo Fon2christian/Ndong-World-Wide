@@ -82,28 +82,80 @@ export const translations = {
     flow: {
       title: "Purchase Flow",
       subtitle: "Simple steps to get your vehicle from Japan",
-      steps: {
-        title: "How It Works",
-        items: [
+      international: {
+        title: "International Customers",
+        subtitle: "Export Service Worldwide",
+        steps: [
           {
             step: "1",
-            title: "Vehicle Selection",
-            description: "Browse our inventory or tell us your requirements. We'll help you find the perfect vehicle from Japan's trusted auction houses and dealers.",
+            title: "Initial Inquiry",
+            description: "Contact us via email, phone, or our contact form with your requirements. Tell us what vehicles, tyres, or parts you're looking for.",
           },
           {
             step: "2",
-            title: "Inspection & Purchase",
-            description: "Our team conducts thorough inspections. Once you approve, we handle the purchase and all necessary paperwork on your behalf.",
+            title: "Consultation & Quotation",
+            description: "Our team discusses your needs, provides recommendations, and sends you a detailed quotation including vehicle costs, shipping options (20ft or 40ft container), and export fees.",
           },
           {
             step: "3",
-            title: "Export Documentation",
-            description: "We prepare all export documents, deregistration certificates, and customs paperwork required for international shipping.",
+            title: "Vehicle Sourcing & Inspection",
+            description: "We source your desired goods from trusted Japanese auctions and dealers. Our team conducts thorough inspections and sends you detailed photos and condition reports.",
           },
           {
             step: "4",
-            title: "Vehicle Handover",
-            description: "Collect your vehicle from our yard or arrange your own transport to the port. All documentation, keys, and export papers are handed over for your independent shipping.",
+            title: "Payment & Purchase",
+            description: "Once you approve, we proceed with the purchase. Payment can be made via bank transfer. We handle all purchasing procedures on your behalf.",
+          },
+          {
+            step: "5",
+            title: "Export Documentation",
+            description: "We prepare all necessary export documents including deregistration certificates, export customs paperwork, Bill of Lading, and shipping invoices.",
+          },
+          {
+            step: "6",
+            title: "Container Loading & Shipping",
+            description: "Your goods are carefully loaded into your chosen container size (20ft or 40ft) and shipped to your destination port. We provide tracking information throughout.",
+          },
+          {
+            step: "7",
+            title: "After-Sales Support",
+            description: "Our service doesn't end at shipping. We provide ongoing support for any questions about customs clearance at your destination and future orders.",
+          },
+        ],
+      },
+      local: {
+        title: "Local Customers (Japan)",
+        subtitle: "Domestic Service",
+        steps: [
+          {
+            step: "1",
+            title: "Initial Inquiry",
+            description: "Contact us via phone, email, or visit our yard directly. Let us know what vehicles, tyres, or parts you're interested in.",
+          },
+          {
+            step: "2",
+            title: "Consultation & Quote",
+            description: "We discuss your requirements and provide a competitive quote. You're welcome to visit our yard to inspect available inventory in person.",
+          },
+          {
+            step: "3",
+            title: "Vehicle Selection",
+            description: "Browse our yard inventory or request specific items. We can also source vehicles from auctions based on your specifications.",
+          },
+          {
+            step: "4",
+            title: "Payment & Documentation",
+            description: "Complete the payment and we handle all necessary paperwork to get your vehicle ready for export.",
+          },
+          {
+            step: "5",
+            title: "Pickup or Delivery",
+            description: "Pick up your purchase directly from our yard, or we can arrange delivery to your location based on negotiation. Flexible options available.",
+          },
+          {
+            step: "6",
+            title: "After-Service Support",
+            description: "We maintain relationships with our customers. Contact us anytime for questions, future purchases, or recommendations.",
           },
         ],
       },
@@ -247,28 +299,80 @@ export const translations = {
     flow: {
       title: "Processus d'Achat",
       subtitle: "Étapes simples pour obtenir votre véhicule du Japon",
-      steps: {
-        title: "Comment Ça Marche",
-        items: [
+      international: {
+        title: "Clients Internationaux",
+        subtitle: "Service d'Exportation Mondial",
+        steps: [
           {
             step: "1",
-            title: "Sélection du Véhicule",
-            description: "Parcourez notre inventaire ou indiquez-nous vos besoins. Nous vous aiderons à trouver le véhicule parfait des maisons de vente aux enchères et concessionnaires de confiance au Japon.",
+            title: "Demande Initiale",
+            description: "Contactez-nous par email, téléphone ou via notre formulaire avec vos besoins. Dites-nous quels véhicules, pneus ou pièces vous recherchez.",
           },
           {
             step: "2",
-            title: "Inspection et Achat",
-            description: "Notre équipe effectue des inspections approfondies. Une fois approuvé, nous gérons l'achat et toutes les formalités nécessaires en votre nom.",
+            title: "Consultation et Devis",
+            description: "Notre équipe discute de vos besoins, fournit des recommandations et vous envoie un devis détaillé incluant les coûts du véhicule, les options d'expédition (conteneur 20 ou 40 pieds) et les frais d'exportation.",
           },
           {
             step: "3",
-            title: "Documentation d'Exportation",
-            description: "Nous préparons tous les documents d'exportation, certificats de radiation et documents douaniers nécessaires pour l'expédition internationale.",
+            title: "Approvisionnement et Inspection",
+            description: "Nous trouvons vos marchandises auprès des enchères et concessionnaires japonais de confiance. Notre équipe effectue des inspections approfondies et vous envoie des photos détaillées et des rapports d'état.",
           },
           {
             step: "4",
-            title: "Remise du Véhicule",
-            description: "Récupérez votre véhicule dans notre parc ou organisez votre propre transport vers le port. Tous les documents, clés et papiers d'exportation vous sont remis pour votre expédition indépendante.",
+            title: "Paiement et Achat",
+            description: "Une fois approuvé, nous procédons à l'achat. Le paiement peut être effectué par virement bancaire. Nous gérons toutes les procédures d'achat en votre nom.",
+          },
+          {
+            step: "5",
+            title: "Documentation d'Exportation",
+            description: "Nous préparons tous les documents d'exportation nécessaires, y compris les certificats de radiation, les documents douaniers d'exportation, le connaissement et les factures d'expédition.",
+          },
+          {
+            step: "6",
+            title: "Chargement et Expédition",
+            description: "Vos marchandises sont soigneusement chargées dans le conteneur de votre choix (20 ou 40 pieds) et expédiées vers votre port de destination. Nous fournissons des informations de suivi tout au long du processus.",
+          },
+          {
+            step: "7",
+            title: "Support Après-Vente",
+            description: "Notre service ne s'arrête pas à l'expédition. Nous fournissons un support continu pour toutes questions concernant le dédouanement à destination et les commandes futures.",
+          },
+        ],
+      },
+      local: {
+        title: "Clients Locaux (Japon)",
+        subtitle: "Service Domestique",
+        steps: [
+          {
+            step: "1",
+            title: "Demande Initiale",
+            description: "Contactez-nous par téléphone, email ou visitez directement notre parc. Faites-nous savoir quels véhicules, pneus ou pièces vous intéressent.",
+          },
+          {
+            step: "2",
+            title: "Consultation et Devis",
+            description: "Nous discutons de vos besoins et fournissons un devis compétitif. Vous êtes invité à visiter notre parc pour inspecter l'inventaire disponible en personne.",
+          },
+          {
+            step: "3",
+            title: "Sélection du Véhicule",
+            description: "Parcourez notre inventaire ou demandez des articles spécifiques. Nous pouvons également trouver des véhicules aux enchères selon vos spécifications.",
+          },
+          {
+            step: "4",
+            title: "Paiement et Documentation",
+            description: "Complétez le paiement et nous gérons tous les documents nécessaires pour préparer votre véhicule à l'exportation.",
+          },
+          {
+            step: "5",
+            title: "Enlèvement ou Livraison",
+            description: "Récupérez votre achat directement depuis notre parc, ou nous pouvons organiser la livraison à votre emplacement selon négociation. Options flexibles disponibles.",
+          },
+          {
+            step: "6",
+            title: "Support Après-Service",
+            description: "Nous maintenons des relations avec nos clients. Contactez-nous à tout moment pour des questions, achats futurs ou recommandations.",
           },
         ],
       },
@@ -412,28 +516,80 @@ export const translations = {
     flow: {
       title: "購入フロー",
       subtitle: "日本から車両を入手するための簡単なステップ",
-      steps: {
-        title: "ご利用の流れ",
-        items: [
+      international: {
+        title: "海外のお客様",
+        subtitle: "世界各国への輸出サービス",
+        steps: [
           {
             step: "1",
-            title: "車両選択",
-            description: "在庫をご覧いただくか、ご要望をお聞かせください。日本の信頼できるオークションハウスやディーラーから最適な車両をお探しします。",
+            title: "お問い合わせ",
+            description: "メール、電話、またはお問い合わせフォームからご連絡ください。ご希望の車両、タイヤ、部品についてお知らせください。",
           },
           {
             step: "2",
-            title: "検査・購入",
-            description: "当社チームが徹底的な検査を行います。ご承認いただければ、購入と必要な書類手続きを代行いたします。",
+            title: "ご相談・お見積り",
+            description: "お客様のニーズをお伺いし、最適なご提案をいたします。車両費用、配送オプション（20フィートまたは40フィートコンテナ）、輸出費用を含む詳細なお見積りをお送りします。",
           },
           {
             step: "3",
-            title: "輸出書類",
-            description: "国際輸送に必要な輸出書類、抹消証明書、通関書類をすべて準備いたします。",
+            title: "車両調達・検査",
+            description: "日本の信頼できるオークションやディーラーからご希望の商品を調達します。徹底的な検査を行い、詳細な写真とコンディションレポートをお送りします。",
           },
           {
             step: "4",
-            title: "車両お引き渡し",
-            description: "当社のヤードで車両をお引き取りいただくか、ご自身で港への輸送を手配してください。すべての書類、鍵、輸出用書類をお渡しします。",
+            title: "お支払い・購入",
+            description: "ご承認後、購入手続きを進めます。銀行振込でのお支払いが可能です。すべての購入手続きを代行いたします。",
+          },
+          {
+            step: "5",
+            title: "輸出書類準備",
+            description: "抹消証明書、輸出通関書類、船荷証券、輸出インボイスなど、必要なすべての輸出書類を準備いたします。",
+          },
+          {
+            step: "6",
+            title: "コンテナ積込・出荷",
+            description: "ご選択いただいたコンテナサイズ（20フィートまたは40フィート）に丁寧に積み込み、目的地の港へ発送します。追跡情報を随時お知らせします。",
+          },
+          {
+            step: "7",
+            title: "アフターサポート",
+            description: "出荷後もサービスは続きます。目的地での通関手続きに関するご質問や、今後のご注文についてもサポートいたします。",
+          },
+        ],
+      },
+      local: {
+        title: "国内のお客様（日本）",
+        subtitle: "国内サービス",
+        steps: [
+          {
+            step: "1",
+            title: "お問い合わせ",
+            description: "お電話、メール、または直接ヤードにお越しください。ご興味のある車両、タイヤ、部品についてお知らせください。",
+          },
+          {
+            step: "2",
+            title: "ご相談・お見積り",
+            description: "ご要望をお伺いし、競争力のあるお見積りをご提供します。在庫を直接ご確認いただくため、ヤードへのご来場も歓迎いたします。",
+          },
+          {
+            step: "3",
+            title: "車両選択",
+            description: "ヤードの在庫をご覧いただくか、特定の商品をリクエストしてください。ご希望に応じてオークションからの車両調達も可能です。",
+          },
+          {
+            step: "4",
+            title: "お支払い・書類手続き",
+            description: "お支払い完了後、輸出準備に必要なすべての書類手続きを代行いたします。",
+          },
+          {
+            step: "5",
+            title: "引取りまたは配送",
+            description: "ヤードで直接お引取りいただくか、ご相談に応じてお客様のご指定場所への配送も可能です。柔軟に対応いたします。",
+          },
+          {
+            step: "6",
+            title: "アフターサービス",
+            description: "お客様との関係を大切にしています。ご質問、将来のご購入、おすすめについていつでもお問い合わせください。",
           },
         ],
       },

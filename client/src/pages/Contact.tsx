@@ -108,93 +108,155 @@ export default function Contact() {
 
       {/* Step 1: Enter Information */}
       {step === 1 && (
-        <div className="contact-form">
-          <h2 className="contact-form__title">{t.contact.formTitle}</h2>
-          <p className="contact-form__required-note">{t.contact.requiredNote}</p>
+        <div className="contact-form-wrapper">
+          <div className="contact-form-card">
+            <div className="contact-form-header">
+              <div className="contact-form-header__icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <h2 className="contact-form-header__title">{t.contact.formTitle}</h2>
+              <p className="contact-form-header__subtitle">{t.contact.requiredNote}</p>
+            </div>
 
-          <div className="contact-form__group">
-            <label className="contact-form__label">
-              <span className="contact-form__required">*</span> {t.contact.name}
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className={`contact-form__input ${errors.name ? "error" : ""}`}
-              placeholder={t.contact.namePlaceholder}
-            />
-            {errors.name && (
-              <span className="contact-form__error">{errors.name}</span>
-            )}
+            <div className="contact-form-fields">
+              {/* Name Field */}
+              <div className="contact-field">
+                <div className="contact-field__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div className="contact-field__content">
+                  <label className="contact-field__label">
+                    {t.contact.name} <span className="contact-field__required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={`contact-field__input ${errors.name ? "error" : ""}`}
+                    placeholder={t.contact.namePlaceholder}
+                  />
+                  {errors.name && (
+                    <span className="contact-field__error">{errors.name}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Furigana Field */}
+              <div className="contact-field">
+                <div className="contact-field__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3v18"/>
+                    <path d="M18 9H6"/>
+                    <path d="M16 3H8"/>
+                  </svg>
+                </div>
+                <div className="contact-field__content">
+                  <label className="contact-field__label">
+                    {t.contact.furigana} <span className="contact-field__required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="furigana"
+                    value={formData.furigana}
+                    onChange={handleInputChange}
+                    className={`contact-field__input ${errors.furigana ? "error" : ""}`}
+                    placeholder={t.contact.furiganaPlaceholder}
+                  />
+                  {errors.furigana && (
+                    <span className="contact-field__error">{errors.furigana}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Email Field */}
+              <div className="contact-field">
+                <div className="contact-field__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                </div>
+                <div className="contact-field__content">
+                  <label className="contact-field__label">
+                    {t.contact.email} <span className="contact-field__required">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={`contact-field__input ${errors.email ? "error" : ""}`}
+                    placeholder={t.contact.emailPlaceholder}
+                  />
+                  {errors.email && (
+                    <span className="contact-field__error">{errors.email}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Phone Field */}
+              <div className="contact-field">
+                <div className="contact-field__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                </div>
+                <div className="contact-field__content">
+                  <label className="contact-field__label">
+                    {t.contact.phone} <span className="contact-field__required">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className={`contact-field__input ${errors.phone ? "error" : ""}`}
+                    placeholder={t.contact.phonePlaceholder}
+                  />
+                  {errors.phone && (
+                    <span className="contact-field__error">{errors.phone}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Inquiry Details Field */}
+              <div className="contact-field contact-field--full">
+                <div className="contact-field__icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div className="contact-field__content">
+                  <label className="contact-field__label">
+                    {t.contact.inquiryDetails}
+                  </label>
+                  <textarea
+                    name="inquiryDetails"
+                    value={formData.inquiryDetails}
+                    onChange={handleInputChange}
+                    className="contact-field__textarea"
+                    placeholder={t.contact.inquiryPlaceholder}
+                    rows={6}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button className="contact-form-submit" onClick={handleNextStep}>
+              <span>{t.contact.nextButton}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
           </div>
-
-          <div className="contact-form__group">
-            <label className="contact-form__label">
-              <span className="contact-form__required">*</span> {t.contact.furigana}
-            </label>
-            <input
-              type="text"
-              name="furigana"
-              value={formData.furigana}
-              onChange={handleInputChange}
-              className={`contact-form__input ${errors.furigana ? "error" : ""}`}
-              placeholder={t.contact.furiganaPlaceholder}
-            />
-            {errors.furigana && (
-              <span className="contact-form__error">{errors.furigana}</span>
-            )}
-          </div>
-
-          <div className="contact-form__group">
-            <label className="contact-form__label">
-              <span className="contact-form__required">*</span> {t.contact.email}
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`contact-form__input ${errors.email ? "error" : ""}`}
-              placeholder={t.contact.emailPlaceholder}
-            />
-            {errors.email && (
-              <span className="contact-form__error">{errors.email}</span>
-            )}
-          </div>
-
-          <div className="contact-form__group">
-            <label className="contact-form__label">
-              <span className="contact-form__required">*</span> {t.contact.phone}
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className={`contact-form__input ${errors.phone ? "error" : ""}`}
-              placeholder={t.contact.phonePlaceholder}
-            />
-            {errors.phone && (
-              <span className="contact-form__error">{errors.phone}</span>
-            )}
-          </div>
-
-          <div className="contact-form__group">
-            <label className="contact-form__label">{t.contact.inquiryDetails}</label>
-            <textarea
-              name="inquiryDetails"
-              value={formData.inquiryDetails}
-              onChange={handleInputChange}
-              className="contact-form__textarea"
-              placeholder={t.contact.inquiryPlaceholder}
-              rows={5}
-            />
-          </div>
-
-          <button className="contact-form__button" onClick={handleNextStep}>
-            {t.contact.nextButton}
-          </button>
         </div>
       )}
 
