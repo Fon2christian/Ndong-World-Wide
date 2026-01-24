@@ -108,6 +108,7 @@ html {
 body {
   font-family: var(--font-sans);
   font-size: 1rem;
+  font-weight: 500;
   line-height: 1.6;
   color: var(--color-text-primary);
   background: var(--color-bg-primary);
@@ -142,6 +143,15 @@ h3 {
 
 p {
   color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+small, .text-sm {
+  font-weight: 500;
+}
+
+label {
+  font-weight: 500;
 }
 
 a {
