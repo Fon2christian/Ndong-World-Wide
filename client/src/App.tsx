@@ -6,7 +6,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 import ImageSlideshow from './components/ImageSlideshow'
-import CarDashboard from './pages/CarDashboard'
+import Market from './pages/Market'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import Flow from './pages/Flow'
@@ -29,7 +29,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/market" element={<CarDashboard />} />
+            <Route path="/market" element={<Market />} />
             <Route path="/flow" element={<Flow />} />
             <Route path="/company" element={<Company />} />
             <Route path="/contact" element={<Contact />} />
