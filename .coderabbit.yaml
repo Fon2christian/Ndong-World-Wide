@@ -4,7 +4,7 @@ reviews:
     drafts: true
     base_branches:
       - ".*"
-  tone: assertive
+  profile: assertive
   review_status: true
 
 analysis:
