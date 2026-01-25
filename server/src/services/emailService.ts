@@ -1,6 +1,20 @@
 import * as nodemailer from "nodemailer";
 import type { ContactAttrs } from "../models/Contact.js";
 
+/**
+ * Escape HTML special characters to prevent HTML injection
+ */
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
 // Create reusable transporter
 const createTransporter = () => {
   // Check if email configuration is available
@@ -32,10 +46,17 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
 
   const recipientEmail = process.env.CONTACT_NOTIFICATION_EMAIL || process.env.EMAIL_USER;
 
+  // Escape all user-provided data to prevent HTML injection
+  const escapedName = escapeHtml(contact.name);
+  const escapedFurigana = escapeHtml(contact.furigana);
+  const escapedEmail = escapeHtml(contact.email);
+  const escapedPhone = escapeHtml(contact.phone);
+  const escapedInquiryDetails = contact.inquiryDetails ? escapeHtml(contact.inquiryDetails) : '';
+
   const mailOptions = {
     from: `"${process.env.EMAIL_FROM_NAME || 'Ndong World Wide'}" <${process.env.EMAIL_USER}>`,
     to: recipientEmail,
-    subject: `New Contact Inquiry from ${contact.name}`,
+    subject: `New Contact Inquiry from ${escapedName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
@@ -45,28 +66,28 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Name:</strong><br/>
-            <span style="color: #34495e;">${contact.name}</span>
+            <span style="color: #34495e;">${escapedName}</span>
           </p>
 
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Furigana:</strong><br/>
-            <span style="color: #34495e;">${contact.furigana}</span>
+            <span style="color: #34495e;">${escapedFurigana}</span>
           </p>
 
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Email:</strong><br/>
-            <a href="mailto:${contact.email}" style="color: #3498db;">${contact.email}</a>
+            <a href="mailto:${escapedEmail}" style="color: #3498db;">${escapedEmail}</a>
           </p>
 
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Phone:</strong><br/>
-            <a href="tel:${contact.phone}" style="color: #3498db;">${contact.phone}</a>
+            <a href="tel:${escapedPhone}" style="color: #3498db;">${escapedPhone}</a>
           </p>
 
-          ${contact.inquiryDetails ? `
+          ${escapedInquiryDetails ? `
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Inquiry Details:</strong><br/>
-            <span style="color: #34495e; white-space: pre-wrap;">${contact.inquiryDetails}</span>
+            <span style="color: #34495e; white-space: pre-wrap;">${escapedInquiryDetails}</span>
           </p>
           ` : ''}
 
