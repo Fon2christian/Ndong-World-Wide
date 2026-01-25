@@ -30,25 +30,50 @@ router.post("/", async (req: Request, res: Response) => {
 
     res.status(201).json(contact);
   } catch (error) {
-    res.status(400).json({ message: "Failed to create contact inquiry", error });
+    console.error("Error creating contact inquiry:", error);
+    // Return sanitized error message
+    const message = error instanceof Error ? error.message : "Failed to create contact inquiry";
+    res.status(400).json({ message });
   }
 });
 
 // GET all contact inquiries (for admin dashboard)
+// TODO: Add authentication middleware to protect this endpoint
+// This endpoint exposes sensitive customer data (names, emails, phone numbers)
 router.get("/", async (req: Request, res: Response) => {
   try {
     const filter: { status?: string } = {};
     if (req.query.status) {
       filter.status = req.query.status as string;
     }
-    const contacts = await Contact.find(filter).sort({ createdAt: -1 });
-    res.json(contacts);
+
+    // Pagination
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const skip = (page - 1) * limit;
+
+    const [contacts, total] = await Promise.all([
+      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Contact.countDocuments(filter),
+    ]);
+
+    res.json({
+      contacts,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch contact inquiries", error });
+    console.error("Error fetching contact inquiries:", error);
+    res.status(500).json({ message: "Failed to fetch contact inquiries" });
   }
 });
 
 // GET single contact inquiry
+// TODO: Add authentication middleware to protect this endpoint
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -59,32 +84,44 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!contact) return res.status(404).json({ message: "Contact inquiry not found" });
     res.json(contact);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch contact inquiry", error });
+    console.error("Error fetching contact inquiry:", error);
+    res.status(500).json({ message: "Failed to fetch contact inquiry" });
   }
 });
 
 // UPDATE contact inquiry status (for admin to mark as resolved, etc.)
+// TODO: Add authentication middleware to protect this endpoint
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid contact ID format" });
     }
+
+    // Whitelist only updatable fields to prevent modification of sensitive data
+    const allowedUpdates: Partial<{ status: string }> = {};
+    if (req.body.status) {
+      allowedUpdates.status = req.body.status;
+    }
+
     const contact = await Contact.findByIdAndUpdate(
       id,
-      req.body,
+      allowedUpdates,
       { new: true, runValidators: true }
     );
     if (!contact) {
       return res.status(404).json({ message: "Contact inquiry not found" });
     }
     res.json(contact);
-  } catch (err) {
-    res.status(400).json({ message: "Failed to update contact inquiry", error: err });
+  } catch (error) {
+    console.error("Error updating contact inquiry:", error);
+    const message = error instanceof Error ? error.message : "Failed to update contact inquiry";
+    res.status(400).json({ message });
   }
 });
 
 // DELETE contact inquiry
+// TODO: Add authentication middleware to protect this endpoint
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -97,7 +134,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete contact inquiry", error });
+    console.error("Error deleting contact inquiry:", error);
+    res.status(500).json({ message: "Failed to delete contact inquiry" });
   }
 });
 

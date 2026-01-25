@@ -8,8 +8,8 @@ export interface ContactAttrs {
   email: string;
   phone: string;
   inquiryDetails?: string;
-  status: "new" | "in_progress" | "resolved";
-  emailSent: boolean;
+  status?: "new" | "in_progress" | "resolved";
+  emailSent?: boolean;
 }
 
 // Create schema

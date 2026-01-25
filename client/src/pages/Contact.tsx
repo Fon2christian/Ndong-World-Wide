@@ -287,7 +287,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <button className="contact-form-submit" onClick={handleNextStep}>
+            <button type="button" className="contact-form-submit" onClick={handleNextStep}>
               <span>{t.contact.nextButton}</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -330,21 +330,14 @@ export default function Contact() {
           </div>
 
           {submitError && (
-            <div style={{
-              color: '#dc3545',
-              backgroundColor: '#f8d7da',
-              border: '1px solid #f5c6cb',
-              borderRadius: '4px',
-              padding: '12px',
-              margin: '20px 0',
-              textAlign: 'center'
-            }}>
+            <div className="contact-confirm__error">
               {submitError}
             </div>
           )}
 
           <div className="contact-confirm__buttons">
             <button
+              type="button"
               className="contact-confirm__button--back"
               onClick={handleBack}
               disabled={isSubmitting}
@@ -352,11 +345,12 @@ export default function Contact() {
               {t.contact.backButton}
             </button>
             <button
+              type="button"
               className="contact-confirm__button--submit"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting..." : t.contact.submitButton}
+              {isSubmitting ? t.contact.submitting : t.contact.submitButton}
             </button>
           </div>
         </div>
@@ -373,7 +367,7 @@ export default function Contact() {
           </div>
           <h2 className="contact-complete__title">{t.contact.completeTitle}</h2>
           <p className="contact-complete__message">{t.contact.completeMessage}</p>
-          <button className="contact-complete__button" onClick={handleNewInquiry}>
+          <button type="button" className="contact-complete__button" onClick={handleNewInquiry}>
             {t.contact.newInquiryButton}
           </button>
         </div>

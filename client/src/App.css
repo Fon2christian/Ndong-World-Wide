@@ -4190,6 +4190,19 @@
   box-shadow: 0 20px 50px rgba(244, 63, 94, 0.4);
 }
 
+.contact-confirm__error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  animation: slideInLeft 0.4s ease-out both;
+}
+
 /* Contact Complete - Celebration */
 .contact-complete {
   max-width: 550px;
