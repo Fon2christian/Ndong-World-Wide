@@ -23,9 +23,13 @@ const createTransporter = () => {
     return null;
   }
 
+  // Parse and validate EMAIL_PORT
+  const port = parseInt(process.env.EMAIL_PORT || "587");
+  const validPort = !isNaN(port) && port > 0 && port <= 65535 ? port : 587;
+
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: parseInt(process.env.EMAIL_PORT || "587"),
+    port: validPort,
     secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
