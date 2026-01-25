@@ -22,6 +22,8 @@
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
   --color-danger-hover: #f87171;
+  --color-danger-bg: #fee2e2;
+  --color-danger-border: #fecaca;
 
   /* Text Colors */
   --color-text-primary: #f8fafc;

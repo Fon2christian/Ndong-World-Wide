@@ -4197,9 +4197,9 @@
 }
 
 .contact-confirm__error {
-  color: #dc3545;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
   border-radius: 12px;
   padding: 16px 20px;
   margin: 20px 0;
