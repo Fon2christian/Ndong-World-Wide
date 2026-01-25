@@ -4944,6 +4944,7 @@
 
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
+  /* Disable all transitions and transforms */
   .lightbox__close,
   .lightbox__nav,
   .lightbox__thumbnail {
@@ -4954,5 +4955,29 @@
   .lightbox__close:hover,
   .lightbox__nav:hover {
     transform: none;
+  }
+
+  /* Pause all infinite animations to reduce CPU/GPU usage and improve battery life */
+  .navbar__logo-icon,
+  .navbar__logo-icon::before,
+  .navbar__link--active::before,
+  .navbar__dropdown-link--active::before,
+  .slideshow__container,
+  .slideshow__container::before,
+  .slideshow__image,
+  .slideshow__welcome-title,
+  .slideshow__tagline,
+  .slideshow__arrow::before,
+  .slideshow__dot--active,
+  .spinner::after,
+  .flow-hero__title,
+  .flow-hero__dot--active,
+  .flow-cta,
+  .company-hero__title,
+  .company-hero::after,
+  .contact-hero__title,
+  .contact-hero::after,
+  .contact-complete__icon {
+    animation-play-state: paused;
   }
 }
