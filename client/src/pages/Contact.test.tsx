@@ -107,6 +107,7 @@ describe('Contact Page', () => {
     vi.mocked(globalThis.fetch).mockResolvedValueOnce({
       ok: false,
       status: 500,
+      json: async () => ({ message: 'Server error occurred' }),
     } as Response)
 
     render(<Contact />)
