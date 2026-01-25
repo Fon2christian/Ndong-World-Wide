@@ -9,6 +9,10 @@ export default function AdminLogin() {
   const { login, isAdmin } = useAuth();
   const navigate = useNavigate();
 
+  // Read actual demo credentials from environment
+  const demoUsername = import.meta.env.VITE_DEMO_ADMIN_USERNAME || "admin";
+  const demoPassword = import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "admin123";
+
   // Redirect if already logged in (use Navigate component to avoid render side-effects)
   if (isAdmin) {
     return <Navigate to="/admin" replace />;
@@ -29,18 +33,20 @@ export default function AdminLogin() {
   return (
     <div className="login-page">
       <div className="login-card">
-        {/* Demo Warning Banner */}
-        <div style={{
-          backgroundColor: '#FEF3C7',
-          border: '2px solid #F59E0B',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '24px',
-          color: '#92400E'
-        }}>
-          <strong>⚠️ DEMO ONLY:</strong> This is a demonstration authentication system.
-          Default credentials: <code>admin</code> / <code>admin123</code>
-        </div>
+        {/* Demo Warning Banner - Only show in development mode */}
+        {import.meta.env.DEV && (
+          <div style={{
+            backgroundColor: '#FEF3C7',
+            border: '2px solid #F59E0B',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginBottom: '24px',
+            color: '#92400E'
+          }}>
+            <strong>⚠️ DEMO ONLY:</strong> This is a demonstration authentication system.
+            Default credentials: <code>{demoUsername}</code> / <code>{demoPassword}</code>
+          </div>
+        )}
 
         <div className="login-header">
           <div className="login-icon">
