@@ -7,6 +7,19 @@ import Contact from './Contact'
 // Mock fetch API
 globalThis.fetch = vi.fn()
 
+// Helper to find button by text content
+const getButtonByText = (text: string | RegExp): HTMLElement => {
+  const buttons = screen.getAllByRole('button')
+  const button = buttons.find(btn => {
+    const content = btn.textContent || ''
+    return typeof text === 'string' ? content.includes(text) : text.test(content)
+  })
+  if (!button) {
+    throw new Error(`Button with text "${text}" not found`)
+  }
+  return button
+}
+
 describe('Contact Page', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -28,18 +41,14 @@ describe('Contact Page', () => {
     const user = userEvent.setup()
     render(<Contact />)
 
-    // Find and click the next/submit button
-    const buttons = screen.getAllByRole('button')
-    const submitButton = buttons.find(btn => btn.textContent?.includes('Proceed') || btn.textContent?.includes('Next'))
+    // Find and click the proceed button
+    const proceedButton = getButtonByText('Proceed')
+    await user.click(proceedButton)
 
-    if (submitButton) {
-      await user.click(submitButton)
-
-      await waitFor(() => {
-        const errors = screen.queryAllByText(/required/i)
-        expect(errors.length).toBeGreaterThan(0)
-      })
-    }
+    await waitFor(() => {
+      const errors = screen.queryAllByText(/required/i)
+      expect(errors.length).toBeGreaterThan(0)
+    })
   })
 
   it('submits form successfully with valid data', async () => {
@@ -65,38 +74,30 @@ describe('Contact Page', () => {
     await user.type(phoneInput, '+81-90-1234-5678')
 
     // Click proceed button
-    const buttons = screen.getAllByRole('button')
-    const proceedButton = buttons.find(btn => btn.textContent?.includes('Proceed'))
+    const proceedButton = getButtonByText('Proceed')
+    await user.click(proceedButton)
 
-    if (proceedButton) {
-      await user.click(proceedButton)
+    // Wait for confirmation screen
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
 
-      // Wait for confirmation screen
-      await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument()
+    // Find and click submit button on confirmation screen
+    const submitButton = getButtonByText('Submit')
+    await user.click(submitButton)
+
+    // Wait for success/completion message
+    await waitFor(() => {
+      expect(screen.getByText('Submission Complete')).toBeInTheDocument()
+    })
+
+    // Verify API was called
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/contacts'),
+      expect.objectContaining({
+        method: 'POST',
       })
-
-      // Find and click submit button on confirmation screen
-      const confirmButtons = screen.getAllByRole('button')
-      const submitButton = confirmButtons.find(btn => btn.textContent?.includes('Submit'))
-
-      if (submitButton) {
-        await user.click(submitButton)
-
-        // Wait for success/completion message
-        await waitFor(() => {
-          expect(screen.getByText('Submission Complete')).toBeInTheDocument()
-        })
-
-        // Verify API was called
-        expect(globalThis.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/contacts'),
-          expect.objectContaining({
-            method: 'POST',
-          })
-        )
-      }
-    }
+    )
   })
 
   it('shows error when API call fails', async () => {
@@ -116,26 +117,18 @@ describe('Contact Page', () => {
     await user.type(screen.getByPlaceholderText(/enter your email/i), 'john@example.com')
     await user.type(screen.getByPlaceholderText(/enter your phone/i), '+81-90-1234-5678')
 
-    const buttons = screen.getAllByRole('button')
-    const proceedButton = buttons.find(btn => btn.textContent?.includes('Proceed'))
+    const proceedButton = getButtonByText('Proceed')
+    await user.click(proceedButton)
 
-    if (proceedButton) {
-      await user.click(proceedButton)
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
 
-      await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument()
-      })
+    const submitButton = getButtonByText('Submit')
+    await user.click(submitButton)
 
-      const confirmButtons = screen.getAllByRole('button')
-      const submitButton = confirmButtons.find(btn => btn.textContent?.includes('Submit'))
-
-      if (submitButton) {
-        await user.click(submitButton)
-
-        await waitFor(() => {
-          expect(screen.getByText(/failed|error/i)).toBeInTheDocument()
-        })
-      }
-    }
+    await waitFor(() => {
+      expect(screen.getByText(/failed|error/i)).toBeInTheDocument()
+    })
   })
 })
