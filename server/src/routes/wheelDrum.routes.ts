@@ -14,9 +14,15 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// GET all wheel drums
-router.get("/", async (_req: Request, res: Response) => {
-  const wheelDrums = await WheelDrum.find().sort({ createdAt: -1 });
+// GET all wheel drums (with optional displayLocation filter)
+router.get("/", async (req: Request, res: Response) => {
+  const filter: { displayLocation?: { $in: string[] } } = {};
+  if (req.query.location) {
+    const location = req.query.location as string;
+    // Match items that are set to this location OR "both"
+    filter.displayLocation = { $in: [location, "both"] };
+  }
+  const wheelDrums = await WheelDrum.find(filter).sort({ createdAt: -1 });
   res.json(wheelDrums);
 });
 

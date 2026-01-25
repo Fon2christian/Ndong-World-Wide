@@ -14,9 +14,15 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// GET all cars
-router.get("/", async (_req: Request, res: Response) => {
-  const cars = await Car.find().sort({ createdAt: -1 });
+// GET all cars (with optional displayLocation filter)
+router.get("/", async (req: Request, res: Response) => {
+  const filter: { displayLocation?: { $in: string[] } } = {};
+  if (req.query.location) {
+    const location = req.query.location as string;
+    // Match items that are set to this location OR "both"
+    filter.displayLocation = { $in: [location, "both"] };
+  }
+  const cars = await Car.find(filter).sort({ createdAt: -1 });
   res.json(cars);
 });
 

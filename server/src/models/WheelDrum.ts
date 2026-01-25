@@ -6,6 +6,7 @@ export interface WheelDrumAttrs {
   price: number;
   condition: string;
   images: string[];
+  displayLocation: "market" | "business" | "both";
 }
 
 const WheelDrumSchema = new Schema<WheelDrumAttrs>(
@@ -15,6 +16,11 @@ const WheelDrumSchema = new Schema<WheelDrumAttrs>(
     price: { type: Number, required: true },
     condition: { type: String, required: true },
     images: { type: [String], default: [] },
+    displayLocation: {
+      type: String,
+      enum: ["market", "business", "both"],
+      default: "market",
+    },
   },
   { timestamps: true }
 );

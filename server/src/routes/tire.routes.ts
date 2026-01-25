@@ -14,11 +14,16 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// GET all tires (with optional condition filter)
+// GET all tires (with optional condition and displayLocation filters)
 router.get("/", async (req: Request, res: Response) => {
-  const filter: { condition?: string } = {};
+  const filter: { condition?: string; displayLocation?: { $in: string[] } } = {};
   if (req.query.condition) {
     filter.condition = req.query.condition as string;
+  }
+  if (req.query.location) {
+    const location = req.query.location as string;
+    // Match items that are set to this location OR "both"
+    filter.displayLocation = { $in: [location, "both"] };
   }
   const tires = await Tire.find(filter).sort({ createdAt: -1 });
   res.json(tires);

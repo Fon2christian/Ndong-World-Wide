@@ -2,6 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { z } from "zod";
+import { compressImages } from "../utils/imageCompression";
 
 // Zod schema for validation
 const carSchema = z.object({
@@ -13,6 +14,7 @@ const carSchema = z.object({
   fuel: z.string().min(1),
   transmission: z.string().min(1),
   images: z.array(z.string()),
+  displayLocation: z.enum(["market", "business", "both"]),
 });
 
 // Car form type
@@ -25,6 +27,7 @@ interface CarForm {
   fuel: string;
   transmission: string;
   images: string[];
+  displayLocation: "market" | "business" | "both";
 }
 
 interface CarFormProps {
@@ -44,6 +47,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
       fuel: "",
       transmission: "",
       images: [],
+      displayLocation: "market",
     }
   );
 
@@ -53,22 +57,26 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     setForm({ ...form, [e.target.name]: value });
   };
 
-  // Handle image file upload
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image file upload - compresses and adds to existing images
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
 
-    Promise.all(
-      files.map(
-        (file) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          })
-      )
-    ).then((base64Images) => setForm({ ...form, images: base64Images }));
+    try {
+      const compressedImages = await compressImages(files);
+      setForm((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
+    } catch (error) {
+      console.error("Error compressing images:", error);
+      alert("Failed to process images. Please try again.");
+    }
+  };
+
+  // Remove a specific image
+  const handleRemoveImage = (indexToRemove: number) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove),
+    }));
   };
 
   // Handle form submission
@@ -127,6 +135,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
         fuel: "",
         transmission: "",
         images: [],
+        displayLocation: "market",
       });
 
       // Notify parent to refresh list
@@ -180,7 +189,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
           />
         </div>
         <div className="form__group">
-          <label className="form__label" htmlFor="price">Price ($)</label>
+          <label className="form__label" htmlFor="price">Price (¥)</label>
           <input
             id="price"
             name="price"
@@ -243,7 +252,23 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
         </div>
       </div>
 
-      {/* Row 5: Image Upload */}
+      {/* Row 5: Display Location */}
+      <div className="form__group">
+        <label className="form__label" htmlFor="displayLocation">Display Location</label>
+        <select
+          id="displayLocation"
+          name="displayLocation"
+          value={form.displayLocation}
+          onChange={handleChange}
+          className="form__select"
+        >
+          <option value="market">Market Only</option>
+          <option value="business">Business Only</option>
+          <option value="both">Both Market & Business</option>
+        </select>
+      </div>
+
+      {/* Row 6: Image Upload */}
       <div className="form__group">
         <label className="form__label">Car Images</label>
         <div className="form__file-upload">
@@ -263,9 +288,23 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
         {form.images.length > 0 && (
           <div className="form__image-preview">
             {form.images.map((img, i) => (
-              <img key={i} src={img} alt={`Preview ${i + 1}`} />
+              <div key={i} className="form__image-preview-item">
+                <img src={img} alt={`Preview ${i + 1}`} />
+                <button
+                  type="button"
+                  className="form__image-remove"
+                  onClick={() => handleRemoveImage(i)}
+                  aria-label={`Remove image ${i + 1}`}
+                >
+                  ×
+                </button>
+                <span className="form__image-number">{i + 1}</span>
+              </div>
             ))}
           </div>
+        )}
+        {form.images.length > 0 && (
+          <p className="form__image-count">{form.images.length} image(s) selected</p>
         )}
       </div>
 

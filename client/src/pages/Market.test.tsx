@@ -178,7 +178,7 @@ describe('Market', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
-        expect(screen.getByText('$25,000')).toBeInTheDocument()
+        expect(screen.getByText('¥25,000')).toBeInTheDocument()
         expect(screen.getByText('2022')).toBeInTheDocument()
       })
     })
@@ -227,7 +227,7 @@ describe('Market', () => {
       await waitFor(() => {
         expect(screen.getByText('Bridgestone')).toBeInTheDocument()
         expect(screen.getByText('205/55R16')).toBeInTheDocument()
-        expect(screen.getByText('$150')).toBeInTheDocument()
+        expect(screen.getByText('¥150')).toBeInTheDocument()
       })
     })
 
@@ -245,7 +245,7 @@ describe('Market', () => {
       await waitFor(() => {
         expect(screen.getByText('Michelin')).toBeInTheDocument()
         expect(screen.getByText('225/45R17')).toBeInTheDocument()
-        expect(screen.getByText('$80')).toBeInTheDocument()
+        expect(screen.getByText('¥80')).toBeInTheDocument()
       })
     })
 
@@ -291,7 +291,7 @@ describe('Market', () => {
       await waitFor(() => {
         expect(screen.getByText('BPW')).toBeInTheDocument()
         expect(screen.getByText('10 hole')).toBeInTheDocument()
-        expect(screen.getByText('$200')).toBeInTheDocument()
+        expect(screen.getByText('¥200')).toBeInTheDocument()
         expect(screen.getByText('Good')).toBeInTheDocument()
       })
     })
