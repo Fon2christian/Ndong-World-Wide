@@ -5,6 +5,7 @@ import type { Request, Response } from "express";
 import carRoutes from "./routes/car.routes.js";
 import tireRoutes from "./routes/tire.routes.js";
 import wheelDrumRoutes from "./routes/wheelDrum.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
 
 const app = express();
 
@@ -39,5 +40,6 @@ app.get("/api/health", (_req: Request, res: Response) => {
 app.use("/api/cars", carRoutes);
 app.use("/api/tires", tireRoutes);
 app.use("/api/wheel-drums", wheelDrumRoutes);
+app.use("/api/contacts", contactRoutes);
 
 export default app;

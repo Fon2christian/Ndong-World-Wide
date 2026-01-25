@@ -20,6 +20,8 @@ export default function Contact() {
     inquiryDetails: "",
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,12 +54,36 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = () => {
-    // TODO: Send formData to server
-    setStep(3);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002";
+      const response = await fetch(`${apiUrl}/api/contacts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit contact form");
+      }
+
+      // Success - move to completion step
+      setStep(3);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setSubmitError("Failed to submit your inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
+    setSubmitError("");
     setStep(1);
   };
 
@@ -69,6 +95,7 @@ export default function Contact() {
       phone: "",
       inquiryDetails: "",
     });
+    setSubmitError("");
     setStep(1);
   };
 
@@ -290,12 +317,34 @@ export default function Contact() {
             </div>
           </div>
 
+          {submitError && (
+            <div style={{
+              color: '#dc3545',
+              backgroundColor: '#f8d7da',
+              border: '1px solid #f5c6cb',
+              borderRadius: '4px',
+              padding: '12px',
+              margin: '20px 0',
+              textAlign: 'center'
+            }}>
+              {submitError}
+            </div>
+          )}
+
           <div className="contact-confirm__buttons">
-            <button className="contact-confirm__button--back" onClick={handleBack}>
+            <button
+              className="contact-confirm__button--back"
+              onClick={handleBack}
+              disabled={isSubmitting}
+            >
               {t.contact.backButton}
             </button>
-            <button className="contact-confirm__button--submit" onClick={handleSubmit}>
-              {t.contact.submitButton}
+            <button
+              className="contact-confirm__button--submit"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : t.contact.submitButton}
             </button>
           </div>
         </div>
