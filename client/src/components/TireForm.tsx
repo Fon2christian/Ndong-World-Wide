@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { compressImages } from "../utils/imageCompression";
@@ -39,6 +39,22 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
       displayLocation: "market",
     }
   );
+
+  // Sync form state when initialData changes (e.g., switching to edit a different tire)
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    } else {
+      setForm({
+        brand: "",
+        size: "",
+        price: 0,
+        condition: defaultCondition,
+        images: [],
+        displayLocation: "market",
+      });
+    }
+  }, [initialData, tireId, defaultCondition]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;

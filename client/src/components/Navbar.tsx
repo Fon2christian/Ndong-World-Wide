@@ -38,7 +38,7 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <ul className="navbar__links">
           {navLinks.map((link) => (
-            <li key={link.name}>
+            <li key={link.href}>
               <Link
                 to={link.href}
                 className={`navbar__link ${isActive(link.href) ? "navbar__link--active" : ""}`}
@@ -90,7 +90,7 @@ export default function Navbar() {
       <div className={`navbar__dropdown ${isMenuOpen ? "navbar__dropdown--open" : ""}`}>
         <ul className="navbar__dropdown-links">
           {navLinks.map((link) => (
-            <li key={link.name}>
+            <li key={link.href}>
               <Link
                 to={link.href}
                 className={`navbar__dropdown-link ${isActive(link.href) ? "navbar__dropdown-link--active" : ""}`}

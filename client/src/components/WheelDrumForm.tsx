@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { compressImages } from "../utils/imageCompression";
@@ -38,6 +38,22 @@ export default function WheelDrumForm({ initialData, wheelDrumId, onSaved }: Whe
       displayLocation: "market",
     }
   );
+
+  // Sync form state when initialData changes (e.g., switching to edit a different wheel drum)
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    } else {
+      setForm({
+        brand: "",
+        size: "",
+        price: 0,
+        condition: "",
+        images: [],
+        displayLocation: "market",
+      });
+    }
+  }, [initialData, wheelDrumId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;

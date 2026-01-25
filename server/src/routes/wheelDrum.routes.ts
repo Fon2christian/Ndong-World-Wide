@@ -1,8 +1,14 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import WheelDrum from "../models/WheelDrum.js";
 
 const router = Router();
+
+// Helper function to validate MongoDB ObjectId
+function isValidObjectId(id: string): boolean {
+  return mongoose.Types.ObjectId.isValid(id);
+}
 
 // CREATE wheel drum
 router.post("/", async (req: Request, res: Response) => {
@@ -16,34 +22,61 @@ router.post("/", async (req: Request, res: Response) => {
 
 // GET all wheel drums (with optional displayLocation filter)
 router.get("/", async (req: Request, res: Response) => {
-  const filter: { displayLocation?: { $in: string[] } } = {};
-  if (req.query.location) {
-    const location = req.query.location as string;
-    // Match items that are set to this location OR "both"
-    filter.displayLocation = { $in: [location, "both"] };
+  try {
+    const filter: { displayLocation?: { $in: string[] } } = {};
+    if (req.query.location) {
+      const location = req.query.location as string;
+      // Match items that are set to this location OR "both"
+      filter.displayLocation = { $in: [location, "both"] };
+    }
+    const wheelDrums = await WheelDrum.find(filter).sort({ createdAt: -1 });
+    res.json(wheelDrums);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch wheel drums", error });
   }
-  const wheelDrums = await WheelDrum.find(filter).sort({ createdAt: -1 });
-  res.json(wheelDrums);
 });
 
 // GET single wheel drum
 router.get("/:id", async (req: Request, res: Response) => {
-  const wheelDrum = await WheelDrum.findById(req.params.id);
-  if (!wheelDrum) return res.status(404).json({ message: "Wheel drum not found" });
-  res.json(wheelDrum);
+  try {
+    const id = req.params.id as string;
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid wheel drum ID format" });
+    }
+    const wheelDrum = await WheelDrum.findById(id);
+    if (!wheelDrum) return res.status(404).json({ message: "Wheel drum not found" });
+    res.json(wheelDrum);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch wheel drum", error });
+  }
 });
 
 // DELETE wheel drum
 router.delete("/:id", async (req: Request, res: Response) => {
-  await WheelDrum.findByIdAndDelete(req.params.id);
-  res.status(204).send();
+  try {
+    const id = req.params.id as string;
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid wheel drum ID format" });
+    }
+    const wheelDrum = await WheelDrum.findByIdAndDelete(id);
+    if (!wheelDrum) {
+      return res.status(404).json({ message: "Wheel drum not found" });
+    }
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete wheel drum", error });
+  }
 });
 
 // UPDATE wheel drum
 router.put("/:id", async (req: Request, res: Response) => {
   try {
+    const id = req.params.id as string;
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid wheel drum ID format" });
+    }
     const wheelDrum = await WheelDrum.findByIdAndUpdate(
-      req.params.id,
+      id,
       req.body,
       { new: true, runValidators: true }
     );

@@ -1,5 +1,5 @@
 // client/src/components/CarForm.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { compressImages } from "../utils/imageCompression";
@@ -50,6 +50,25 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
       displayLocation: "market",
     }
   );
+
+  // Sync form state when initialData changes (e.g., switching to edit a different car)
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    } else {
+      setForm({
+        brand: "",
+        model: "",
+        year: 2020,
+        price: 0,
+        mileage: 0,
+        fuel: "",
+        transmission: "",
+        images: [],
+        displayLocation: "market",
+      });
+    }
+  }, [initialData, carId]);
 
   // Handle text/number input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

@@ -29,6 +29,19 @@ export default function AdminLogin() {
   return (
     <div className="login-page">
       <div className="login-card">
+        {/* Demo Warning Banner */}
+        <div style={{
+          backgroundColor: '#FEF3C7',
+          border: '2px solid #F59E0B',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '24px',
+          color: '#92400E'
+        }}>
+          <strong>⚠️ DEMO ONLY:</strong> This is a demonstration authentication system.
+          Default credentials: <code>admin</code> / <code>admin123</code>
+        </div>
+
         <div className="login-header">
           <div className="login-icon">
             <svg

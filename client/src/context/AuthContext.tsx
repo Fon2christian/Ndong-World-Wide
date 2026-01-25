@@ -8,10 +8,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Demo admin credentials (in production, this would be server-side)
+// ⚠️ DEMO ONLY - NOT FOR PRODUCTION USE ⚠️
+// In production, authentication MUST be handled server-side with proper security:
+// - Never store credentials in client-side code
+// - Use proper JWT/session tokens
+// - Implement rate limiting and brute force protection
+// - Hash passwords with bcrypt/argon2
+// These environment variables are used ONLY for local development/demo purposes.
 const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
+  username: import.meta.env.VITE_DEMO_ADMIN_USERNAME || "admin",
+  password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "admin123",
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
