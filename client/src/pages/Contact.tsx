@@ -69,14 +69,26 @@ export default function Contact() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit contact form");
+        // Try to extract error message from server response
+        let errorMessage = t.contact.errors.submitFailed;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If parsing fails, use the default i18n error message
+        }
+        throw new Error(errorMessage);
       }
 
       // Success - move to completion step
       setStep(3);
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      setSubmitError("Failed to submit your inquiry. Please try again.");
+      setSubmitError(
+        error instanceof Error ? error.message : t.contact.errors.submitFailed
+      );
     } finally {
       setIsSubmitting(false);
     }
