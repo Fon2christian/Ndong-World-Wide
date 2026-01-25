@@ -11,9 +11,55 @@ function isValidObjectId(id: string): boolean {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+// Helper function to validate email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Helper function to validate contact input
+function validateContactInput(body: any): { valid: boolean; error?: string } {
+  const { name, furigana, email, phone, inquiryDetails } = body;
+
+  // Check required fields
+  if (!name || !furigana || !email || !phone) {
+    return { valid: false, error: "All required fields must be provided" };
+  }
+
+  // Validate email format
+  if (!isValidEmail(email)) {
+    return { valid: false, error: "Invalid email format" };
+  }
+
+  // Validate field lengths to prevent abuse
+  if (name.length > 200) {
+    return { valid: false, error: "Name must be less than 200 characters" };
+  }
+  if (furigana.length > 200) {
+    return { valid: false, error: "Furigana must be less than 200 characters" };
+  }
+  if (email.length > 100) {
+    return { valid: false, error: "Email must be less than 100 characters" };
+  }
+  if (phone.length > 50) {
+    return { valid: false, error: "Phone must be less than 50 characters" };
+  }
+  if (inquiryDetails && inquiryDetails.length > 5000) {
+    return { valid: false, error: "Inquiry details must be less than 5000 characters" };
+  }
+
+  return { valid: true };
+}
+
 // CREATE contact inquiry
 router.post("/", async (req: Request, res: Response) => {
   try {
+    // Validate input
+    const validation = validateContactInput(req.body);
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.error });
+    }
+
     // Create contact in database
     const contact = await Contact.create(req.body);
 
