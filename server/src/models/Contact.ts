@@ -30,5 +30,9 @@ const ContactSchema = new Schema<ContactAttrs>(
   { timestamps: true }
 );
 
+// Add indexes for query performance
+ContactSchema.index({ createdAt: -1 }); // For sorting all contacts by creation date
+ContactSchema.index({ status: 1, createdAt: -1 }); // For filtering by status and sorting
+
 // Export model
 export default mongoose.model<ContactAttrs>("Contact", ContactSchema);
