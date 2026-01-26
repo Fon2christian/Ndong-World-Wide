@@ -60,7 +60,7 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
   const mailOptions = {
     from: `"${process.env.EMAIL_FROM_NAME || 'Ndong World Wide'}" <${process.env.EMAIL_USER}>`,
     to: recipientEmail,
-    subject: `New Contact Inquiry from ${escapedName}`,
+    subject: `New Contact Inquiry from ${contact.name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
@@ -80,12 +80,12 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
 
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Email:</strong><br/>
-            <a href="mailto:${escapedEmail}" style="color: #3498db;">${escapedEmail}</a>
+            <a href="mailto:${encodeURIComponent(contact.email)}" style="color: #3498db;">${escapedEmail}</a>
           </p>
 
           <p style="margin: 10px 0;">
             <strong style="color: #2c3e50;">Phone:</strong><br/>
-            <a href="tel:${escapedPhone}" style="color: #3498db;">${escapedPhone}</a>
+            <a href="tel:${encodeURIComponent(contact.phone)}" style="color: #3498db;">${escapedPhone}</a>
           </p>
 
           ${escapedInquiryDetails ? `

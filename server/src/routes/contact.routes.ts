@@ -21,8 +21,9 @@ function isValidEmail(email: string): boolean {
 function validateContactInput(body: any): { valid: boolean; error?: string } {
   const { name, furigana, email, phone, inquiryDetails } = body;
 
-  // Check required fields
-  if (!name || !furigana || !email || !phone) {
+  // Check required fields exist and are strings
+  if (!name || typeof name !== 'string' || !furigana || typeof furigana !== 'string' ||
+      !email || typeof email !== 'string' || !phone || typeof phone !== 'string') {
     return { valid: false, error: "All required fields must be provided" };
   }
 
@@ -44,7 +45,7 @@ function validateContactInput(body: any): { valid: boolean; error?: string } {
   if (phone.length > 50) {
     return { valid: false, error: "Phone must be less than 50 characters" };
   }
-  if (inquiryDetails && inquiryDetails.length > 5000) {
+  if (inquiryDetails && typeof inquiryDetails === 'string' && inquiryDetails.length > 5000) {
     return { valid: false, error: "Inquiry details must be less than 5000 characters" };
   }
 
@@ -93,9 +94,10 @@ router.get("/", async (req: Request, res: Response) => {
       filter.status = req.query.status as string;
     }
 
-    // Pagination
+    // Pagination with maximum limit to prevent abuse
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 50;
+    const requestedLimit = parseInt(req.query.limit as string) || 50;
+    const limit = Math.min(requestedLimit, 100); // Cap at 100 items per page
     const skip = (page - 1) * limit;
 
     const [contacts, total] = await Promise.all([

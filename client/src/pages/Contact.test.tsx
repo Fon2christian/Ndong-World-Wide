@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render } from '../test/test-utils'
 import Contact from './Contact'
-
-// Mock fetch API
-globalThis.fetch = vi.fn()
 
 // Helper to find button by text content
 const getButtonByText = (text: string | RegExp): HTMLElement => {
@@ -22,7 +19,13 @@ const getButtonByText = (text: string | RegExp): HTMLElement => {
 
 describe('Contact Page', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // Properly stub fetch to prevent test pollution
+    vi.stubGlobal('fetch', vi.fn())
+  })
+
+  afterEach(() => {
+    // Restore all globals after each test
+    vi.unstubAllGlobals()
   })
 
   it('renders contact form', () => {
@@ -49,6 +52,9 @@ describe('Contact Page', () => {
       const errors = screen.queryAllByText(/required/i)
       expect(errors.length).toBeGreaterThan(0)
     })
+
+    // Ensure no API call is made when validation fails
+    expect(globalThis.fetch).not.toHaveBeenCalled()
   })
 
   it('submits form successfully with valid data', async () => {
