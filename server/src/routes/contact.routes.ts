@@ -61,8 +61,17 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(400).json({ message: validation.error });
     }
 
+    // Whitelist only allowed fields to prevent mass-assignment
+    const contactData = {
+      name: req.body.name,
+      furigana: req.body.furigana,
+      email: req.body.email,
+      phone: req.body.phone,
+      ...(req.body.inquiryDetails && { inquiryDetails: req.body.inquiryDetails })
+    };
+
     // Create contact in database
-    const contact = await Contact.create(req.body);
+    const contact = await Contact.create(contactData);
 
     // Send email notification
     try {
