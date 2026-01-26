@@ -1,19 +1,22 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
 reviews:
   auto_review:
     enabled: true
     drafts: true
     base_branches:
       - ".*"
-  tone: assertive
+
+  profile: assertive
   review_status: true
 
-analysis:
-  enabled: true
-  depth: deep
+  analysis:
+    enabled: true
+    depth: deep
 
-summary:
-  enabled: true
+  summary:
+    enabled: true
 
-style:
-  severity_labels: true
-  inline_comments: true
+  style:
+    severity_labels: true
+    inline_comments: true

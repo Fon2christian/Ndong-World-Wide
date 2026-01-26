@@ -295,7 +295,7 @@ export default function AdminDashboard() {
             <td>{car.brand}</td>
             <td>{car.model}</td>
             <td>{car.year}</td>
-            <td>${car.price.toLocaleString()}</td>
+            <td>¥{car.price.toLocaleString()}</td>
             <td>{car.mileage.toLocaleString()} km</td>
             <td className="capitalize">{car.fuel}</td>
             <td className="capitalize">{car.transmission}</td>
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
             </td>
             <td>{tire.brand}</td>
             <td>{tire.size}</td>
-            <td>${tire.price.toLocaleString()}</td>
+            <td>¥{tire.price.toLocaleString()}</td>
             <td>
               <span className={`condition-badge condition-badge--${tire.condition}`}>
                 {tire.condition}
@@ -385,7 +385,7 @@ export default function AdminDashboard() {
             </td>
             <td>{wd.brand}</td>
             <td>{wd.size}</td>
-            <td>${wd.price.toLocaleString()}</td>
+            <td>¥{wd.price.toLocaleString()}</td>
             <td>{wd.condition}</td>
             <td>
               <div className="admin-table__actions">

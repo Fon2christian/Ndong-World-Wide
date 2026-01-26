@@ -64,6 +64,7 @@ describe('WheelDrumForm', () => {
       price: 200,
       condition: 'Good',
       images: [],
+      displayLocation: 'market' as const,
     }
 
     it('should populate form with initial data', () => {
@@ -188,6 +189,7 @@ describe('WheelDrumForm', () => {
         price: 200,
         condition: 'Good',
         images: [],
+        displayLocation: 'market' as const,
       }
 
       render(<WheelDrumForm initialData={initialData} wheelDrumId="123" onSaved={onSaved} />)
@@ -294,6 +296,55 @@ describe('WheelDrumForm', () => {
 
       await waitFor(() => {
         expect(mockAlert).toHaveBeenCalledWith('Failed to save wheel drum. Check server logs.')
+      })
+    })
+  })
+
+  describe('displayLocation', () => {
+    it('should render displayLocation select field', () => {
+      render(<WheelDrumForm />)
+      expect(screen.getByLabelText(/display location/i)).toBeInTheDocument()
+    })
+
+    it('should default to "market" displayLocation', () => {
+      render(<WheelDrumForm />)
+      const locationSelect = screen.getByLabelText(/display location/i) as HTMLSelectElement
+      expect(locationSelect.value).toBe('market')
+    })
+
+    it('should update displayLocation field on change', async () => {
+      const user = userEvent.setup()
+      render(<WheelDrumForm />)
+
+      const locationSelect = screen.getByLabelText(/display location/i)
+      await user.selectOptions(locationSelect, 'business')
+
+      expect(locationSelect).toHaveValue('business')
+    })
+
+    it('should include displayLocation in form submission', async () => {
+      const user = userEvent.setup()
+      mockedAxios.post.mockResolvedValue({ data: { _id: '123' } })
+
+      render(<WheelDrumForm />)
+
+      await user.type(screen.getByLabelText(/brand/i), 'BPW')
+      await user.type(screen.getByLabelText(/size/i), '10 hole')
+      await user.clear(screen.getByLabelText(/price/i))
+      await user.type(screen.getByLabelText(/price/i), '200')
+      await user.type(screen.getByLabelText(/condition/i), 'Good')
+      await user.selectOptions(screen.getByLabelText(/display location/i), 'both')
+
+      const submitButton = screen.getByRole('button', { name: /create wheel drum/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+          expect.stringContaining('/api/wheel-drums'),
+          expect.objectContaining({
+            displayLocation: 'both',
+          })
+        )
       })
     })
   })

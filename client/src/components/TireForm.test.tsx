@@ -77,6 +77,7 @@ describe('TireForm', () => {
       price: 200,
       condition: 'used' as const,
       images: [],
+      displayLocation: 'market' as const,
     }
 
     it('should populate form with initial data', () => {
@@ -198,6 +199,7 @@ describe('TireForm', () => {
         price: 200,
         condition: 'used' as const,
         images: [],
+        displayLocation: 'market' as const,
       }
 
       render(<TireForm initialData={initialData} tireId="123" onSaved={onSaved} />)
@@ -281,6 +283,63 @@ describe('TireForm', () => {
 
       await waitFor(() => {
         expect(mockAlert).toHaveBeenCalledWith('Failed to save tire. Check server logs.')
+      })
+    })
+  })
+
+  describe('displayLocation', () => {
+    it('should render displayLocation select field', () => {
+      render(<TireForm />)
+      expect(screen.getByLabelText(/display location/i)).toBeInTheDocument()
+    })
+
+    it('should default to "market" displayLocation', () => {
+      render(<TireForm />)
+      const locationSelect = screen.getByLabelText(/display location/i) as HTMLSelectElement
+      expect(locationSelect.value).toBe('market')
+    })
+
+    it('should update displayLocation field on change', async () => {
+      const user = userEvent.setup()
+      render(<TireForm />)
+
+      const locationSelect = screen.getByLabelText(/display location/i)
+      await user.selectOptions(locationSelect, 'business')
+
+      expect(locationSelect).toHaveValue('business')
+    })
+
+    it('should have all three location options', () => {
+      render(<TireForm />)
+      const locationSelect = screen.getByLabelText(/display location/i)
+
+      expect(locationSelect).toContainHTML('Market Only')
+      expect(locationSelect).toContainHTML('Business Only')
+      expect(locationSelect).toContainHTML('Both Market')
+    })
+
+    it('should include displayLocation in form submission', async () => {
+      const user = userEvent.setup()
+      mockedAxios.post.mockResolvedValue({ data: { _id: '123' } })
+
+      render(<TireForm />)
+
+      await user.type(screen.getByLabelText(/brand/i), 'Bridgestone')
+      await user.type(screen.getByLabelText(/size/i), '205/55R16')
+      await user.clear(screen.getByLabelText(/price/i))
+      await user.type(screen.getByLabelText(/price/i), '150')
+      await user.selectOptions(screen.getByLabelText(/display location/i), 'both')
+
+      const submitButton = screen.getByRole('button', { name: /create tire/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+          expect.stringContaining('/api/tires'),
+          expect.objectContaining({
+            displayLocation: 'both',
+          })
+        )
       })
     })
   })

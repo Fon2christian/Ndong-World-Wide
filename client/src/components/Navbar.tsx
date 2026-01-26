@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -8,16 +8,23 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin } = useAuth();
   const { t } = useLanguage();
+  const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const navLinks = [
     { name: t.nav.home, href: "/" },
+    { name: t.nav.business, href: "/business" },
     { name: t.nav.market, href: "/market" },
     { name: t.nav.flow, href: "/flow" },
     { name: t.nav.company, href: "/company" },
     { name: t.nav.contact, href: "/contact" },
   ];
+
+  const isActive = (href: string) => {
+    if (href === "/") return location.pathname === "/";
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <nav className="navbar">
@@ -31,15 +38,21 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <ul className="navbar__links">
           {navLinks.map((link) => (
-            <li key={link.name}>
-              <Link to={link.href} className="navbar__link">
+            <li key={link.href}>
+              <Link
+                to={link.href}
+                className={`navbar__link ${isActive(link.href) ? "navbar__link--active" : ""}`}
+              >
                 {link.name}
               </Link>
             </li>
           ))}
           {isAdmin && (
             <li>
-              <Link to="/admin" className="navbar__link navbar__link--admin">
+              <Link
+                to="/admin"
+                className={`navbar__link navbar__link--admin ${isActive("/admin") ? "navbar__link--active" : ""}`}
+              >
                 Admin
               </Link>
             </li>
@@ -77,10 +90,10 @@ export default function Navbar() {
       <div className={`navbar__dropdown ${isMenuOpen ? "navbar__dropdown--open" : ""}`}>
         <ul className="navbar__dropdown-links">
           {navLinks.map((link) => (
-            <li key={link.name}>
+            <li key={link.href}>
               <Link
                 to={link.href}
-                className="navbar__dropdown-link"
+                className={`navbar__dropdown-link ${isActive(link.href) ? "navbar__dropdown-link--active" : ""}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
@@ -90,7 +103,7 @@ export default function Navbar() {
           <li>
             <Link
               to={isAdmin ? "/admin" : "/login"}
-              className={`navbar__dropdown-link ${isAdmin ? "navbar__link--admin" : ""}`}
+              className={`navbar__dropdown-link ${isAdmin ? "navbar__link--admin" : ""} ${isActive("/admin") || isActive("/login") ? "navbar__dropdown-link--active" : ""}`}
               onClick={() => setIsMenuOpen(false)}
             >
               {isAdmin ? "Admin Dashboard" : "Admin Login"}

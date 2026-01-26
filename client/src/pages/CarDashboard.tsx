@@ -113,7 +113,7 @@ export default function CarDashboard() {
                 </div>
 
                 <p className="car-card__price">
-                  ${car.price.toLocaleString()}
+                  ¥{car.price.toLocaleString()}
                 </p>
 
                 {/* Specs Grid */}

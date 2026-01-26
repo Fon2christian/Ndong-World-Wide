@@ -8,11 +8,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Demo admin credentials (in production, this would be server-side)
-const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
-};
+// ⚠️ DEMO ONLY - NOT FOR PRODUCTION USE ⚠️
+// In production, authentication MUST be handled server-side with proper security:
+// - Never store credentials in client-side code
+// - Use proper JWT/session tokens
+// - Implement rate limiting and brute force protection
+// - Hash passwords with bcrypt/argon2
+// Demo credentials are ONLY available in development mode (import.meta.env.DEV)
+const ADMIN_CREDENTIALS = import.meta.env.DEV ? {
+  username: import.meta.env.VITE_DEMO_ADMIN_USERNAME || "admin",
+  password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "admin123",
+} : null;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize synchronously from localStorage to prevent redirect on refresh
@@ -34,6 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (username: string, password: string): boolean => {
+    // In production builds, demo credentials are disabled
+    if (!ADMIN_CREDENTIALS) {
+      console.error("Authentication is not available in production mode. Implement server-side auth.");
+      return false;
+    }
+
     if (
       username === ADMIN_CREDENTIALS.username &&
       password === ADMIN_CREDENTIALS.password

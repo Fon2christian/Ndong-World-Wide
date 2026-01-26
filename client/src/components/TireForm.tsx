@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
+import { compressImages } from "../utils/imageCompression";
 
 const tireSchema = z.object({
   brand: z.string().min(1),
@@ -8,6 +9,7 @@ const tireSchema = z.object({
   price: z.number().min(0),
   condition: z.enum(["new", "used"]),
   images: z.array(z.string()),
+  displayLocation: z.enum(["market", "business", "both"]),
 });
 
 interface TireFormData {
@@ -16,6 +18,7 @@ interface TireFormData {
   price: number;
   condition: "new" | "used";
   images: string[];
+  displayLocation: "market" | "business" | "both";
 }
 
 interface TireFormProps {
@@ -33,29 +36,51 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
       price: 0,
       condition: defaultCondition,
       images: [],
+      displayLocation: "market",
     }
   );
+
+  // Sync form state when initialData changes (e.g., switching to edit a different tire)
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    } else {
+      setForm({
+        brand: "",
+        size: "",
+        price: 0,
+        condition: defaultCondition,
+        images: [],
+        displayLocation: "market",
+      });
+    }
+  }, [initialData, tireId, defaultCondition]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;
     setForm({ ...form, [e.target.name]: value });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image file upload - compresses and adds to existing images
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
 
-    Promise.all(
-      files.map(
-        (file) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          })
-      )
-    ).then((base64Images) => setForm((prev) => ({ ...prev, images: base64Images })));
+    try {
+      const compressedImages = await compressImages(files);
+      setForm((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
+    } catch (error) {
+      console.error("Error compressing images:", error);
+      alert("Failed to process images. Please try again.");
+    }
+  };
+
+  // Remove a specific image
+  const handleRemoveImage = (indexToRemove: number) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +121,7 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
         price: 0,
         condition: defaultCondition,
         images: [],
+        displayLocation: "market",
       });
 
       onSaved?.();
@@ -136,7 +162,7 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
       {/* Row 2: Price & Condition */}
       <div className="form__row">
         <div className="form__group">
-          <label className="form__label" htmlFor="price">Price ($)</label>
+          <label className="form__label" htmlFor="price">Price (¥)</label>
           <input
             id="price"
             name="price"
@@ -162,7 +188,23 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
         </div>
       </div>
 
-      {/* Row 3: Image Upload */}
+      {/* Row 3: Display Location */}
+      <div className="form__group">
+        <label className="form__label" htmlFor="displayLocation">Display Location</label>
+        <select
+          id="displayLocation"
+          name="displayLocation"
+          value={form.displayLocation}
+          onChange={handleChange}
+          className="form__select"
+        >
+          <option value="market">Market Only</option>
+          <option value="business">Business Only</option>
+          <option value="both">Both Market & Business</option>
+        </select>
+      </div>
+
+      {/* Row 4: Image Upload */}
       <div className="form__group">
         <label className="form__label">Tire Images</label>
         <div className="form__file-upload">
@@ -181,9 +223,23 @@ export default function TireForm({ initialData, tireId, defaultCondition = "new"
         {form.images.length > 0 && (
           <div className="form__image-preview">
             {form.images.map((img, i) => (
-              <img key={i} src={img} alt={`Preview ${i + 1}`} />
+              <div key={i} className="form__image-preview-item">
+                <img src={img} alt={`Preview ${i + 1}`} />
+                <button
+                  type="button"
+                  className="form__image-remove"
+                  onClick={() => handleRemoveImage(i)}
+                  aria-label={`Remove image ${i + 1}`}
+                >
+                  ×
+                </button>
+                <span className="form__image-number">{i + 1}</span>
+              </div>
             ))}
           </div>
+        )}
+        {form.images.length > 0 && (
+          <p className="form__image-count">{form.images.length} image(s) selected</p>
         )}
       </div>
 

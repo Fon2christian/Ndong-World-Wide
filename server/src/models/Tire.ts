@@ -6,6 +6,7 @@ export interface TireAttrs {
   price: number;
   condition: "new" | "used";
   images: string[];
+  displayLocation: "market" | "business" | "both";
 }
 
 const TireSchema = new Schema<TireAttrs>(
@@ -19,6 +20,11 @@ const TireSchema = new Schema<TireAttrs>(
       required: true,
     },
     images: { type: [String], default: [] },
+    displayLocation: {
+      type: String,
+      enum: ["market", "business", "both"],
+      default: "market",
+    },
   },
   { timestamps: true }
 );

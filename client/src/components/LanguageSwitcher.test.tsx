@@ -61,11 +61,8 @@ describe('LanguageSwitcher', () => {
       await user.click(screen.getByLabelText('Select language'))
 
       // Find and click French option
-      const buttons = screen.getAllByRole('button')
-      const frenchButton = buttons.find(btn => btn.textContent?.includes('Français'))
-      if (frenchButton) {
-        await user.click(frenchButton)
-      }
+      const frenchButton = screen.getByText('Français')
+      await user.click(frenchButton)
 
       // Verify language changed
       expect(localStorage.getItem('language')).toBe('fr')
@@ -81,11 +78,8 @@ describe('LanguageSwitcher', () => {
       await user.click(screen.getByLabelText('Select language'))
 
       // Find and click French option
-      const buttons = screen.getAllByRole('button')
-      const frenchButton = buttons.find(btn => btn.textContent?.includes('Français'))
-      if (frenchButton) {
-        await user.click(frenchButton)
-      }
+      const frenchButton = screen.getByText('Français')
+      await user.click(frenchButton)
 
       expect(localStorage.getItem('language')).toBe('fr')
     })
@@ -98,11 +92,8 @@ describe('LanguageSwitcher', () => {
       await user.click(screen.getByLabelText('Select language'))
 
       // Find and click Japanese option
-      const buttons = screen.getAllByRole('button')
-      const japaneseButton = buttons.find(btn => btn.textContent?.includes('日本語'))
-      if (japaneseButton) {
-        await user.click(japaneseButton)
-      }
+      const japaneseButton = screen.getByText('日本語')
+      await user.click(japaneseButton)
 
       expect(localStorage.getItem('language')).toBe('ja')
     })
@@ -116,11 +107,8 @@ describe('LanguageSwitcher', () => {
       await user.click(screen.getByLabelText('Select language'))
 
       // Find and click English option
-      const buttons = screen.getAllByRole('button')
-      const englishButton = buttons.find(btn => btn.textContent?.includes('English'))
-      if (englishButton) {
-        await user.click(englishButton)
-      }
+      const englishButton = screen.getByText('English')
+      await user.click(englishButton)
 
       expect(localStorage.getItem('language')).toBe('en')
     })

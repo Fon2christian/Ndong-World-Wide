@@ -89,8 +89,8 @@ describe('CarDashboard', () => {
       render(<CarDashboard />)
 
       await waitFor(() => {
-        expect(screen.getByText('$25,000')).toBeInTheDocument()
-        expect(screen.getByText('$22,000')).toBeInTheDocument()
+        expect(screen.getByText('¥25,000')).toBeInTheDocument()
+        expect(screen.getByText('¥22,000')).toBeInTheDocument()
       })
     })
 

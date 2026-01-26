@@ -20,6 +20,8 @@ export default function Contact() {
     inquiryDetails: "",
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,12 +54,48 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = () => {
-    // TODO: Send formData to server
-    setStep(3);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002";
+      const response = await fetch(`${apiUrl}/api/contacts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        // Try to extract error message from server response
+        let errorMessage = t.contact.errors.submitFailed;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If parsing fails, use the default i18n error message
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Success - move to completion step
+      setStep(3);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setSubmitError(
+        error instanceof Error ? error.message : t.contact.errors.submitFailed
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
+    setSubmitError("");
     setStep(1);
   };
 
@@ -69,6 +107,7 @@ export default function Contact() {
       phone: "",
       inquiryDetails: "",
     });
+    setSubmitError("");
     setStep(1);
   };
 
@@ -248,7 +287,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <button className="contact-form-submit" onClick={handleNextStep}>
+            <button type="button" className="contact-form-submit" onClick={handleNextStep}>
               <span>{t.contact.nextButton}</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -290,12 +329,28 @@ export default function Contact() {
             </div>
           </div>
 
+          {submitError && (
+            <div className="contact-confirm__error">
+              {submitError}
+            </div>
+          )}
+
           <div className="contact-confirm__buttons">
-            <button className="contact-confirm__button--back" onClick={handleBack}>
+            <button
+              type="button"
+              className="contact-confirm__button--back"
+              onClick={handleBack}
+              disabled={isSubmitting}
+            >
               {t.contact.backButton}
             </button>
-            <button className="contact-confirm__button--submit" onClick={handleSubmit}>
-              {t.contact.submitButton}
+            <button
+              type="button"
+              className="contact-confirm__button--submit"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? t.contact.submitting : t.contact.submitButton}
             </button>
           </div>
         </div>
@@ -312,7 +367,7 @@ export default function Contact() {
           </div>
           <h2 className="contact-complete__title">{t.contact.completeTitle}</h2>
           <p className="contact-complete__message">{t.contact.completeMessage}</p>
-          <button className="contact-complete__button" onClick={handleNewInquiry}>
+          <button type="button" className="contact-complete__button" onClick={handleNewInquiry}>
             {t.contact.newInquiryButton}
           </button>
         </div>

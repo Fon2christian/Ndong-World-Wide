@@ -1,8 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useLanguage } from "../context/LanguageContext";
 
 type TabType = "cars" | "new-tires" | "used-tires" | "wheel-drums";
+
+// Image Gallery Hook for managing image index per item
+function useImageGallery() {
+  const [currentIndices, setCurrentIndices] = useState<Record<string, number>>({});
+
+  const getCurrentIndex = useCallback((id: string) => currentIndices[id] || 0, [currentIndices]);
+
+  const nextImage = useCallback((id: string, totalImages: number) => {
+    setCurrentIndices(prev => ({
+      ...prev,
+      [id]: ((prev[id] || 0) + 1) % totalImages
+    }));
+  }, []);
+
+  const prevImage = useCallback((id: string, totalImages: number) => {
+    setCurrentIndices(prev => ({
+      ...prev,
+      [id]: ((prev[id] || 0) - 1 + totalImages) % totalImages
+    }));
+  }, []);
+
+  return { getCurrentIndex, nextImage, prevImage };
+}
 
 interface Car {
   _id: string;
@@ -37,6 +60,14 @@ interface WheelDrum {
   createdAt: string;
 }
 
+// Lightbox state interface
+interface LightboxState {
+  isOpen: boolean;
+  images: string[];
+  currentIndex: number;
+  title: string;
+}
+
 export default function Market() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
@@ -45,15 +76,61 @@ export default function Market() {
   const [usedTires, setUsedTires] = useState<Tire[]>([]);
   const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>([]);
   const [loading, setLoading] = useState(true);
+  const { getCurrentIndex, nextImage, prevImage } = useImageGallery();
+
+  // Lightbox state
+  const [lightbox, setLightbox] = useState<LightboxState>({
+    isOpen: false,
+    images: [],
+    currentIndex: 0,
+    title: "",
+  });
+
+  const openLightbox = (images: string[], index: number, title: string) => {
+    setLightbox({ isOpen: true, images, currentIndex: index, title });
+    document.body.style.overflow = "hidden"; // Prevent background scroll
+  };
+
+  const closeLightbox = () => {
+    setLightbox({ isOpen: false, images: [], currentIndex: 0, title: "" });
+    document.body.style.overflow = ""; // Restore scroll
+  };
+
+  const lightboxNext = () => {
+    setLightbox(prev => ({
+      ...prev,
+      currentIndex: (prev.currentIndex + 1) % prev.images.length,
+    }));
+  };
+
+  const lightboxPrev = () => {
+    setLightbox(prev => ({
+      ...prev,
+      currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length,
+    }));
+  };
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightbox.isOpen) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") lightboxNext();
+      if (e.key === "ArrowLeft") lightboxPrev();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightbox.isOpen]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Fetch only items that should be displayed on Market (location=market or both)
       const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_URL}/api/cars`),
-        axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=new`),
-        axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=used`),
-        axios.get(`${import.meta.env.VITE_API_URL}/api/wheel-drums`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/cars?location=market`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=new&location=market`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=used&location=market`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/wheel-drums?location=market`),
       ]);
       setCars(carsRes.data);
       setNewTires(newTiresRes.data);
@@ -132,14 +209,42 @@ export default function Market() {
     </div>
   );
 
-  const renderCarCard = (car: Car) => (
+  const renderCarCard = (car: Car) => {
+    const currentIndex = getCurrentIndex(car._id);
+    return (
     <article key={car._id} className="car-card">
       <div className="car-card__gallery">
         {car.images.length > 0 ? (
           <>
-            <img src={car.images[0]} alt={`${car.brand} ${car.model}`} className="car-card__image" />
+            <img
+              src={car.images[currentIndex]}
+              alt={`${car.brand} ${car.model}`}
+              className="car-card__image car-card__image--clickable"
+              onClick={() => openLightbox(car.images, currentIndex, `${car.brand} ${car.model}`)}
+            />
             {car.images.length > 1 && (
-              <span className="car-card__image-count">+{car.images.length - 1} photos</span>
+              <>
+                <button
+                  className="gallery-nav gallery-nav--prev"
+                  onClick={(e) => { e.stopPropagation(); prevImage(car._id, car.images.length); }}
+                  aria-label="Previous image"
+                >
+                  ‹
+                </button>
+                <button
+                  className="gallery-nav gallery-nav--next"
+                  onClick={(e) => { e.stopPropagation(); nextImage(car._id, car.images.length); }}
+                  aria-label="Next image"
+                >
+                  ›
+                </button>
+                <div className="gallery-dots">
+                  {car.images.map((_, i) => (
+                    <span key={i} className={`gallery-dot ${i === currentIndex ? 'gallery-dot--active' : ''}`} />
+                  ))}
+                </div>
+                <span className="car-card__image-count">{currentIndex + 1}/{car.images.length}</span>
+              </>
             )}
           </>
         ) : (
@@ -151,7 +256,7 @@ export default function Market() {
           <h2 className="car-card__title">{car.brand} {car.model}</h2>
           <span className="car-card__year">{car.year}</span>
         </div>
-        <p className="car-card__price">${car.price.toLocaleString()}</p>
+        <p className="car-card__price">¥{car.price.toLocaleString()}</p>
         <div className="car-card__specs">
           <div className="car-spec">
             <span className="car-spec__label">{t.market.mileage}</span>
@@ -172,12 +277,46 @@ export default function Market() {
       </div>
     </article>
   );
+  };
 
-  const renderTireCard = (tire: Tire) => (
+  const renderTireCard = (tire: Tire) => {
+    const currentIndex = getCurrentIndex(tire._id);
+    return (
     <article key={tire._id} className="product-card product-card--tire">
       <div className="product-card__gallery">
         {tire.images.length > 0 ? (
-          <img src={tire.images[0]} alt={`${tire.brand} ${tire.size}`} className="product-card__image" />
+          <>
+            <img
+              src={tire.images[currentIndex]}
+              alt={`${tire.brand} ${tire.size}`}
+              className="product-card__image product-card__image--clickable"
+              onClick={() => openLightbox(tire.images, currentIndex, `${tire.brand} - ${tire.size}`)}
+            />
+            {tire.images.length > 1 && (
+              <>
+                <button
+                  className="gallery-nav gallery-nav--prev"
+                  onClick={(e) => { e.stopPropagation(); prevImage(tire._id, tire.images.length); }}
+                  aria-label="Previous image"
+                >
+                  ‹
+                </button>
+                <button
+                  className="gallery-nav gallery-nav--next"
+                  onClick={(e) => { e.stopPropagation(); nextImage(tire._id, tire.images.length); }}
+                  aria-label="Next image"
+                >
+                  ›
+                </button>
+                <div className="gallery-dots">
+                  {tire.images.map((_, i) => (
+                    <span key={i} className={`gallery-dot ${i === currentIndex ? 'gallery-dot--active' : ''}`} />
+                  ))}
+                </div>
+                <span className="product-card__image-count">{currentIndex + 1}/{tire.images.length}</span>
+              </>
+            )}
+          </>
         ) : (
           <div className="product-card__gallery-placeholder">{getTabIcon("tire-new")}</div>
         )}
@@ -188,19 +327,53 @@ export default function Market() {
       <div className="product-card__body">
         <h2 className="product-card__title">{tire.brand}</h2>
         <p className="product-card__subtitle">{tire.size}</p>
-        <p className="product-card__price">${tire.price.toLocaleString()}</p>
+        <p className="product-card__price">¥{tire.price.toLocaleString()}</p>
         <div className="product-card__actions">
           <button className="btn btn--primary btn--small">{t.market.contactSeller}</button>
         </div>
       </div>
     </article>
   );
+  };
 
-  const renderWheelDrumCard = (wheelDrum: WheelDrum) => (
+  const renderWheelDrumCard = (wheelDrum: WheelDrum) => {
+    const currentIndex = getCurrentIndex(wheelDrum._id);
+    return (
     <article key={wheelDrum._id} className="product-card product-card--wheel">
       <div className="product-card__gallery">
         {wheelDrum.images.length > 0 ? (
-          <img src={wheelDrum.images[0]} alt={`${wheelDrum.brand} ${wheelDrum.size}`} className="product-card__image" />
+          <>
+            <img
+              src={wheelDrum.images[currentIndex]}
+              alt={`${wheelDrum.brand} ${wheelDrum.size}`}
+              className="product-card__image product-card__image--clickable"
+              onClick={() => openLightbox(wheelDrum.images, currentIndex, `${wheelDrum.brand} - ${wheelDrum.size}`)}
+            />
+            {wheelDrum.images.length > 1 && (
+              <>
+                <button
+                  className="gallery-nav gallery-nav--prev"
+                  onClick={(e) => { e.stopPropagation(); prevImage(wheelDrum._id, wheelDrum.images.length); }}
+                  aria-label="Previous image"
+                >
+                  ‹
+                </button>
+                <button
+                  className="gallery-nav gallery-nav--next"
+                  onClick={(e) => { e.stopPropagation(); nextImage(wheelDrum._id, wheelDrum.images.length); }}
+                  aria-label="Next image"
+                >
+                  ›
+                </button>
+                <div className="gallery-dots">
+                  {wheelDrum.images.map((_, i) => (
+                    <span key={i} className={`gallery-dot ${i === currentIndex ? 'gallery-dot--active' : ''}`} />
+                  ))}
+                </div>
+                <span className="product-card__image-count">{currentIndex + 1}/{wheelDrum.images.length}</span>
+              </>
+            )}
+          </>
         ) : (
           <div className="product-card__gallery-placeholder">{getTabIcon("wheel")}</div>
         )}
@@ -209,13 +382,14 @@ export default function Market() {
         <h2 className="product-card__title">{wheelDrum.brand}</h2>
         <p className="product-card__subtitle">{wheelDrum.size}</p>
         <p className="product-card__condition">{wheelDrum.condition}</p>
-        <p className="product-card__price">${wheelDrum.price.toLocaleString()}</p>
+        <p className="product-card__price">¥{wheelDrum.price.toLocaleString()}</p>
         <div className="product-card__actions">
           <button className="btn btn--primary btn--small">{t.market.contactSeller}</button>
         </div>
       </div>
     </article>
   );
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -275,6 +449,56 @@ export default function Market() {
       <div className="market__content">
         {renderContent()}
       </div>
+
+      {/* Lightbox Modal */}
+      {lightbox.isOpen && (
+        <div className="lightbox" onClick={closeLightbox}>
+          <div className="lightbox__overlay" />
+          <div className="lightbox__content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox__close" onClick={closeLightbox} aria-label="Close">
+              ×
+            </button>
+            <div className="lightbox__header">
+              <h3 className="lightbox__title">{lightbox.title}</h3>
+              <span className="lightbox__counter">
+                {lightbox.currentIndex + 1} / {lightbox.images.length}
+              </span>
+            </div>
+            <div className="lightbox__main">
+              {lightbox.images.length > 1 && (
+                <button className="lightbox__nav lightbox__nav--prev" onClick={lightboxPrev} aria-label="Previous">
+                  ‹
+                </button>
+              )}
+              <div className="lightbox__image-container">
+                <img
+                  src={lightbox.images[lightbox.currentIndex]}
+                  alt={`${lightbox.title} - Image ${lightbox.currentIndex + 1}`}
+                  className="lightbox__image"
+                />
+              </div>
+              {lightbox.images.length > 1 && (
+                <button className="lightbox__nav lightbox__nav--next" onClick={lightboxNext} aria-label="Next">
+                  ›
+                </button>
+              )}
+            </div>
+            {lightbox.images.length > 1 && (
+              <div className="lightbox__thumbnails">
+                {lightbox.images.map((img, i) => (
+                  <button
+                    key={i}
+                    className={`lightbox__thumbnail ${i === lightbox.currentIndex ? 'lightbox__thumbnail--active' : ''}`}
+                    onClick={() => setLightbox(prev => ({ ...prev, currentIndex: i }))}
+                  >
+                    <img src={img} alt={`Thumbnail ${i + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

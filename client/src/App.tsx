@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import Flow from './pages/Flow'
 import Company from './pages/Company'
 import Contact from './pages/Contact'
+import Business from './pages/Business'
 
 function Home() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/business" element={<Business />} />
             <Route path="/market" element={<Market />} />
             <Route path="/flow" element={<Flow />} />
             <Route path="/company" element={<Company />} />
