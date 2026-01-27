@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import Contact from "../models/Contact.js";
 import { sendContactEmail } from "../services/emailService.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -94,9 +95,8 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // GET all contact inquiries (for admin dashboard)
-// TODO: Add authentication middleware to protect this endpoint
-// This endpoint exposes sensitive customer data (names, emails, phone numbers)
-router.get("/", async (req: Request, res: Response) => {
+// Protected endpoint - requires authentication
+router.get("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const filter: { status?: string } = {};
     if (req.query.status) {
@@ -130,8 +130,8 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // GET single contact inquiry
-// TODO: Add authentication middleware to protect this endpoint
-router.get("/:id", async (req: Request, res: Response) => {
+// Protected endpoint - requires authentication
+router.get("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
@@ -147,8 +147,8 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // UPDATE contact inquiry status (for admin to mark as resolved, etc.)
-// TODO: Add authentication middleware to protect this endpoint
-router.put("/:id", async (req: Request, res: Response) => {
+// Protected endpoint - requires authentication
+router.put("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
@@ -178,8 +178,8 @@ router.put("/:id", async (req: Request, res: Response) => {
 });
 
 // DELETE contact inquiry
-// TODO: Add authentication middleware to protect this endpoint
-router.delete("/:id", async (req: Request, res: Response) => {
+// Protected endpoint - requires authentication
+router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
