@@ -1,6 +1,5 @@
 import { render, type RenderOptions } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from '../context/AuthContext'
 import { LanguageProvider } from '../context/LanguageContext'
 import type { ReactElement, ReactNode } from 'react'
 
@@ -13,9 +12,7 @@ function AllProviders({ children }: WrapperProps) {
   return (
     <BrowserRouter>
       <LanguageProvider>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </LanguageProvider>
     </BrowserRouter>
   )
@@ -41,17 +38,6 @@ function LanguageWrapper({ children }: WrapperProps) {
   )
 }
 
-// Auth provider wrapper
-function AuthWrapper({ children }: WrapperProps) {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </BrowserRouter>
-  )
-}
-
 // Custom render with all providers
 function customRender(
   ui: ReactElement,
@@ -66,6 +52,5 @@ export {
   customRender as render,
   RouterWrapper,
   LanguageWrapper,
-  AuthWrapper,
   AllProviders,
 }
