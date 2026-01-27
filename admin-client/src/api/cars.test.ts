@@ -14,15 +14,15 @@ describe('Cars API', () => {
     const mockCars = [
       {
         _id: '1',
-        make: 'Toyota',
+        brand: 'Toyota',
         model: 'Camry',
         year: 2020,
         price: 25000,
         mileage: 15000,
-        color: 'Black',
-        transmission: 'Automatic',
-        fuelType: 'Petrol',
-        status: 'available' as const,
+        fuel: 'petrol' as const,
+        transmission: 'automatic' as const,
+        images: [],
+        displayLocation: 'market' as const,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-01',
       },
@@ -38,15 +38,15 @@ describe('Cars API', () => {
   it('should fetch car by id', async () => {
     const mockCar = {
       _id: '1',
-      make: 'Toyota',
+      brand: 'Toyota',
       model: 'Camry',
       year: 2020,
       price: 25000,
       mileage: 15000,
-      color: 'Black',
-      transmission: 'Automatic',
-      fuelType: 'Petrol',
-      status: 'available' as const,
+      fuel: 'petrol' as const,
+      transmission: 'automatic' as const,
+      images: [],
+      displayLocation: 'market' as const,
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
     };
@@ -60,15 +60,15 @@ describe('Cars API', () => {
 
   it('should create a new car', async () => {
     const carData = {
-      make: 'Honda',
+      brand: 'Honda',
       model: 'Accord',
       year: 2021,
       price: 28000,
       mileage: 5000,
-      color: 'White',
-      transmission: 'Automatic',
-      fuelType: 'Petrol',
-      status: 'available' as const,
+      fuel: 'petrol' as const,
+      transmission: 'automatic' as const,
+      images: [],
+      displayLocation: 'market' as const,
     };
 
     const mockResponse = { ...carData, _id: '2', createdAt: '2024-01-01', updatedAt: '2024-01-01' };
@@ -83,15 +83,15 @@ describe('Cars API', () => {
     const updateData = { price: 27000 };
     const mockResponse = {
       _id: '1',
-      make: 'Toyota',
+      brand: 'Toyota',
       model: 'Camry',
       year: 2020,
       price: 27000,
       mileage: 15000,
-      color: 'Black',
-      transmission: 'Automatic',
-      fuelType: 'Petrol',
-      status: 'available' as const,
+      fuel: 'petrol' as const,
+      transmission: 'automatic' as const,
+      images: [],
+      displayLocation: 'market' as const,
       createdAt: '2024-01-01',
       updatedAt: '2024-01-02',
     };

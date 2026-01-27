@@ -104,11 +104,11 @@ export default function WheelDrums() {
           <table>
             <thead>
               <tr>
-                <th>Brand & Model</th>
+                <th>Brand</th>
                 <th>Size</th>
-                <th>Material</th>
+                <th>Condition</th>
                 <th>Price</th>
-                <th>Quantity</th>
+                <th>Display Location</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -116,12 +116,12 @@ export default function WheelDrums() {
               {wheelDrums.map((wheelDrum) => (
                 <tr key={wheelDrum._id}>
                   <td>
-                    <strong>{wheelDrum.brand} {wheelDrum.model}</strong>
+                    <strong>{wheelDrum.brand}</strong>
                   </td>
                   <td>{wheelDrum.size}</td>
-                  <td>{wheelDrum.material}</td>
+                  <td className="capitalize">{wheelDrum.condition}</td>
                   <td>¥{wheelDrum.price.toLocaleString()}</td>
-                  <td>{wheelDrum.quantity}</td>
+                  <td className="capitalize">{wheelDrum.displayLocation}</td>
                   <td>
                     <div className="action-buttons">
                       <button

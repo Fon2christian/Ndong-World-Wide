@@ -21,85 +21,73 @@ export interface AuthResponse {
 // Car
 export interface Car {
   _id: string;
-  make: string;
+  brand: string;
   model: string;
   year: number;
   price: number;
   mileage: number;
-  color: string;
-  transmission: string;
-  fuelType: string;
-  description?: string;
-  images?: string[];
-  status: 'available' | 'sold' | 'pending';
+  fuel: 'petrol' | 'diesel' | 'hybrid' | 'electric';
+  transmission: 'automatic' | 'manual';
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CarFormData {
-  make: string;
+  brand: string;
   model: string;
   year: number;
   price: number;
   mileage: number;
-  color: string;
-  transmission: string;
-  fuelType: string;
-  description?: string;
-  images?: string[];
-  status: 'available' | 'sold' | 'pending';
+  fuel: 'petrol' | 'diesel' | 'hybrid' | 'electric';
+  transmission: 'automatic' | 'manual';
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
 }
 
 // Tire
 export interface Tire {
   _id: string;
   brand: string;
-  model: string;
   size: string;
   price: number;
-  quantity: number;
-  season: string;
-  description?: string;
-  images?: string[];
+  condition: 'new' | 'used';
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface TireFormData {
   brand: string;
-  model: string;
   size: string;
   price: number;
-  quantity: number;
-  season: string;
-  description?: string;
-  images?: string[];
+  condition: 'new' | 'used';
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
 }
 
 // Wheel Drum
 export interface WheelDrum {
   _id: string;
   brand: string;
-  model: string;
   size: string;
   price: number;
-  quantity: number;
-  material: string;
-  description?: string;
-  images?: string[];
+  condition: string;
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface WheelDrumFormData {
   brand: string;
-  model: string;
   size: string;
   price: number;
-  quantity: number;
-  material: string;
-  description?: string;
-  images?: string[];
+  condition: string;
+  images: string[];
+  displayLocation: 'market' | 'business' | 'both';
 }
 
 // Contact Inquiry

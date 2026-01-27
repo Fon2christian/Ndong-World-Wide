@@ -104,11 +104,11 @@ export default function Tires() {
           <table>
             <thead>
               <tr>
-                <th>Brand & Model</th>
+                <th>Brand</th>
                 <th>Size</th>
-                <th>Season</th>
+                <th>Condition</th>
                 <th>Price</th>
-                <th>Quantity</th>
+                <th>Display Location</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -116,12 +116,12 @@ export default function Tires() {
               {tires.map((tire) => (
                 <tr key={tire._id}>
                   <td>
-                    <strong>{tire.brand} {tire.model}</strong>
+                    <strong>{tire.brand}</strong>
                   </td>
                   <td>{tire.size}</td>
-                  <td>{tire.season}</td>
+                  <td className="capitalize">{tire.condition}</td>
                   <td>¥{tire.price.toLocaleString()}</td>
-                  <td>{tire.quantity}</td>
+                  <td className="capitalize">{tire.displayLocation}</td>
                   <td>
                     <div className="action-buttons">
                       <button

@@ -104,14 +104,13 @@ export default function Cars() {
           <table>
             <thead>
               <tr>
-                <th>Make & Model</th>
+                <th>Brand & Model</th>
                 <th>Year</th>
                 <th>Price</th>
                 <th>Mileage</th>
-                <th>Color</th>
                 <th>Transmission</th>
                 <th>Fuel</th>
-                <th>Status</th>
+                <th>Display Location</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -119,19 +118,14 @@ export default function Cars() {
               {cars.map((car) => (
                 <tr key={car._id}>
                   <td>
-                    <strong>{car.make} {car.model}</strong>
+                    <strong>{car.brand} {car.model}</strong>
                   </td>
                   <td>{car.year}</td>
                   <td>¥{car.price.toLocaleString()}</td>
                   <td>{car.mileage.toLocaleString()} km</td>
-                  <td>{car.color}</td>
-                  <td>{car.transmission}</td>
-                  <td>{car.fuelType}</td>
-                  <td>
-                    <span className={`status-badge status-${car.status}`}>
-                      {car.status}
-                    </span>
-                  </td>
+                  <td className="capitalize">{car.transmission}</td>
+                  <td className="capitalize">{car.fuel}</td>
+                  <td className="capitalize">{car.displayLocation}</td>
                   <td>
                     <div className="action-buttons">
                       <button

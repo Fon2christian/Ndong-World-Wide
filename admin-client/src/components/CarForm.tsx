@@ -1,5 +1,20 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
+import { z } from 'zod';
+import { compressImages } from '../utils/imageCompression';
 import type { Car, CarFormData } from '../types';
+
+// Zod schema for validation
+const carSchema = z.object({
+  brand: z.string().min(1, 'Brand is required'),
+  model: z.string().min(1, 'Model is required'),
+  year: z.number().min(1900).max(new Date().getFullYear() + 1),
+  price: z.number().min(0),
+  mileage: z.number().min(0),
+  fuel: z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
+  transmission: z.enum(['automatic', 'manual']),
+  images: z.array(z.string()),
+  displayLocation: z.enum(['market', 'business', 'both']),
+});
 
 interface CarFormProps {
   car?: Car;
@@ -9,24 +24,86 @@ interface CarFormProps {
 
 export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
   const [formData, setFormData] = useState<CarFormData>({
-    make: car?.make || '',
+    brand: car?.brand || '',
     model: car?.model || '',
     year: car?.year || new Date().getFullYear(),
     price: car?.price || 0,
     mileage: car?.mileage || 0,
-    color: car?.color || '',
-    transmission: car?.transmission || 'Automatic',
-    fuelType: car?.fuelType || 'Petrol',
-    description: car?.description || '',
+    fuel: car?.fuel || 'petrol',
+    transmission: car?.transmission || 'automatic',
     images: car?.images || [],
-    status: car?.status || 'available',
+    displayLocation: car?.displayLocation || 'market',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Sync form state when car changes
+  useEffect(() => {
+    if (car) {
+      setFormData({
+        brand: car.brand,
+        model: car.model,
+        year: car.year,
+        price: car.price,
+        mileage: car.mileage,
+        fuel: car.fuel,
+        transmission: car.transmission,
+        images: car.images,
+        displayLocation: car.displayLocation,
+      });
+    } else {
+      setFormData({
+        brand: '',
+        model: '',
+        year: new Date().getFullYear(),
+        price: 0,
+        mileage: 0,
+        fuel: 'petrol',
+        transmission: 'automatic',
+        images: [],
+        displayLocation: 'market',
+      });
+    }
+  }, [car]);
+
+  const handleChange = (field: keyof CarFormData, value: any) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  // Handle image file upload - compresses and adds to existing images
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
+
+    try {
+      const compressedImages = await compressImages(files);
+      setFormData((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
+    } catch (error) {
+      console.error('Error compressing images:', error);
+      setError('Failed to process images. Please try again.');
+    }
+  };
+
+  // Remove a specific image
+  const handleRemoveImage = (indexToRemove: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove),
+    }));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate form using Zod
+    const result = carSchema.safeParse(formData);
+    if (!result.success) {
+      const firstError = result.error.issues[0];
+      setError(`${firstError.path.join('.')}: ${firstError.message}`);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -38,155 +115,187 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     }
   };
 
-  const handleChange = (field: keyof CarFormData, value: any) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="car-form">
-      {error && <div className="error-message">{error}</div>}
+    <form onSubmit={handleSubmit} className="form">
+      {error && <div className="form__error">{error}</div>}
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="make">Make *</label>
+      {/* Row 1: Brand & Model */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="brand">Brand *</label>
           <input
-            id="make"
-            type="text"
-            value={formData.make}
-            onChange={(e) => handleChange('make', e.target.value)}
-            required
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={(e) => handleChange('brand', e.target.value)}
+            placeholder="e.g. Toyota"
+            className="form__input"
             disabled={isSubmitting}
+            required
           />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="model">Model *</label>
+        <div className="form__group">
+          <label className="form__label" htmlFor="model">Model *</label>
           <input
             id="model"
-            type="text"
+            name="model"
             value={formData.model}
             onChange={(e) => handleChange('model', e.target.value)}
-            required
+            placeholder="e.g. Camry"
+            className="form__input"
             disabled={isSubmitting}
+            required
           />
         </div>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="year">Year *</label>
+      {/* Row 2: Year & Price */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="year">Year *</label>
           <input
             id="year"
+            name="year"
             type="number"
             value={formData.year}
             onChange={(e) => handleChange('year', parseInt(e.target.value))}
-            min="1900"
-            max={new Date().getFullYear() + 1}
-            required
+            placeholder="e.g. 2023"
+            className="form__input"
             disabled={isSubmitting}
+            required
           />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="price">Price (¥) *</label>
+        <div className="form__group">
+          <label className="form__label" htmlFor="price">Price (¥) *</label>
           <input
             id="price"
+            name="price"
             type="number"
             value={formData.price}
             onChange={(e) => handleChange('price', parseFloat(e.target.value))}
-            min="0"
-            step="0.01"
-            required
+            placeholder="e.g. 25000"
+            className="form__input"
             disabled={isSubmitting}
+            required
           />
         </div>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="mileage">Mileage (km) *</label>
+      {/* Row 3: Mileage */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="mileage">Mileage (km) *</label>
           <input
             id="mileage"
+            name="mileage"
             type="number"
             value={formData.mileage}
             onChange={(e) => handleChange('mileage', parseInt(e.target.value))}
-            min="0"
-            required
+            placeholder="e.g. 50000"
+            className="form__input"
             disabled={isSubmitting}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="color">Color *</label>
-          <input
-            id="color"
-            type="text"
-            value={formData.color}
-            onChange={(e) => handleChange('color', e.target.value)}
             required
-            disabled={isSubmitting}
           />
         </div>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="transmission">Transmission *</label>
+      {/* Row 4: Fuel & Transmission */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="fuel">Fuel Type *</label>
+          <select
+            id="fuel"
+            name="fuel"
+            value={formData.fuel}
+            onChange={(e) => handleChange('fuel', e.target.value)}
+            className="form__select"
+            disabled={isSubmitting}
+            required
+          >
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+            <option value="electric">Electric</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="transmission">Transmission *</label>
           <select
             id="transmission"
+            name="transmission"
             value={formData.transmission}
             onChange={(e) => handleChange('transmission', e.target.value)}
-            required
+            className="form__select"
             disabled={isSubmitting}
-          >
-            <option value="Automatic">Automatic</option>
-            <option value="Manual">Manual</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="fuelType">Fuel Type *</label>
-          <select
-            id="fuelType"
-            value={formData.fuelType}
-            onChange={(e) => handleChange('fuelType', e.target.value)}
             required
-            disabled={isSubmitting}
           >
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Hybrid">Hybrid</option>
-            <option value="Electric">Electric</option>
+            <option value="automatic">Automatic</option>
+            <option value="manual">Manual</option>
           </select>
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="status">Status *</label>
+      {/* Row 5: Display Location */}
+      <div className="form__group">
+        <label className="form__label" htmlFor="displayLocation">Display Location *</label>
         <select
-          id="status"
-          value={formData.status}
-          onChange={(e) => handleChange('status', e.target.value as 'available' | 'sold' | 'pending')}
-          required
+          id="displayLocation"
+          name="displayLocation"
+          value={formData.displayLocation}
+          onChange={(e) => handleChange('displayLocation', e.target.value)}
+          className="form__select"
           disabled={isSubmitting}
+          required
         >
-          <option value="available">Available</option>
-          <option value="pending">Pending</option>
-          <option value="sold">Sold</option>
+          <option value="market">Market Only</option>
+          <option value="business">Business Only</option>
+          <option value="both">Both Market & Business</option>
         </select>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
-        <textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => handleChange('description', e.target.value)}
-          rows={4}
-          disabled={isSubmitting}
-        />
+      {/* Row 6: Image Upload */}
+      <div className="form__group">
+        <label className="form__label">Car Images</label>
+        <div className="form__file-upload">
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+            disabled={isSubmitting}
+          />
+          <p className="form__file-upload-text">
+            <strong>Click to upload</strong> or drag and drop
+          </p>
+          <p className="form__file-upload-text">PNG, JPG up to 10MB</p>
+        </div>
+
+        {/* Image Preview */}
+        {formData.images.length > 0 && (
+          <div className="form__image-preview">
+            {formData.images.map((img, i) => (
+              <div key={i} className="form__image-preview-item">
+                <img src={img} alt={`Preview ${i + 1}`} />
+                <button
+                  type="button"
+                  className="form__image-remove"
+                  onClick={() => handleRemoveImage(i)}
+                  aria-label={`Remove image ${i + 1}`}
+                  disabled={isSubmitting}
+                >
+                  ×
+                </button>
+                <span className="form__image-number">{i + 1}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {formData.images.length > 0 && (
+          <p className="form__image-count">{formData.images.length} image(s) selected</p>
+        )}
       </div>
 
+      {/* Form Actions */}
       <div className="form-actions">
         <button type="button" onClick={onCancel} className="btn btn-secondary" disabled={isSubmitting}>
           Cancel
