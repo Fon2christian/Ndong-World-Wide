@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -20,6 +20,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="dashboard-container">
+      <main className="main-content">
+        {children}
+      </main>
+
       <aside className="sidebar">
         <div className="sidebar-header">
           <h2>Ndong World Wide</h2>
@@ -49,10 +53,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </button>
         </div>
       </aside>
-
-      <main className="main-content">
-        {children}
-      </main>
     </div>
   );
 }

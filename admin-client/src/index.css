@@ -287,10 +287,11 @@ tbody tr:hover {
 .sidebar {
   width: 260px;
   background: white;
-  border-right: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   position: fixed;
+  right: 0;
   height: 100vh;
   overflow-y: auto;
 }
@@ -335,7 +336,7 @@ tbody tr:hover {
 .nav-item.active {
   background-color: #eff6ff;
   color: var(--color-primary);
-  border-right: 3px solid var(--color-primary);
+  border-left: 3px solid var(--color-primary);
 }
 
 .nav-icon {
@@ -344,6 +345,12 @@ tbody tr:hover {
 
 .nav-label {
   font-size: 0.9375rem;
+}
+
+.main-content {
+  flex: 1;
+  margin-right: 260px;
+  padding: 2rem;
 }
 
 .sidebar-footer {
@@ -366,12 +373,6 @@ tbody tr:hover {
 .admin-email {
   font-size: 0.875rem;
   color: var(--text-secondary);
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 260px;
-  padding: 2rem;
 }
 
 .page-header {
@@ -646,7 +647,7 @@ tbody tr:hover {
   }
 
   .main-content {
-    margin-left: 0;
+    margin-right: 0;
     padding: 1rem;
   }
 
