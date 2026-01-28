@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
 
 export default function Contacts() {
+  const navigate = useNavigate();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -144,7 +146,14 @@ export default function Contacts() {
               </thead>
               <tbody>
                 {contacts.map((contact) => (
-                  <tr key={contact._id} style={{ backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.05)' : undefined }}>
+                  <tr
+                    key={contact._id}
+                    onClick={() => navigate(`/contacts/${contact._id}`)}
+                    style={{
+                      backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.05)' : undefined,
+                      cursor: 'pointer'
+                    }}
+                  >
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {!contact.isRead && (
@@ -171,7 +180,7 @@ export default function Contacts() {
                         {contact.inquiryDetails || 'N/A'}
                       </div>
                     </td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <select
                         value={contact.status}
                         onChange={(e) =>
@@ -188,7 +197,7 @@ export default function Contacts() {
                       </select>
                     </td>
                     <td style={{ whiteSpace: 'nowrap' }}>{formatDate(contact.createdAt)}</td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <div className="action-buttons">
                         {!contact.isRead && (
                           <button

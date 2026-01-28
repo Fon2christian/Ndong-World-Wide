@@ -6,6 +6,7 @@ import Cars from './pages/Cars';
 import Tires from './pages/Tires';
 import WheelDrums from './pages/WheelDrums';
 import Contacts from './pages/Contacts';
+import ContactDetail from './pages/ContactDetail';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -64,6 +65,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <WheelDrums />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contacts/:id"
+        element={
+          <ProtectedRoute>
+            <ContactDetail />
           </ProtectedRoute>
         }
       />
