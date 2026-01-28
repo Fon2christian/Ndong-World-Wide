@@ -10,6 +10,7 @@ export interface ContactAttrs {
   inquiryDetails?: string;
   status?: "new" | "in_progress" | "resolved";
   emailSent?: boolean;
+  isRead?: boolean;
 }
 
 // Create schema
@@ -26,6 +27,7 @@ const ContactSchema = new Schema<ContactAttrs>(
       default: "new",
     },
     emailSent: { type: Boolean, default: false },
+    isRead: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -33,6 +35,7 @@ const ContactSchema = new Schema<ContactAttrs>(
 // Add indexes for query performance
 ContactSchema.index({ createdAt: -1 }); // For sorting all contacts by creation date
 ContactSchema.index({ status: 1, createdAt: -1 }); // For filtering by status and sorting
+ContactSchema.index({ isRead: 1, createdAt: -1 }); // For filtering by read status and sorting
 
 // Export model
 export default mongoose.model<ContactAttrs>("Contact", ContactSchema);

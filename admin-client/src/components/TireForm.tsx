@@ -236,7 +236,7 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
           Cancel
         </button>
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : tire ? 'Update Tire' : 'Create Tire'}
+          {isSubmitting ? 'Saving...' : tire ? 'Update Tire' : 'Upload Tire'}
         </button>
       </div>
     </form>

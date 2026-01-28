@@ -100,6 +100,7 @@ export interface Contact {
   inquiryDetails?: string;
   status: 'new' | 'in_progress' | 'resolved';
   emailSent: boolean;
+  isRead: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -41,6 +41,15 @@ export default function Contacts() {
     }
   };
 
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await contactsApi.markAsRead(id);
+      fetchContacts();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to mark as read');
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this contact inquiry?')) return;
     try {
@@ -65,7 +74,22 @@ export default function Contacts() {
     <DashboardLayout>
       <div className="page-header">
         <div>
-          <h1>Contact Inquiries</h1>
+          <h1>
+            Customer Inquiries
+            {contacts.length > 0 && (
+              <span style={{
+                marginLeft: '0.75rem',
+                fontSize: '0.875rem',
+                padding: '0.25rem 0.75rem',
+                backgroundColor: contacts.filter(c => !c.isRead).length > 0 ? '#3b82f6' : 'var(--border-color)',
+                color: contacts.filter(c => !c.isRead).length > 0 ? 'white' : 'var(--text-secondary)',
+                borderRadius: '9999px',
+                fontWeight: '600'
+              }}>
+                {contacts.filter(c => !c.isRead).length} unread
+              </span>
+            )}
+          </h1>
           <p>View and manage customer inquiries</p>
         </div>
       </div>
@@ -119,12 +143,23 @@ export default function Contacts() {
               </thead>
               <tbody>
                 {contacts.map((contact) => (
-                  <tr key={contact._id}>
+                  <tr key={contact._id} style={{ backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.05)' : undefined }}>
                     <td>
-                      <div>
-                        <strong>{contact.name}</strong>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                          {contact.furigana}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        {!contact.isRead && (
+                          <span style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: '#3b82f6',
+                            flexShrink: 0
+                          }} title="Unread"></span>
+                        )}
+                        <div>
+                          <strong style={{ fontWeight: !contact.isRead ? '700' : '600' }}>{contact.name}</strong>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                            {contact.furigana}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -154,6 +189,16 @@ export default function Contacts() {
                     <td style={{ whiteSpace: 'nowrap' }}>{formatDate(contact.createdAt)}</td>
                     <td>
                       <div className="action-buttons">
+                        {!contact.isRead && (
+                          <button
+                            onClick={() => handleMarkAsRead(contact._id)}
+                            className="btn-icon"
+                            title="Mark as read"
+                            style={{ backgroundColor: '#3b82f6', color: 'white' }}
+                          >
+                            ✓
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(contact._id)}
                           className="btn-icon btn-delete"

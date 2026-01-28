@@ -234,7 +234,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
           Cancel
         </button>
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : wheelDrum ? 'Update Wheel Drum' : 'Create Wheel Drum'}
+          {isSubmitting ? 'Saving...' : wheelDrum ? 'Update Wheel Drum' : 'Upload Wheel Drum'}
         </button>
       </div>
     </form>

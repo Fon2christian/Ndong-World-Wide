@@ -70,7 +70,7 @@ export default function WheelDrums() {
         </div>
         {!showForm && (
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            + Add New Wheel Drum
+            + Upload New Wheel Drum
           </button>
         )}
       </div>
@@ -80,7 +80,7 @@ export default function WheelDrums() {
       {showForm ? (
         <div className="card">
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>
-            {editingWheelDrum ? 'Edit Wheel Drum' : 'Add New Wheel Drum'}
+            {editingWheelDrum ? 'Edit Wheel Drum' : 'Upload New Wheel Drum'}
           </h2>
           <WheelDrumForm
             wheelDrum={editingWheelDrum}
@@ -96,7 +96,7 @@ export default function WheelDrums() {
       ) : wheelDrums.length === 0 ? (
         <div className="card">
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No wheel drums found. Click "Add New Wheel Drum" to create your first listing.
+            No wheel drums found. Click "Upload New Wheel Drum" to create your first listing.
           </p>
         </div>
       ) : (

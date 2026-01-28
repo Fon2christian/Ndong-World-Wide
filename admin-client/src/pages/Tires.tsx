@@ -70,7 +70,7 @@ export default function Tires() {
         </div>
         {!showForm && (
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            + Add New Tire
+            + Upload New Tire
           </button>
         )}
       </div>
@@ -80,7 +80,7 @@ export default function Tires() {
       {showForm ? (
         <div className="card">
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>
-            {editingTire ? 'Edit Tire' : 'Add New Tire'}
+            {editingTire ? 'Edit Tire' : 'Upload New Tire'}
           </h2>
           <TireForm
             tire={editingTire}
@@ -96,7 +96,7 @@ export default function Tires() {
       ) : tires.length === 0 ? (
         <div className="card">
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No tires found. Click "Add New Tire" to create your first listing.
+            No tires found. Click "Upload New Tire" to create your first listing.
           </p>
         </div>
       ) : (

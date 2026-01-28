@@ -156,9 +156,14 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     }
 
     // Whitelist only updatable fields to prevent modification of sensitive data
-    const allowedUpdates: Partial<{ status: string }> = {};
+    const allowedUpdates: Partial<{ status: string; isRead: boolean }> = {};
     if (req.body.status) {
       allowedUpdates.status = req.body.status;
+      // Automatically mark as read when status changes
+      allowedUpdates.isRead = true;
+    }
+    if (req.body.isRead !== undefined) {
+      allowedUpdates.isRead = req.body.isRead;
     }
 
     const contact = await Contact.findByIdAndUpdate(

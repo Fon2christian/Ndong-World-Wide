@@ -70,7 +70,7 @@ export default function Cars() {
         </div>
         {!showForm && (
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            + Add New Car
+            + Upload New Car
           </button>
         )}
       </div>
@@ -80,7 +80,7 @@ export default function Cars() {
       {showForm ? (
         <div className="card">
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>
-            {editingCar ? 'Edit Car' : 'Add New Car'}
+            {editingCar ? 'Edit Car' : 'Upload New Car'}
           </h2>
           <CarForm
             car={editingCar}
@@ -96,7 +96,7 @@ export default function Cars() {
       ) : cars.length === 0 ? (
         <div className="card">
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No cars found. Click "Add New Car" to create your first listing.
+            No cars found. Click "Upload New Car" to create your first listing.
           </p>
         </div>
       ) : (

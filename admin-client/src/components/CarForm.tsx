@@ -301,7 +301,7 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
           Cancel
         </button>
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : car ? 'Update Car' : 'Create Car'}
+          {isSubmitting ? 'Saving...' : car ? 'Update Car' : 'Upload Car'}
         </button>
       </div>
     </form>

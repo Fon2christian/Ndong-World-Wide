@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { path: '/cars', label: 'Cars', icon: '🚗' },
     { path: '/tires', label: 'Tires', icon: '⚙️' },
     { path: '/wheel-drums', label: 'Wheel Drums', icon: '🔧' },
-    { path: '/contacts', label: 'Contacts', icon: '📧' },
+    { path: '/contacts', label: 'Customer Inquiries', icon: '📧' },
   ];
 
   return (
