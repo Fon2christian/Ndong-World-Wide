@@ -13,10 +13,11 @@ const app = express();
 app.use(cors());
 
 // Rate limiting to prevent DoS attacks
-// Allows 100 requests per 15 minutes per IP
+// Development: 500 requests per 15 minutes
+// Production: 100 requests per 15 minutes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  max: process.env.NODE_ENV === 'production' ? 100 : 500, // Higher limit for development
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
