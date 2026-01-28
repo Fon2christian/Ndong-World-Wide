@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
@@ -13,19 +13,22 @@ export default function Contacts() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     fetchContacts();
   }, [statusFilter, currentPage]);
 
-  // Refetch when navigating back to this page with refetch flag
+  // Refetch when returning to this page (after initial mount)
   useEffect(() => {
-    if (location.state?.refetch) {
-      fetchContacts();
-      // Clear the refetch flag by replacing the state
-      window.history.replaceState({}, '');
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [location.state]);
+
+    // Refetch contacts when navigating back to this page
+    fetchContacts();
+  }, [location.key]);
 
   const fetchContacts = async () => {
     try {
