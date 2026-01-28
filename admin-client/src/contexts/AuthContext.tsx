@@ -46,7 +46,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAdmin(null);
       }
     } finally {
-      setIsLoading(false);
+      // Only clear loading if this token is still current (prevent stale verification from clearing fresh login)
+      const currentToken = localStorage.getItem(TOKEN_KEY);
+      if (currentToken === token) {
+        setIsLoading(false);
+      }
     }
   };
 

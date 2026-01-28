@@ -5,7 +5,7 @@ export const contactsApi = {
   getAll: async (params?: PaginationParams): Promise<PaginatedResponse<Contact>> => {
     const response = await api.get<PaginatedResponse<Contact>>('/api/contacts', { params });
     // Normalize response shape to always use `data` property by destructuring to exclude contacts
-    const { contacts, ...rest } = response.data as any;
+    const { contacts, ...rest } = response.data;
     return {
       ...rest,
       data: response.data.data || contacts || [],
