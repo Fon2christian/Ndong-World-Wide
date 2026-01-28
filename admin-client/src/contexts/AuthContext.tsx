@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import axios from 'axios';
 import type { Admin, LoginCredentials, AuthResponse } from '../types';
 
@@ -29,52 +29,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const verifyToken = async (token: string) => {
-    // Capture current token once to avoid race conditions throughout this async flow
-    const currentTokenAtStart = localStorage.getItem(TOKEN_KEY);
-    const isStillCurrent = currentTokenAtStart === token;
-
     try {
       const response = await axios.get<Admin>(`${API_URL}/api/admin/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Only update state if this token is still current (prevent stale requests from clearing new sessions)
-      if (isStillCurrent) {
+      // Check if token is still current AFTER async call (detect changes during request)
+      const currentToken = localStorage.getItem(TOKEN_KEY);
+      if (currentToken === token) {
         setAdmin(response.data);
       }
     } catch (error) {
-      // Only clear if this token is still the current one
-      if (isStillCurrent) {
+      // Check if token is still current AFTER async call (detect changes during request)
+      const currentToken = localStorage.getItem(TOKEN_KEY);
+      if (currentToken === token) {
         localStorage.removeItem(TOKEN_KEY);
         setAdmin(null);
       }
     } finally {
-      // Always clear loading for this verification attempt, regardless of token changes
-      // If a fresh login occurred during verification, it will have already set isLoading to false
       setIsLoading(false);
     }
   };
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials) => {
     const response = await axios.post<AuthResponse>(`${API_URL}/api/admin/login`, credentials);
     const { token, admin: adminData } = response.data;
     localStorage.setItem(TOKEN_KEY, token);
     setAdmin(adminData);
     setIsLoading(false); // Ensure loading state is cleared after successful login
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setAdmin(null);
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    admin,
+    isAuthenticated: !!admin,
+    isLoading,
+    login,
+    logout
+  }), [admin, isLoading, login, logout]);
 
   return (
-    <AuthContext.Provider value={{
-      admin,
-      isAuthenticated: !!admin,
-      isLoading,
-      login,
-      logout
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
