@@ -29,6 +29,7 @@ export default function WheelDrums() {
   };
 
   const handleCreate = async (data: WheelDrumFormData) => {
+    setError(''); // Clear stale error before mutation
     try {
       await wheelDrumsApi.create(data);
       setShowForm(false);
@@ -41,6 +42,7 @@ export default function WheelDrums() {
 
   const handleUpdate = async (data: WheelDrumFormData) => {
     if (!editingWheelDrum) return;
+    setError(''); // Clear stale error before mutation
     try {
       await wheelDrumsApi.update(editingWheelDrum._id, data);
       setShowForm(false);

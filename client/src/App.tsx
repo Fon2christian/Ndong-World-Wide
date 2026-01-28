@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -25,7 +25,7 @@ function NotFound() {
       <p style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Page Not Found</p>
       <p style={{ marginTop: '1rem' }}>
         The page you're looking for doesn't exist.{' '}
-        <a href="/" style={{ color: '#2563eb', textDecoration: 'underline' }}>Go home</a>
+        <Link to="/" style={{ color: '#2563eb', textDecoration: 'underline' }}>Go home</Link>
       </p>
     </div>
   )

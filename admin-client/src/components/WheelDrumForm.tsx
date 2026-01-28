@@ -58,6 +58,11 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
     setFormData({ ...formData, [field]: value });
   };
 
+  const handleNumberChange = (field: keyof WheelDrumFormData, value: string) => {
+    const parsed = parseFloat(value);
+    setFormData({ ...formData, [field]: isNaN(parsed) ? 0 : parsed });
+  };
+
   // Handle image file upload - compresses and adds to existing images
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -146,7 +151,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
             name="price"
             type="number"
             value={formData.price}
-            onChange={(e) => handleChange('price', parseFloat(e.target.value))}
+            onChange={(e) => handleNumberChange('price', e.target.value)}
             placeholder="e.g. 200"
             className="form__input"
             disabled={isSubmitting}

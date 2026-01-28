@@ -20,14 +20,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Guard to prevent multiple concurrent auth error redirects
+let isRedirecting = false;
+
 // Handle authentication errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem(TOKEN_KEY);
-      // Full page reload on auth error is intentional to clear all state
-      window.location.href = '/login';
+      if (!isRedirecting) {
+        isRedirecting = true;
+        localStorage.removeItem(TOKEN_KEY);
+        // Full page reload on auth error is intentional to clear all state
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

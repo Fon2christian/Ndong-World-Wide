@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { token, admin: adminData } = response.data;
     localStorage.setItem(TOKEN_KEY, token);
     setAdmin(adminData);
+    setIsLoading(false); // Ensure loading state is cleared after successful login
   };
 
   const logout = () => {

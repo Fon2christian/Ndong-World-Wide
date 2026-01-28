@@ -70,6 +70,11 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     setFormData({ ...formData, [field]: value });
   };
 
+  const handleNumberChange = (field: keyof CarFormData, value: string) => {
+    const parsed = field === 'year' || field === 'mileage' ? parseInt(value) : parseFloat(value);
+    setFormData({ ...formData, [field]: isNaN(parsed) ? 0 : parsed });
+  };
+
   // Handle image file upload - compresses and adds to existing images
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -158,7 +163,7 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
             name="year"
             type="number"
             value={formData.year}
-            onChange={(e) => handleChange('year', parseInt(e.target.value))}
+            onChange={(e) => handleNumberChange('year', e.target.value)}
             placeholder="e.g. 2023"
             className="form__input"
             disabled={isSubmitting}
@@ -172,7 +177,7 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
             name="price"
             type="number"
             value={formData.price}
-            onChange={(e) => handleChange('price', parseFloat(e.target.value))}
+            onChange={(e) => handleNumberChange('price', e.target.value)}
             placeholder="e.g. 25000"
             className="form__input"
             disabled={isSubmitting}
@@ -190,7 +195,7 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
             name="mileage"
             type="number"
             value={formData.mileage}
-            onChange={(e) => handleChange('mileage', parseInt(e.target.value))}
+            onChange={(e) => handleNumberChange('mileage', e.target.value)}
             placeholder="e.g. 50000"
             className="form__input"
             disabled={isSubmitting}

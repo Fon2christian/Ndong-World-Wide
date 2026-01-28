@@ -28,6 +28,7 @@ export default function Tires() {
   };
 
   const handleCreate = async (data: TireFormData) => {
+    setError(''); // Clear stale error before mutation
     try {
       await tiresApi.create(data);
       setShowForm(false);
@@ -40,6 +41,7 @@ export default function Tires() {
 
   const handleUpdate = async (data: TireFormData) => {
     if (!editingTire) return;
+    setError(''); // Clear stale error before mutation
     try {
       await tiresApi.update(editingTire._id, data);
       setShowForm(false);

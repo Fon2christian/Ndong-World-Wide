@@ -28,6 +28,7 @@ export default function Cars() {
   };
 
   const handleCreate = async (data: CarFormData) => {
+    setError(''); // Clear stale error before mutation
     try {
       await carsApi.create(data);
       setShowForm(false);
@@ -40,6 +41,7 @@ export default function Cars() {
 
   const handleUpdate = async (data: CarFormData) => {
     if (!editingCar) return;
+    setError(''); // Clear stale error before mutation
     try {
       await carsApi.update(editingCar._id, data);
       setShowForm(false);

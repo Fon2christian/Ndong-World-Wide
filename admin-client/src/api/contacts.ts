@@ -4,13 +4,12 @@ import type { Contact, PaginationParams, PaginatedResponse } from '../types';
 export const contactsApi = {
   getAll: async (params?: PaginationParams): Promise<PaginatedResponse<Contact>> => {
     const response = await api.get<PaginatedResponse<Contact>>('/api/contacts', { params });
-    // Normalize response shape to always use `data` property
-    const normalized = {
-      ...response.data,
-      data: response.data.data || response.data.contacts || [],
+    // Normalize response shape to always use `data` property by destructuring to exclude contacts
+    const { contacts, ...rest } = response.data as any;
+    return {
+      ...rest,
+      data: response.data.data || contacts || [],
     };
-    delete normalized.contacts; // Remove redundant property
-    return normalized;
   },
 
   getById: async (id: string): Promise<Contact> => {
