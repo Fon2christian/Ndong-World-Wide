@@ -29,28 +29,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const verifyToken = async (token: string) => {
+    // Capture current token once to avoid race conditions throughout this async flow
+    const currentTokenAtStart = localStorage.getItem(TOKEN_KEY);
+    const isStillCurrent = currentTokenAtStart === token;
+
     try {
       const response = await axios.get<Admin>(`${API_URL}/api/admin/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Only update state if this token is still current (prevent stale requests from clearing new sessions)
-      const currentToken = localStorage.getItem(TOKEN_KEY);
-      if (currentToken === token) {
+      if (isStillCurrent) {
         setAdmin(response.data);
       }
     } catch (error) {
       // Only clear if this token is still the current one
-      const currentToken = localStorage.getItem(TOKEN_KEY);
-      if (currentToken === token) {
+      if (isStillCurrent) {
         localStorage.removeItem(TOKEN_KEY);
         setAdmin(null);
       }
     } finally {
-      // Only clear loading if this token is still current (prevent stale verification from clearing fresh login)
-      const currentToken = localStorage.getItem(TOKEN_KEY);
-      if (currentToken === token) {
-        setIsLoading(false);
-      }
+      // Always clear loading for this verification attempt, regardless of token changes
+      // If a fresh login occurred during verification, it will have already set isLoading to false
+      setIsLoading(false);
     }
   };
 
