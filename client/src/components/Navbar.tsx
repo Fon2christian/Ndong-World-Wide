@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAdmin } = useAuth();
   const { t } = useLanguage();
   const location = useLocation();
 
@@ -47,30 +45,11 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          {isAdmin && (
-            <li>
-              <Link
-                to="/admin"
-                className={`navbar__link navbar__link--admin ${isActive("/admin") ? "navbar__link--active" : ""}`}
-              >
-                Admin
-              </Link>
-            </li>
-          )}
         </ul>
 
-        {/* Language Switcher and Contact / Login Button */}
+        {/* Language Switcher */}
         <div className="navbar__actions">
           <LanguageSwitcher />
-          {isAdmin ? (
-            <Link to="/admin" className="btn btn--primary navbar__contact">
-              Dashboard
-            </Link>
-          ) : (
-            <Link to="/login" className="btn btn--primary navbar__contact">
-              Admin Login
-            </Link>
-          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -100,15 +79,6 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          <li>
-            <Link
-              to={isAdmin ? "/admin" : "/login"}
-              className={`navbar__dropdown-link ${isAdmin ? "navbar__link--admin" : ""} ${isActive("/admin") || isActive("/login") ? "navbar__dropdown-link--active" : ""}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {isAdmin ? "Admin Dashboard" : "Admin Login"}
-            </Link>
-          </li>
         </ul>
       </div>
     </nav>
