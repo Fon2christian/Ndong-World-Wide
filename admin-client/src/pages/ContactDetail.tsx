@@ -60,7 +60,7 @@ export default function ContactDetail() {
     try {
       setError('');
       await contactsApi.delete(id);
-      navigate('/contacts');
+      navigate('/contacts', { state: { refetch: true } });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete inquiry');
     }
@@ -110,6 +110,7 @@ export default function ContactDetail() {
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
               to="/contacts"
+              state={{ refetch: true }}
               style={{
                 color: 'var(--primary-color)',
                 textDecoration: 'none',

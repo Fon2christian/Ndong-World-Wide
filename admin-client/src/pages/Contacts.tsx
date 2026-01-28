@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
 
 export default function Contacts() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -16,6 +17,23 @@ export default function Contacts() {
   useEffect(() => {
     fetchContacts();
   }, [statusFilter, currentPage]);
+
+  // Refetch when navigating back to this page (handles Link navigation and browser back button)
+  useEffect(() => {
+    if (location.state?.refetch) {
+      fetchContacts();
+      // Clear the refetch flag by replacing the state
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
+
+  // Refetch when location key changes (detects navigation including browser back button)
+  useEffect(() => {
+    // Only refetch if we're not on initial load (location.key changes on navigation)
+    if (location.key !== 'default') {
+      fetchContacts();
+    }
+  }, [location.key]);
 
   const fetchContacts = async () => {
     try {
