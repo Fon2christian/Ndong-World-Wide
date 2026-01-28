@@ -150,20 +150,40 @@ export default function Contacts() {
                     key={contact._id}
                     onClick={() => navigate(`/contacts/${contact._id}`)}
                     style={{
-                      backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.05)' : undefined,
-                      cursor: 'pointer'
+                      backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.08)' : undefined,
+                      cursor: 'pointer',
+                      opacity: contact.isRead ? 0.7 : 1,
+                      borderLeft: !contact.isRead ? '3px solid #3b82f6' : '3px solid transparent'
                     }}
                   >
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {!contact.isRead && (
+                        {!contact.isRead ? (
                           <span style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '0.25rem',
                             backgroundColor: '#3b82f6',
+                            color: 'white',
+                            fontSize: '0.625rem',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
                             flexShrink: 0
-                          }} title="Unread"></span>
+                          }}>
+                            Unread
+                          </span>
+                        ) : (
+                          <span style={{
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '0.25rem',
+                            backgroundColor: '#e5e7eb',
+                            color: '#6b7280',
+                            fontSize: '0.625rem',
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            flexShrink: 0
+                          }}>
+                            Read
+                          </span>
                         )}
                         <div>
                           <strong style={{ fontWeight: !contact.isRead ? '700' : '600' }}>{contact.name}</strong>
@@ -173,10 +193,15 @@ export default function Contacts() {
                         </div>
                       </div>
                     </td>
-                    <td>{contact.email}</td>
-                    <td>{contact.phone}</td>
+                    <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.email}</td>
+                    <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.phone}</td>
                     <td>
-                      <div style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{
+                        maxWidth: '300px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: !contact.isRead ? '600' : '400'
+                      }}>
                         {contact.inquiryDetails || 'N/A'}
                       </div>
                     </td>
