@@ -12,7 +12,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const TOKEN_KEY = 'admin_token';
+export const TOKEN_KEY = 'admin_token';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -33,10 +33,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await axios.get<Admin>(`${API_URL}/api/admin/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setAdmin(response.data);
+      // Only update state if this token is still current (prevent stale requests from clearing new sessions)
+      const currentToken = localStorage.getItem(TOKEN_KEY);
+      if (currentToken === token) {
+        setAdmin(response.data);
+      }
     } catch (error) {
-      localStorage.removeItem(TOKEN_KEY);
-      setAdmin(null);
+      // Only clear if this token is still the current one
+      const currentToken = localStorage.getItem(TOKEN_KEY);
+      if (currentToken === token) {
+        localStorage.removeItem(TOKEN_KEY);
+        setAdmin(null);
+      }
     } finally {
       setIsLoading(false);
     }

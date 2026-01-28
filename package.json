@@ -8,7 +8,7 @@
     "dev:all": "concurrently -n server,client,admin -c blue,green,yellow \"npm run dev -w server\" \"npm run dev -w client\" \"npm run dev -w admin-client\"",
     "build": "npm run build -w client && npm run build -w admin-client && npm run build -w server",
     "start": "npm run start -w server",
-    "install:all": "npm install && npm install -w client && npm install -w admin-client && npm install -w server"
+    "install:all": "npm install"
   },
   "workspaces": [
     "client",

@@ -188,9 +188,10 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
 
       {/* Row 4: Image Upload */}
       <div className="form__group">
-        <label className="form__label">Wheel Drum Images</label>
+        <label className="form__label" htmlFor="wheel-drum-images">Wheel Drum Images</label>
         <div className="form__file-upload">
           <input
+            id="wheel-drum-images"
             type="file"
             multiple
             accept="image/*"

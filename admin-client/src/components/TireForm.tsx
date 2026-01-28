@@ -190,9 +190,10 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
 
       {/* Row 4: Image Upload */}
       <div className="form__group">
-        <label className="form__label">Tire Images</label>
+        <label className="form__label" htmlFor="tire-images">Tire Images</label>
         <div className="form__file-upload">
           <input
+            id="tire-images"
             type="file"
             multiple
             accept="image/*"

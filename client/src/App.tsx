@@ -18,6 +18,19 @@ function Home() {
   )
 }
 
+function NotFound() {
+  return (
+    <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+      <h1 style={{ fontSize: '4rem', margin: '0' }}>404</h1>
+      <p style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Page Not Found</p>
+      <p style={{ marginTop: '1rem' }}>
+        The page you're looking for doesn't exist.{' '}
+        <a href="/" style={{ color: '#2563eb', textDecoration: 'underline' }}>Go home</a>
+      </p>
+    </div>
+  )
+}
+
 function App() {
   return (
     <LanguageProvider>
@@ -30,6 +43,7 @@ function App() {
           <Route path="/flow" element={<Flow />} />
           <Route path="/company" element={<Company />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />

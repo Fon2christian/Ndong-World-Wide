@@ -28,17 +28,27 @@ export default function Tires() {
   };
 
   const handleCreate = async (data: TireFormData) => {
-    await tiresApi.create(data);
-    setShowForm(false);
-    fetchTires();
+    try {
+      await tiresApi.create(data);
+      setShowForm(false);
+      fetchTires();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create tire');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleUpdate = async (data: TireFormData) => {
     if (!editingTire) return;
-    await tiresApi.update(editingTire._id, data);
-    setShowForm(false);
-    setEditingTire(undefined);
-    fetchTires();
+    try {
+      await tiresApi.update(editingTire._id, data);
+      setShowForm(false);
+      setEditingTire(undefined);
+      fetchTires();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update tire');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -69,7 +79,7 @@ export default function Tires() {
           <p>Manage your tire inventory</p>
         </div>
         {!showForm && (
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+          <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
             + Upload New Tire
           </button>
         )}
@@ -125,6 +135,7 @@ export default function Tires() {
                   <td>
                     <div className="action-buttons">
                       <button
+                        type="button"
                         onClick={() => handleEdit(tire)}
                         className="btn-icon btn-edit"
                         title="Edit"
@@ -132,6 +143,7 @@ export default function Tires() {
                         ✏️
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(tire._id)}
                         className="btn-icon btn-delete"
                         title="Delete"

@@ -28,17 +28,27 @@ export default function Cars() {
   };
 
   const handleCreate = async (data: CarFormData) => {
-    await carsApi.create(data);
-    setShowForm(false);
-    fetchCars();
+    try {
+      await carsApi.create(data);
+      setShowForm(false);
+      fetchCars();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create car');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleUpdate = async (data: CarFormData) => {
     if (!editingCar) return;
-    await carsApi.update(editingCar._id, data);
-    setShowForm(false);
-    setEditingCar(undefined);
-    fetchCars();
+    try {
+      await carsApi.update(editingCar._id, data);
+      setShowForm(false);
+      setEditingCar(undefined);
+      fetchCars();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update car');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -69,7 +79,7 @@ export default function Cars() {
           <p>Manage your car inventory</p>
         </div>
         {!showForm && (
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+          <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
             + Upload New Car
           </button>
         )}
@@ -129,6 +139,7 @@ export default function Cars() {
                   <td>
                     <div className="action-buttons">
                       <button
+                        type="button"
                         onClick={() => handleEdit(car)}
                         className="btn-icon btn-edit"
                         title="Edit"
@@ -136,6 +147,7 @@ export default function Cars() {
                         ✏️
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(car._id)}
                         className="btn-icon btn-delete"
                         title="Delete"

@@ -38,8 +38,13 @@ export async function compressImage(
         ctx.imageSmoothingQuality = "high";
         ctx.drawImage(img, 0, 0, width, height);
 
+        // Preserve PNG transparency by checking file type
+        const isPNG = file.type === 'image/png';
+        const mimeType = isPNG ? 'image/png' : 'image/jpeg';
+        const outputQuality = isPNG ? 1.0 : quality; // PNG doesn't use quality parameter
+
         // Convert to base64 with compression
-        const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+        const compressedBase64 = canvas.toDataURL(mimeType, outputQuality);
         resolve(compressedBase64);
       };
       img.onerror = () => reject(new Error("Failed to load image"));
@@ -50,7 +55,24 @@ export async function compressImage(
   });
 }
 
-// Compress multiple images
+// Compress multiple images with graceful failure handling
 export async function compressImages(files: File[]): Promise<string[]> {
-  return Promise.all(files.map((file) => compressImage(file)));
+  const results = await Promise.allSettled(files.map((file) => compressImage(file)));
+
+  // Extract successful compressions and log failures
+  const compressed: string[] = [];
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      compressed.push(result.value);
+    } else {
+      console.error(`Failed to compress file ${files[index].name}:`, result.reason);
+    }
+  });
+
+  // If all failed, throw an error
+  if (compressed.length === 0 && files.length > 0) {
+    throw new Error('Failed to compress any images');
+  }
+
+  return compressed;
 }

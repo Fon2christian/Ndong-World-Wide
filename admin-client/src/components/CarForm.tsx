@@ -255,9 +255,10 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
 
       {/* Row 6: Image Upload */}
       <div className="form__group">
-        <label className="form__label">Car Images</label>
+        <label className="form__label" htmlFor="car-images">Car Images</label>
         <div className="form__file-upload">
           <input
+            id="car-images"
             type="file"
             multiple
             accept="image/*"

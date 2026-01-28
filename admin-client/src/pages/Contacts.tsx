@@ -18,6 +18,7 @@ export default function Contacts() {
   const fetchContacts = async () => {
     try {
       setIsLoading(true);
+      setError(''); // Clear stale error state before refetching
       const response = await contactsApi.getAll({
         page: currentPage,
         limit: 20,
@@ -61,7 +62,7 @@ export default function Contacts() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -191,6 +192,7 @@ export default function Contacts() {
                       <div className="action-buttons">
                         {!contact.isRead && (
                           <button
+                            type="button"
                             onClick={() => handleMarkAsRead(contact._id)}
                             className="btn-icon"
                             title="Mark as read"
@@ -200,6 +202,7 @@ export default function Contacts() {
                           </button>
                         )}
                         <button
+                          type="button"
                           onClick={() => handleDelete(contact._id)}
                           className="btn-icon btn-delete"
                           title="Delete"
@@ -217,6 +220,7 @@ export default function Contacts() {
           {totalPages > 1 && (
             <div className="pagination">
               <button
+                type="button"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="btn btn-secondary"
@@ -227,6 +231,7 @@ export default function Contacts() {
                 Page {currentPage} of {totalPages}
               </span>
               <button
+                type="button"
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
                 className="btn btn-secondary"

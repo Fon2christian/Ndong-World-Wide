@@ -18,6 +18,7 @@ export default function WheelDrums() {
   const fetchWheelDrums = async () => {
     try {
       setIsLoading(true);
+      setError(''); // Clear stale error state before refetching
       const data = await wheelDrumsApi.getAll();
       setWheelDrums(data);
     } catch (err: any) {
@@ -28,17 +29,27 @@ export default function WheelDrums() {
   };
 
   const handleCreate = async (data: WheelDrumFormData) => {
-    await wheelDrumsApi.create(data);
-    setShowForm(false);
-    fetchWheelDrums();
+    try {
+      await wheelDrumsApi.create(data);
+      setShowForm(false);
+      fetchWheelDrums();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create wheel drum');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleUpdate = async (data: WheelDrumFormData) => {
     if (!editingWheelDrum) return;
-    await wheelDrumsApi.update(editingWheelDrum._id, data);
-    setShowForm(false);
-    setEditingWheelDrum(undefined);
-    fetchWheelDrums();
+    try {
+      await wheelDrumsApi.update(editingWheelDrum._id, data);
+      setShowForm(false);
+      setEditingWheelDrum(undefined);
+      fetchWheelDrums();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update wheel drum');
+      throw err; // Re-throw so form can handle it
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -69,7 +80,7 @@ export default function WheelDrums() {
           <p>Manage your wheel drum inventory</p>
         </div>
         {!showForm && (
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+          <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
             + Upload New Wheel Drum
           </button>
         )}
@@ -125,6 +136,7 @@ export default function WheelDrums() {
                   <td>
                     <div className="action-buttons">
                       <button
+                        type="button"
                         onClick={() => handleEdit(wheelDrum)}
                         className="btn-icon btn-edit"
                         title="Edit"
@@ -132,6 +144,7 @@ export default function WheelDrums() {
                         ✏️
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(wheelDrum._id)}
                         className="btn-icon btn-delete"
                         title="Delete"
