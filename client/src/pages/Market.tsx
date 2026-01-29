@@ -78,6 +78,10 @@ export default function Market() {
   const [loading, setLoading] = useState(true);
   const { getCurrentIndex, nextImage, prevImage } = useImageGallery();
 
+  // Contact modal state
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string>("");
+
   // Lightbox state
   const [lightbox, setLightbox] = useState<LightboxState>({
     isOpen: false,
@@ -94,6 +98,16 @@ export default function Market() {
   const closeLightbox = () => {
     setLightbox({ isOpen: false, images: [], currentIndex: 0, title: "" });
     document.body.style.overflow = ""; // Restore scroll
+  };
+
+  const openContactModal = (itemId: string) => {
+    setSelectedItem(itemId);
+    setShowContactModal(true);
+  };
+
+  const closeContactModal = () => {
+    setShowContactModal(false);
+    setSelectedItem("");
   };
 
   const lightboxNext = () => {
@@ -272,7 +286,12 @@ export default function Market() {
           </div>
         </div>
         <div className="car-card__actions">
-          <button className="btn btn--primary btn--small">{t.market.contactSeller}</button>
+          <button
+            className="btn btn--primary btn--small"
+            onClick={() => openContactModal(car._id)}
+          >
+            {t.market.contactSeller}
+          </button>
         </div>
       </div>
     </article>
@@ -329,7 +348,12 @@ export default function Market() {
         <p className="product-card__subtitle">{tire.size}</p>
         <p className="product-card__price">¥{tire.price.toLocaleString()}</p>
         <div className="product-card__actions">
-          <button className="btn btn--primary btn--small">{t.market.contactSeller}</button>
+          <button
+            className="btn btn--primary btn--small"
+            onClick={() => openContactModal(tire._id)}
+          >
+            {t.market.contactSeller}
+          </button>
         </div>
       </div>
     </article>
@@ -384,7 +408,12 @@ export default function Market() {
         <p className="product-card__condition">{wheelDrum.condition}</p>
         <p className="product-card__price">¥{wheelDrum.price.toLocaleString()}</p>
         <div className="product-card__actions">
-          <button className="btn btn--primary btn--small">{t.market.contactSeller}</button>
+          <button
+            className="btn btn--primary btn--small"
+            onClick={() => openContactModal(wheelDrum._id)}
+          >
+            {t.market.contactSeller}
+          </button>
         </div>
       </div>
     </article>
@@ -496,6 +525,46 @@ export default function Market() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="contact-modal" onClick={closeContactModal}>
+          <div className="contact-modal__overlay" />
+          <div className="contact-modal__content" onClick={(e) => e.stopPropagation()}>
+            <button className="contact-modal__close" onClick={closeContactModal} aria-label="Close">
+              ×
+            </button>
+            <div className="contact-modal__header">
+              <h3 className="contact-modal__title">Contact Seller</h3>
+              <p className="contact-modal__subtitle">Choose your preferred language</p>
+            </div>
+            <div className="contact-modal__options">
+              <a
+                href="tel:+817077746436"
+                className="contact-modal__option"
+                onClick={closeContactModal}
+              >
+                <div className="contact-modal__option-icon">📞</div>
+                <div className="contact-modal__option-content">
+                  <h4 className="contact-modal__option-title">Call in English</h4>
+                  <p className="contact-modal__option-number">+81 70-7774-6436</p>
+                </div>
+              </a>
+              <a
+                href="tel:+819080864799"
+                className="contact-modal__option"
+                onClick={closeContactModal}
+              >
+                <div className="contact-modal__option-icon">📞</div>
+                <div className="contact-modal__option-content">
+                  <h4 className="contact-modal__option-title">Call in Japanese</h4>
+                  <p className="contact-modal__option-number">+81 90-8086-4799</p>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
       )}
