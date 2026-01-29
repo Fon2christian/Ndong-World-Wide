@@ -53,8 +53,8 @@ export default function ContactDetail() {
     try {
       setIsUpdating(true);
       setError('');
-      await contactsApi.updateStatus(id, status);
-      setContact({ ...contact, status });
+      const updated = await contactsApi.updateStatus(id, status);
+      setContact(updated);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update status');
     } finally {
