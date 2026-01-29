@@ -21,7 +21,7 @@ export default function Login() {
     } catch (err: any) {
       // Check for rate limiting error
       if (err.response?.status === 429) {
-        setError('Too many login attempts. Please wait 15 minutes before trying again.');
+        setError('Too many requests. Please wait a few minutes before trying again.');
       } else {
         setError(err.response?.data?.message || 'Login failed. Please try again.');
       }
