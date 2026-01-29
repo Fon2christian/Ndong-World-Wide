@@ -13,21 +13,19 @@ export default function Contacts() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const isInitialMount = useRef(true);
+  const lastLocationKey = useRef(location.key);
 
   useEffect(() => {
     fetchContacts();
   }, [statusFilter, currentPage]);
 
-  // Refetch when returning to this page (after initial mount)
+  // Refetch only when navigating back from detail page
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
+    // Only refetch if location.key actually changed (not on initial render or hot reload)
+    if (lastLocationKey.current !== location.key && lastLocationKey.current !== 'default') {
+      fetchContacts();
     }
-
-    // Refetch contacts when navigating back to this page
-    fetchContacts();
+    lastLocationKey.current = location.key;
   }, [location.key]);
 
   const fetchContacts = async () => {
