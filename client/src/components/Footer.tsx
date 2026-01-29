@@ -55,10 +55,17 @@ export default function Footer() {
           />
           <div className="footer__info">
             <p className="footer__address">
-              {t.footer.address}
+              {t.company.companyLocationValue}
             </p>
             <p className="footer__phone">
-              +81 123-456-7890
+              <a href="tel:+817077746436" style={{ color: 'inherit', textDecoration: 'none' }}>
+                +81 70-7774-6436
+              </a> (English)
+            </p>
+            <p className="footer__phone">
+              <a href="tel:+819080864799" style={{ color: 'inherit', textDecoration: 'none' }}>
+                +81 90-8086-4799
+              </a> (Japanese)
             </p>
             <p className="footer__email">
               info@ndongworldwide.com
