@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
@@ -7,7 +7,6 @@ import type { Contact } from '../types';
 const PREV_PATH_KEY = 'contacts_prev_path';
 
 export default function Contacts() {
-  const navigate = useNavigate();
   const location = useLocation();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,24 +173,23 @@ export default function Contacts() {
                 {contacts.map((contact) => (
                   <tr
                     key={contact._id}
-                    onClick={() => navigate(`/contacts/${contact._id}`)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        navigate(`/contacts/${contact._id}`);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="link"
                     style={{
                       backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.08)' : undefined,
-                      cursor: 'pointer',
                       opacity: contact.isRead ? 0.7 : 1,
                       borderLeft: !contact.isRead ? '3px solid #3b82f6' : '3px solid transparent'
                     }}
                   >
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Link
+                        to={`/contacts/${contact._id}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          textDecoration: 'none',
+                          color: 'inherit'
+                        }}
+                      >
                         {!contact.isRead ? (
                           <span style={{
                             padding: '0.125rem 0.5rem',
@@ -225,7 +223,7 @@ export default function Contacts() {
                             {contact.furigana}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.email}</td>
                     <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.phone}</td>
