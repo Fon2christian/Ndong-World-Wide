@@ -37,8 +37,8 @@ export default function ContactDetail() {
 
       // Mark as read if not already
       if (!data.isRead) {
-        await contactsApi.markAsRead(id);
-        setContact({ ...data, isRead: true });
+        const updated = await contactsApi.markAsRead(id);
+        setContact(updated);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load contact inquiry');
