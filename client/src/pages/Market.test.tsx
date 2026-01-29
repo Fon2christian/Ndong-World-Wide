@@ -341,6 +341,146 @@ describe('Market', () => {
     })
   })
 
+  describe('contact seller modal', () => {
+    beforeEach(() => {
+      mockedAxios.get.mockImplementation((url: string) => {
+        if (url.includes('/cars')) return Promise.resolve({ data: mockCars })
+        if (url.includes('condition=new')) return Promise.resolve({ data: [] })
+        if (url.includes('condition=used')) return Promise.resolve({ data: [] })
+        if (url.includes('/wheel-drums')) return Promise.resolve({ data: [] })
+        return Promise.resolve({ data: [] })
+      })
+    })
+
+    it('should open contact modal when Contact Seller button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /contact seller/i })).toBeInTheDocument()
+        expect(screen.getByText(/choose your preferred language/i)).toBeInTheDocument()
+      })
+    })
+
+    it('should display English and Japanese phone options in modal', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/call in english/i)).toBeInTheDocument()
+        expect(screen.getByText('+81 70-7774-6436')).toBeInTheDocument()
+        expect(screen.getByText(/call in japanese/i)).toBeInTheDocument()
+        expect(screen.getByText('+81 90-8086-4799')).toBeInTheDocument()
+      })
+    })
+
+    it('should render phone numbers as clickable tel links', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        const englishLink = screen.getByRole('link', { name: /call in english/i })
+        const japaneseLink = screen.getByRole('link', { name: /call in japanese/i })
+
+        expect(englishLink).toHaveAttribute('href', 'tel:+817077746436')
+        expect(japaneseLink).toHaveAttribute('href', 'tel:+819080864799')
+      })
+    })
+
+    it('should close modal when close button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /contact seller/i })).toBeInTheDocument()
+      })
+
+      const closeButton = screen.getByRole('button', { name: /close/i })
+      await user.click(closeButton)
+
+      await waitFor(() => {
+        expect(screen.queryByRole('heading', { name: /contact seller/i })).not.toBeInTheDocument()
+      })
+    })
+
+    it('should close modal when clicking backdrop', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /contact seller/i })).toBeInTheDocument()
+      })
+
+      // Click on the modal backdrop
+      const modalBackdrop = document.querySelector('.contact-modal')
+      if (modalBackdrop) {
+        await user.click(modalBackdrop)
+      }
+
+      await waitFor(() => {
+        expect(screen.queryByRole('heading', { name: /contact seller/i })).not.toBeInTheDocument()
+      })
+    })
+
+    it('should close modal when clicking a phone option', async () => {
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contact seller/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /contact seller/i })).toBeInTheDocument()
+      })
+
+      const englishLink = screen.getByRole('link', { name: /call in english/i })
+      await user.click(englishLink)
+
+      await waitFor(() => {
+        expect(screen.queryByRole('heading', { name: /contact seller/i })).not.toBeInTheDocument()
+      })
+    })
+  })
+
   describe('translations', () => {
     beforeEach(() => {
       mockedAxios.get.mockResolvedValue({ data: [] })

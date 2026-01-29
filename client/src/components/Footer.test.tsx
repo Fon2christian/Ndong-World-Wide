@@ -34,8 +34,26 @@ describe('Footer', () => {
 
     it('should render contact information', () => {
       render(<Footer />)
-      expect(screen.getByText('+81 123-456-7890')).toBeInTheDocument()
+      expect(screen.getByText('+81 70-7774-6436')).toBeInTheDocument()
+      expect(screen.getByText('(English)')).toBeInTheDocument()
+      expect(screen.getByText('+81 90-8086-4799')).toBeInTheDocument()
+      expect(screen.getByText('(Japanese)')).toBeInTheDocument()
       expect(screen.getByText('info@ndongworldwide.com')).toBeInTheDocument()
+    })
+
+    it('should render phone numbers as clickable tel links', () => {
+      render(<Footer />)
+      const englishPhoneLink = screen.getByRole('link', { name: /\+81 70-7774-6436/i })
+      const japanesePhoneLink = screen.getByRole('link', { name: /\+81 90-8086-4799/i })
+
+      expect(englishPhoneLink).toHaveAttribute('href', 'tel:+817077746436')
+      expect(japanesePhoneLink).toHaveAttribute('href', 'tel:+819080864799')
+    })
+
+    it('should render company address from translations', () => {
+      render(<Footer />)
+      // English address should be rendered by default
+      expect(screen.getByText(/Yoshikawa City/i)).toBeInTheDocument()
     })
 
     it('should render Quick Links section', () => {
