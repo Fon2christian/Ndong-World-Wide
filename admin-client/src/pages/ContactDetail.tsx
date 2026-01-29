@@ -222,7 +222,7 @@ export default function ContactDetail() {
               </h2>
               <div style={{ display: 'grid', gap: '1rem' }}>
                 <div>
-                  <label style={{
+                  <div style={{
                     display: 'block',
                     fontSize: '0.875rem',
                     fontWeight: '600',
@@ -230,12 +230,12 @@ export default function ContactDetail() {
                     marginBottom: '0.25rem'
                   }}>
                     Name
-                  </label>
+                  </div>
                   <p style={{ fontSize: '1rem', margin: 0 }}>{contact.name}</p>
                 </div>
 
                 <div>
-                  <label style={{
+                  <div style={{
                     display: 'block',
                     fontSize: '0.875rem',
                     fontWeight: '600',
@@ -243,12 +243,12 @@ export default function ContactDetail() {
                     marginBottom: '0.25rem'
                   }}>
                     Furigana (読み仮名)
-                  </label>
+                  </div>
                   <p style={{ fontSize: '1rem', margin: 0 }}>{contact.furigana}</p>
                 </div>
 
                 <div>
-                  <label style={{
+                  <div style={{
                     display: 'block',
                     fontSize: '0.875rem',
                     fontWeight: '600',
@@ -256,7 +256,7 @@ export default function ContactDetail() {
                     marginBottom: '0.25rem'
                   }}>
                     Email
-                  </label>
+                  </div>
                   <p style={{ fontSize: '1rem', margin: 0 }}>
                     <a href={`mailto:${contact.email}`} style={{ color: 'var(--primary-color)' }}>
                       {contact.email}
@@ -265,7 +265,7 @@ export default function ContactDetail() {
                 </div>
 
                 <div>
-                  <label style={{
+                  <div style={{
                     display: 'block',
                     fontSize: '0.875rem',
                     fontWeight: '600',
@@ -273,7 +273,7 @@ export default function ContactDetail() {
                     marginBottom: '0.25rem'
                   }}>
                     Phone
-                  </label>
+                  </div>
                   <p style={{ fontSize: '1rem', margin: 0 }}>
                     <a href={`tel:${contact.phone}`} style={{ color: 'var(--primary-color)' }}>
                       {contact.phone}

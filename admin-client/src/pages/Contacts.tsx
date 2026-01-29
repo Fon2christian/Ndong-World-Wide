@@ -175,6 +175,14 @@ export default function Contacts() {
                   <tr
                     key={contact._id}
                     onClick={() => navigate(`/contacts/${contact._id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(`/contacts/${contact._id}`);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="link"
                     style={{
                       backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.08)' : undefined,
                       cursor: 'pointer',
