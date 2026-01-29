@@ -19,7 +19,12 @@ export default function Login() {
     try {
       await login(credentials);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      // Check for rate limiting error
+      if (err.response?.status === 429) {
+        setError('Too many requests. Please wait a few minutes before trying again.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

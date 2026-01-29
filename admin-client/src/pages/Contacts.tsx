@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
 
+const PREV_PATH_KEY = 'contacts_prev_path';
+
 export default function Contacts() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,9 +16,32 @@ export default function Contacts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Always fetch on mount and when filter/page changes
   useEffect(() => {
     fetchContacts();
   }, [statusFilter, currentPage]);
+
+  // Refetch when returning from contact detail page
+  useEffect(() => {
+    // Check if we're being told to refetch via location state (from Link navigation)
+    if (location.state?.refetch) {
+      fetchContacts();
+      // Clear the state to prevent refetch on subsequent renders
+      window.history.replaceState({}, document.title);
+      return;
+    }
+
+    // Also check sessionStorage for browser back button navigation
+    const prevPath = sessionStorage.getItem(PREV_PATH_KEY) || '';
+    const currentPath = location.pathname;
+
+    if (prevPath.startsWith('/contacts/') && currentPath === '/contacts') {
+      fetchContacts();
+    }
+
+    // Always update sessionStorage with current path
+    sessionStorage.setItem(PREV_PATH_KEY, currentPath);
+  }, [location.pathname, location.state]);
 
   const fetchContacts = async () => {
     try {
@@ -144,17 +172,52 @@ export default function Contacts() {
               </thead>
               <tbody>
                 {contacts.map((contact) => (
-                  <tr key={contact._id} style={{ backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.05)' : undefined }}>
+                  <tr
+                    key={contact._id}
+                    onClick={() => navigate(`/contacts/${contact._id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(`/contacts/${contact._id}`);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="link"
+                    style={{
+                      backgroundColor: !contact.isRead ? 'rgba(59, 130, 246, 0.08)' : undefined,
+                      cursor: 'pointer',
+                      opacity: contact.isRead ? 0.7 : 1,
+                      borderLeft: !contact.isRead ? '3px solid #3b82f6' : '3px solid transparent'
+                    }}
+                  >
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {!contact.isRead && (
+                        {!contact.isRead ? (
                           <span style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '0.25rem',
                             backgroundColor: '#3b82f6',
+                            color: 'white',
+                            fontSize: '0.625rem',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
                             flexShrink: 0
-                          }} title="Unread"></span>
+                          }}>
+                            Unread
+                          </span>
+                        ) : (
+                          <span style={{
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '0.25rem',
+                            backgroundColor: '#e5e7eb',
+                            color: '#6b7280',
+                            fontSize: '0.625rem',
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            flexShrink: 0
+                          }}>
+                            Read
+                          </span>
                         )}
                         <div>
                           <strong style={{ fontWeight: !contact.isRead ? '700' : '600' }}>{contact.name}</strong>
@@ -164,14 +227,19 @@ export default function Contacts() {
                         </div>
                       </div>
                     </td>
-                    <td>{contact.email}</td>
-                    <td>{contact.phone}</td>
+                    <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.email}</td>
+                    <td style={{ fontWeight: !contact.isRead ? '600' : '400' }}>{contact.phone}</td>
                     <td>
-                      <div style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{
+                        maxWidth: '300px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: !contact.isRead ? '600' : '400'
+                      }}>
                         {contact.inquiryDetails || 'N/A'}
                       </div>
                     </td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <select
                         value={contact.status}
                         onChange={(e) =>
@@ -188,7 +256,7 @@ export default function Contacts() {
                       </select>
                     </td>
                     <td style={{ whiteSpace: 'nowrap' }}>{formatDate(contact.createdAt)}</td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <div className="action-buttons">
                         {!contact.isRead && (
                           <button
