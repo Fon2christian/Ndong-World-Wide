@@ -9,6 +9,9 @@ import Flow from './pages/Flow'
 import Company from './pages/Company'
 import Contact from './pages/Contact'
 import Business from './pages/Business'
+import TiresProvision from './pages/TiresProvision'
+import WheelsProvision from './pages/WheelsProvision'
+import CarsProvision from './pages/CarsProvision'
 
 function Home() {
   return (
@@ -39,6 +42,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/business" element={<Business />} />
+          <Route path="/business/tires" element={<TiresProvision />} />
+          <Route path="/business/wheels" element={<WheelsProvision />} />
+          <Route path="/business/cars" element={<CarsProvision />} />
           <Route path="/market" element={<Market />} />
           <Route path="/flow" element={<Flow />} />
           <Route path="/company" element={<Company />} />
