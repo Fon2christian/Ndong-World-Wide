@@ -1,8 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
+
+const PREV_PATH_KEY = 'contacts_prev_path';
 
 export default function Contacts() {
   const navigate = useNavigate();
@@ -13,20 +15,33 @@ export default function Contacts() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const lastLocationKey = useRef(location.key);
 
+  // Always fetch on mount and when filter/page changes
   useEffect(() => {
     fetchContacts();
   }, [statusFilter, currentPage]);
 
-  // Refetch only when navigating back from detail page
+  // Refetch when returning from contact detail page
   useEffect(() => {
-    // Only refetch if location.key actually changed (not on initial render or hot reload)
-    if (lastLocationKey.current !== location.key && lastLocationKey.current !== 'default') {
+    // Check if we're being told to refetch via location state (from Link navigation)
+    if (location.state?.refetch) {
+      fetchContacts();
+      // Clear the state to prevent refetch on subsequent renders
+      window.history.replaceState({}, document.title);
+      return;
+    }
+
+    // Also check sessionStorage for browser back button navigation
+    const prevPath = sessionStorage.getItem(PREV_PATH_KEY) || '';
+    const currentPath = location.pathname;
+
+    if (prevPath.startsWith('/contacts/') && currentPath === '/contacts') {
       fetchContacts();
     }
-    lastLocationKey.current = location.key;
-  }, [location.key]);
+
+    // Always update sessionStorage with current path
+    sessionStorage.setItem(PREV_PATH_KEY, currentPath);
+  }, [location.pathname, location.state]);
 
   const fetchContacts = async () => {
     try {

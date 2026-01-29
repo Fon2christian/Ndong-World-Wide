@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
 import type { Contact } from '../types';
 
+const PREV_PATH_KEY = 'contacts_prev_path';
+
 export default function ContactDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [contact, setContact] = useState<Contact | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -17,6 +20,11 @@ export default function ContactDetail() {
       fetchContact();
     }
   }, [id]);
+
+  // Update sessionStorage with current pathname for navigation tracking
+  useEffect(() => {
+    sessionStorage.setItem(PREV_PATH_KEY, location.pathname);
+  }, [location.pathname]);
 
   const fetchContact = async () => {
     if (!id) return;
