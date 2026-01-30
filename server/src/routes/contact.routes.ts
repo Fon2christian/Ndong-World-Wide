@@ -103,10 +103,10 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
       filter.status = req.query.status as string;
     }
 
-    // Pagination with maximum limit to prevent abuse
-    const page = parseInt(req.query.page as string) || 1;
+    // Pagination with bounds checking to prevent abuse and invalid values
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const requestedLimit = parseInt(req.query.limit as string) || 50;
-    const limit = Math.min(requestedLimit, 100); // Cap at 100 items per page
+    const limit = Math.max(1, Math.min(requestedLimit, 100)); // Clamp between 1 and 100
     const skip = (page - 1) * limit;
 
     const [contacts, total] = await Promise.all([
