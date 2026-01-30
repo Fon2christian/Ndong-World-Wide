@@ -10,13 +10,4 @@ reviews:
   profile: assertive
   review_status: true
 
-  analysis:
-    enabled: true
-    depth: deep
-
-  summary:
-    enabled: true
-
-  style:
-    severity_labels: true
-    inline_comments: true
+  high_level_summary: true

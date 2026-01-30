@@ -71,6 +71,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
     try {
       const compressedImages = await compressImages(files);
       setFormData((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
+      setError(''); // Clear any previous image-processing errors
     } catch (error) {
       console.error('Error compressing images:', error);
       setError('Failed to process images. Please try again.');

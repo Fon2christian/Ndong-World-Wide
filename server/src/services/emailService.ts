@@ -15,6 +15,15 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (char) => map[char]);
 }
 
+/**
+ * Sanitize email header values to prevent CRLF injection attacks
+ * Removes or replaces CR (\r) and LF (\n) characters that could be used
+ * to inject additional email headers
+ */
+function sanitizeHeader(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ').trim();
+}
+
 // Create reusable transporter
 const createTransporter = () => {
   // Check if email configuration is available
@@ -57,10 +66,13 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
   const escapedPhone = escapeHtml(contact.phone);
   const escapedInquiryDetails = contact.inquiryDetails ? escapeHtml(contact.inquiryDetails) : '';
 
+  // Sanitize header values to prevent CRLF injection
+  const safeSubjectName = sanitizeHeader(contact.name);
+
   const mailOptions = {
     from: `"${process.env.EMAIL_FROM_NAME || 'Ndong World Wide'}" <${process.env.EMAIL_USER}>`,
     to: recipientEmail,
-    subject: `New Contact Inquiry from ${contact.name}`,
+    subject: `New Contact Inquiry from ${safeSubjectName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">

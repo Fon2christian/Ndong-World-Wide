@@ -18,7 +18,19 @@ const ContactSchema = new Schema<ContactAttrs>(
   {
     name: { type: String, required: true },
     furigana: { type: String, required: true },
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+      validate: {
+        validator: function(v: string) {
+          // Basic email format validation
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: (props: any) => `${props.value} is not a valid email address!`
+      }
+    },
     phone: { type: String, required: true },
     inquiryDetails: { type: String, default: "" },
     status: {

@@ -14,7 +14,15 @@ const WheelDrumSchema = new Schema<WheelDrumAttrs>(
     brand: { type: String, required: true },
     size: { type: String, required: true },
     price: { type: Number, required: true },
-    condition: { type: String, required: true },
+    // Note: Unlike Tire's binary "new"/"used" condition, WheelDrum uses
+    // quality grades (e.g., "Good", "Excellent", "Fair") as free-form text
+    // to allow for more nuanced condition descriptions
+    condition: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: [1, 'Condition cannot be empty']
+    },
     images: { type: [String], default: [] },
     displayLocation: {
       type: String,

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CarForm from './CarForm';
 import type { Car } from '../types';
@@ -16,7 +16,7 @@ describe('CarForm', () => {
 
     expect(screen.getByLabelText(/brand/i)).toHaveValue('');
     expect(screen.getByLabelText(/model/i)).toHaveValue('');
-    expect(screen.getByRole('button', { name: /create car/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /upload car/i })).toBeInTheDocument();
   });
 
   it('should render form with existing car data for editing', () => {
@@ -51,7 +51,7 @@ describe('CarForm', () => {
     fireEvent.change(screen.getByLabelText(/price/i), { target: { value: '28000' } });
     fireEvent.change(screen.getByLabelText(/mileage/i), { target: { value: '5000' } });
 
-    const submitButton = screen.getByRole('button', { name: /create car/i });
+    const submitButton = screen.getByRole('button', { name: /upload car/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe('CarForm', () => {
     const mockError = vi.fn().mockRejectedValue({
       response: {
         data: {
-          message: 'Failed to create car',
+          message: 'Failed to upload car',
         },
       },
     });
@@ -93,11 +93,11 @@ describe('CarForm', () => {
     fireEvent.change(screen.getByLabelText(/price/i), { target: { value: '28000' } });
     fireEvent.change(screen.getByLabelText(/mileage/i), { target: { value: '5000' } });
 
-    const submitButton = screen.getByRole('button', { name: /create car/i });
+    const submitButton = screen.getByRole('button', { name: /upload car/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to create car')).toBeInTheDocument();
+      expect(screen.getByText('Failed to upload car')).toBeInTheDocument();
     });
   });
 
@@ -114,7 +114,7 @@ describe('CarForm', () => {
     fireEvent.change(screen.getByLabelText(/price/i), { target: { value: '28000' } });
     fireEvent.change(screen.getByLabelText(/mileage/i), { target: { value: '5000' } });
 
-    const submitButton = screen.getByRole('button', { name: /create car/i });
+    const submitButton = screen.getByRole('button', { name: /upload car/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {

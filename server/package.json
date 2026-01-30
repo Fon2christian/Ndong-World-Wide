@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "migrate:displayLocation": "tsx src/migrations/001-backfill-displayLocation.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
