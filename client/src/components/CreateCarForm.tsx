@@ -1,8 +1,7 @@
 // client/src/components/CarForm.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { z } from "zod";
-import { compressImages } from "../utils/imageCompression";
 
 // Zod schema for validation
 const carSchema = z.object({
@@ -14,7 +13,6 @@ const carSchema = z.object({
   fuel: z.string().min(1),
   transmission: z.string().min(1),
   images: z.array(z.string()),
-  displayLocation: z.enum(["market", "business", "both"]),
 });
 
 // Car form type
@@ -27,7 +25,6 @@ interface CarForm {
   fuel: string;
   transmission: string;
   images: string[];
-  displayLocation: "market" | "business" | "both";
 }
 
 interface CarFormProps {
@@ -47,28 +44,8 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
       fuel: "",
       transmission: "",
       images: [],
-      displayLocation: "market",
     }
   );
-
-  // Sync form state when initialData changes (e.g., switching to edit a different car)
-  useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
-    } else {
-      setForm({
-        brand: "",
-        model: "",
-        year: 2020,
-        price: 0,
-        mileage: 0,
-        fuel: "",
-        transmission: "",
-        images: [],
-        displayLocation: "market",
-      });
-    }
-  }, [initialData, carId]);
 
   // Handle text/number input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -76,26 +53,22 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     setForm({ ...form, [e.target.name]: value });
   };
 
-  // Handle image file upload - compresses and adds to existing images
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image file upload
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
 
-    try {
-      const compressedImages = await compressImages(files);
-      setForm((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
-    } catch (error) {
-      console.error("Error compressing images:", error);
-      alert("Failed to process images. Please try again.");
-    }
-  };
-
-  // Remove a specific image
-  const handleRemoveImage = (indexToRemove: number) => {
-    setForm((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, index) => index !== indexToRemove),
-    }));
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+      )
+    ).then((base64Images) => setForm({ ...form, images: base64Images }));
   };
 
   // Handle form submission
@@ -133,7 +106,6 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     console.log("Payload:", payload);
 
       let res;
-      
       if (carId) {
         // Update existing car
         res = await axios.put(`${import.meta.env.VITE_API_URL}/api/cars/${carId}`, payload);
@@ -154,7 +126,6 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
         fuel: "",
         transmission: "",
         images: [],
-        displayLocation: "market",
       });
 
       // Notify parent to refresh list
@@ -166,173 +137,16 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      {/* Row 1: Brand & Model */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="brand">Brand</label>
-          <input
-            id="brand"
-            name="brand"
-            value={form.brand}
-            onChange={handleChange}
-            placeholder="e.g. Toyota"
-            className="form__input"
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="model">Model</label>
-          <input
-            id="model"
-            name="model"
-            value={form.model}
-            onChange={handleChange}
-            placeholder="e.g. Camry"
-            className="form__input"
-          />
-        </div>
-      </div>
-
-      {/* Row 2: Year & Price */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="year">Year</label>
-          <input
-            id="year"
-            name="year"
-            type="number"
-            value={form.year}
-            onChange={handleChange}
-            placeholder="e.g. 2023"
-            className="form__input"
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="price">Price (¥)</label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            value={form.price}
-            onChange={handleChange}
-            placeholder="e.g. 25000"
-            className="form__input"
-          />
-        </div>
-      </div>
-
-      {/* Row 3: Mileage */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="mileage">Mileage (km)</label>
-          <input
-            id="mileage"
-            name="mileage"
-            type="number"
-            value={form.mileage}
-            onChange={handleChange}
-            placeholder="e.g. 50000"
-            className="form__input"
-          />
-        </div>
-      </div>
-
-      {/* Row 4: Fuel & Transmission */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="fuel">Fuel Type</label>
-          <select
-            id="fuel"
-            name="fuel"
-            value={form.fuel}
-            onChange={handleChange}
-            className="form__select"
-          >
-            <option value="">Select fuel type</option>
-            <option value="petrol">Petrol</option>
-            <option value="diesel">Diesel</option>
-            <option value="electric">Electric</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="transmission">Transmission</label>
-          <select
-            id="transmission"
-            name="transmission"
-            value={form.transmission}
-            onChange={handleChange}
-            className="form__select"
-          >
-            <option value="">Select transmission</option>
-            <option value="automatic">Automatic</option>
-            <option value="manual">Manual</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Row 5: Display Location */}
-      <div className="form__group">
-        <label className="form__label" htmlFor="displayLocation">Display Location</label>
-        <select
-          id="displayLocation"
-          name="displayLocation"
-          value={form.displayLocation}
-          onChange={handleChange}
-          className="form__select"
-        >
-          <option value="market">Market Only</option>
-          <option value="business">Business Only</option>
-          <option value="both">Both Market & Business</option>
-        </select>
-      </div>
-
-      {/* Row 6: Image Upload */}
-      <div className="form__group">
-        <label className="form__label">Car Images</label>
-        <div className="form__file-upload">
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageChange}
-          />
-          <p className="form__file-upload-text">
-            <strong>Click to upload</strong> or drag and drop
-          </p>
-          <p className="form__file-upload-text">PNG, JPG up to 10MB</p>
-        </div>
-
-        {/* Image Preview */}
-        {form.images.length > 0 && (
-          <div className="form__image-preview">
-            {form.images.map((img, i) => (
-              <div key={i} className="form__image-preview-item">
-                <img src={img} alt={`Preview ${i + 1}`} />
-                <button
-                  type="button"
-                  className="form__image-remove"
-                  onClick={() => handleRemoveImage(i)}
-                  aria-label={`Remove image ${i + 1}`}
-                >
-                  ×
-                </button>
-                <span className="form__image-number">{i + 1}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        {form.images.length > 0 && (
-          <p className="form__image-count">{form.images.length} image(s) selected</p>
-        )}
-      </div>
-
-      {/* Form Actions */}
-      <div className="form__actions">
-        <button type="submit" className="btn btn--primary">
-          {carId ? "Update Car" : "Create Car"}
-        </button>
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <input name="brand" value={form.brand} onChange={handleChange} placeholder="Brand" />
+      <input name="model" value={form.model} onChange={handleChange} placeholder="Model" />
+      <input name="year" type="number" value={form.year} onChange={handleChange} placeholder="Year" />
+      <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Price" />
+      <input name="mileage" type="number" value={form.mileage} onChange={handleChange} placeholder="Mileage" />
+      <input name="fuel" value={form.fuel} onChange={handleChange} placeholder="Fuel" />
+      <input name="transmission" value={form.transmission} onChange={handleChange} placeholder="Transmission" />
+      <input type="file" multiple onChange={handleImageChange} />
+      <button type="submit">{carId ? "Update Car" : "Create Car"}</button>
     </form>
   );
 }

@@ -11,7 +11,6 @@ export interface CarAttrs {
   fuel: "petrol" | "diesel" | "hybrid" | "electric";
   transmission: "automatic" | "manual";
   images: string[];
-  displayLocation: "market" | "business" | "both";
 }
 
 // Create schema
@@ -33,11 +32,6 @@ const CarSchema = new Schema<CarAttrs>(
       required: true,
     },
     images: { type: [String], default: [] },
-    displayLocation: {
-      type: String,
-      enum: ["market", "business", "both"],
-      default: "market",
-    },
   },
   { timestamps: true }
 );

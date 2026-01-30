@@ -11,9 +11,6 @@ dist/
 dist-ssr/
 build/
 
-# Test coverage
-coverage/
-
 # Logs
 logs/
 *.log
