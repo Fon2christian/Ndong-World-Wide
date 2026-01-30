@@ -538,8 +538,8 @@ export default function Market() {
               ×
             </button>
             <div className="contact-modal__header">
-              <h3 className="contact-modal__title">Contact Seller</h3>
-              <p className="contact-modal__subtitle">Choose your preferred language</p>
+              <h3 className="contact-modal__title">{t.market.contactModal.title}</h3>
+              <p className="contact-modal__subtitle">{t.market.contactModal.subtitle}</p>
             </div>
             <div className="contact-modal__options">
               <a
@@ -549,7 +549,7 @@ export default function Market() {
               >
                 <div className="contact-modal__option-icon">📞</div>
                 <div className="contact-modal__option-content">
-                  <h4 className="contact-modal__option-title">Call in English</h4>
+                  <h4 className="contact-modal__option-title">{t.market.contactModal.callEnglish}</h4>
                   <p className="contact-modal__option-number">+81 70-7774-6436</p>
                 </div>
               </a>
@@ -560,7 +560,7 @@ export default function Market() {
               >
                 <div className="contact-modal__option-icon">📞</div>
                 <div className="contact-modal__option-content">
-                  <h4 className="contact-modal__option-title">Call in Japanese</h4>
+                  <h4 className="contact-modal__option-title">{t.market.contactModal.callJapanese}</h4>
                   <p className="contact-modal__option-number">+81 90-8086-4799</p>
                 </div>
               </a>

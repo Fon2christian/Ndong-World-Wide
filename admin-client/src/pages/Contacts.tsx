@@ -6,6 +6,17 @@ import type { Contact } from '../types';
 
 const PREV_PATH_KEY = 'contacts_prev_path';
 
+// Type-safe error message extraction for API errors
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response?: { data?: { message?: string } } }).response;
+    if (response?.data?.message) {
+      return response.data.message;
+    }
+  }
+  return fallback;
+}
+
 export default function Contacts() {
   const location = useLocation();
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -53,8 +64,8 @@ export default function Contacts() {
       });
       setContacts(response.contacts || response.data || []);
       setTotalPages(response.pagination.pages);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load contacts');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to load contacts'));
     } finally {
       setIsLoading(false);
     }
@@ -64,8 +75,8 @@ export default function Contacts() {
     try {
       await contactsApi.updateStatus(id, status);
       fetchContacts();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update status');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to update status'));
     }
   };
 
@@ -73,8 +84,8 @@ export default function Contacts() {
     try {
       await contactsApi.markAsRead(id);
       fetchContacts();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to mark as read');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to mark as read'));
     }
   };
 
@@ -83,8 +94,8 @@ export default function Contacts() {
     try {
       await contactsApi.delete(id);
       fetchContacts();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to delete contact');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to delete contact'));
     }
   };
 

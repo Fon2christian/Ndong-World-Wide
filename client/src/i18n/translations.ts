@@ -84,6 +84,12 @@ export const translations = {
       contactSeller: "Contact Seller",
       conditionNew: "New",
       conditionUsed: "Used",
+      contactModal: {
+        title: "Contact Seller",
+        subtitle: "Choose your preferred language",
+        callEnglish: "Call in English",
+        callJapanese: "Call in Japanese",
+      },
     },
     // Language
     language: {
@@ -317,6 +323,12 @@ export const translations = {
       contactSeller: "Contacter le Vendeur",
       conditionNew: "Neuf",
       conditionUsed: "Usagé",
+      contactModal: {
+        title: "Contacter le Vendeur",
+        subtitle: "Choisissez votre langue préférée",
+        callEnglish: "Appeler en Anglais",
+        callJapanese: "Appeler en Japonais",
+      },
     },
     // Language
     language: {
@@ -550,6 +562,12 @@ export const translations = {
       contactSeller: "販売者に連絡",
       conditionNew: "新品",
       conditionUsed: "中古",
+      contactModal: {
+        title: "販売者に連絡",
+        subtitle: "ご希望の言語をお選びください",
+        callEnglish: "英語で電話",
+        callJapanese: "日本語で電話",
+      },
     },
     // Language
     language: {
