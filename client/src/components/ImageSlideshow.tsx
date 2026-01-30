@@ -167,11 +167,6 @@ function MissionSection() {
   );
 }
 
-const ceoImages = [
-  "/assets/images/yoko.JPG",
-  "/assets/images/Fon.JPG",
-];
-
 function CEOSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentCeoIndex, setCurrentCeoIndex] = useState(0);
@@ -237,7 +232,7 @@ function CEOSection() {
             <div className="ceo-section__content">
               <div className="ceo-section__image-container">
                 <img
-                  src={ceoImages[index]}
+                  src={leader.image}
                   alt={leader.name}
                   className="ceo-section__image"
                 />
