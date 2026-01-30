@@ -271,8 +271,9 @@ describe('Business', () => {
       render(<Business />)
 
       await waitFor(() => {
-        expect(screen.getByText('10,000 km')).toBeInTheDocument()
-        expect(screen.getByText('25,000 km')).toBeInTheDocument()
+        // Use locale-agnostic regex to match formatted mileage numbers
+        expect(screen.getByText(/10[,.\s]?000 km/)).toBeInTheDocument()
+        expect(screen.getByText(/25[,.\s]?000 km/)).toBeInTheDocument()
       })
     })
 
@@ -280,8 +281,9 @@ describe('Business', () => {
       render(<Business />)
 
       await waitFor(() => {
-        expect(screen.getByText(/28,000/)).toBeInTheDocument()
-        expect(screen.getByText(/22,000/)).toBeInTheDocument()
+        // Use locale-agnostic regex to match formatted price numbers
+        expect(screen.getByText(/28[,.\s]?000/)).toBeInTheDocument()
+        expect(screen.getByText(/22[,.\s]?000/)).toBeInTheDocument()
       })
     })
 

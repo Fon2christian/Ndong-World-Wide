@@ -208,7 +208,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
             disabled={isSubmitting}
           />
           <p className="form__file-upload-text">
-            <strong>Click to upload</strong> or drag and drop
+            <strong>Click to upload</strong>
           </p>
           <p className="form__file-upload-text">PNG, JPG (images will be compressed automatically)</p>
         </div>

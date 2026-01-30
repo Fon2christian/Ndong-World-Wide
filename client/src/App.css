@@ -2753,6 +2753,11 @@
   color: var(--color-accent-hover);
 }
 
+.footer__contact-link {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* Navigation Section */
 .footer__nav,
 .footer__services {

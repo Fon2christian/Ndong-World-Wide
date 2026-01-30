@@ -343,6 +343,9 @@ describe('Market', () => {
       // Error should be logged
       expect(consoleSpy).toHaveBeenCalled()
 
+      // Empty state should be shown since data failed to load
+      expect(screen.getByText(/no items available/i)).toBeInTheDocument()
+
       consoleSpy.mockRestore()
     })
   })

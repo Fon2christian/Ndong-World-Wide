@@ -19,30 +19,42 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+// Filter to match documents with missing, null, or empty displayLocation
+const invalidDisplayLocationFilter = {
+  $or: [
+    { displayLocation: { $exists: false } },
+    { displayLocation: null },
+    { displayLocation: "" }
+  ]
+};
+
 async function backfillDisplayLocation() {
   try {
-    // Connect to MongoDB
-    const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/ndong-world-wide";
+    // Require MONGO_URI to avoid accidentally migrating the wrong database
+    const mongoUri = process.env.MONGO_URI;
+    if (!mongoUri) {
+      throw new Error("MONGO_URI environment variable is required");
+    }
     await mongoose.connect(mongoUri);
     console.log("✅ Connected to MongoDB");
 
-    // Backfill Cars
+    // Backfill Cars (covers missing, null, and empty values)
     const carsResult = await Car.updateMany(
-      { displayLocation: { $exists: false } }, // Documents without displayLocation field
-      { $set: { displayLocation: "market" } }  // Set to default value
+      invalidDisplayLocationFilter,
+      { $set: { displayLocation: "market" } }
     );
     console.log(`📦 Cars: Updated ${carsResult.modifiedCount} documents (${carsResult.matchedCount} matched)`);
 
     // Backfill Tires
     const tiresResult = await Tire.updateMany(
-      { displayLocation: { $exists: false } },
+      invalidDisplayLocationFilter,
       { $set: { displayLocation: "market" } }
     );
     console.log(`🛞 Tires: Updated ${tiresResult.modifiedCount} documents (${tiresResult.matchedCount} matched)`);
 
     // Backfill WheelDrums
     const wheelDrumsResult = await WheelDrum.updateMany(
-      { displayLocation: { $exists: false } },
+      invalidDisplayLocationFilter,
       { $set: { displayLocation: "market" } }
     );
     console.log(`⚙️  WheelDrums: Updated ${wheelDrumsResult.modifiedCount} documents (${wheelDrumsResult.matchedCount} matched)`);
@@ -50,11 +62,11 @@ async function backfillDisplayLocation() {
     const totalUpdated = carsResult.modifiedCount + tiresResult.modifiedCount + wheelDrumsResult.modifiedCount;
     console.log(`\n✨ Migration complete! Total documents updated: ${totalUpdated}`);
 
-    // Verify the migration
+    // Verify the migration (uses same filter to check for any remaining invalid values)
     console.log("\n🔍 Verification:");
-    const carsWithoutLocation = await Car.countDocuments({ displayLocation: { $exists: false } });
-    const tiresWithoutLocation = await Tire.countDocuments({ displayLocation: { $exists: false } });
-    const wheelDrumsWithoutLocation = await WheelDrum.countDocuments({ displayLocation: { $exists: false } });
+    const carsWithoutLocation = await Car.countDocuments(invalidDisplayLocationFilter);
+    const tiresWithoutLocation = await Tire.countDocuments(invalidDisplayLocationFilter);
+    const wheelDrumsWithoutLocation = await WheelDrum.countDocuments(invalidDisplayLocationFilter);
 
     if (carsWithoutLocation === 0 && tiresWithoutLocation === 0 && wheelDrumsWithoutLocation === 0) {
       console.log("✅ All documents now have displayLocation field");

@@ -95,10 +95,10 @@ export default function Market() {
     document.body.style.overflow = "hidden"; // Prevent background scroll
   };
 
-  const closeLightbox = () => {
+  const closeLightbox = useCallback(() => {
     setLightbox({ isOpen: false, images: [], currentIndex: 0, title: "" });
     document.body.style.overflow = ""; // Restore scroll
-  };
+  }, []);
 
   const openContactModal = (itemId: string) => {
     setSelectedItem(itemId);
@@ -110,19 +110,19 @@ export default function Market() {
     setSelectedItem("");
   };
 
-  const lightboxNext = () => {
+  const lightboxNext = useCallback(() => {
     setLightbox(prev => ({
       ...prev,
       currentIndex: (prev.currentIndex + 1) % prev.images.length,
     }));
-  };
+  }, []);
 
-  const lightboxPrev = () => {
+  const lightboxPrev = useCallback(() => {
     setLightbox(prev => ({
       ...prev,
       currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length,
     }));
-  };
+  }, []);
 
   // Handle keyboard navigation for lightbox
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function Market() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightbox.isOpen]);
+  }, [lightbox.isOpen, closeLightbox, lightboxNext, lightboxPrev]);
 
   // Handle keyboard navigation for contact modal
   useEffect(() => {
@@ -470,10 +470,14 @@ export default function Market() {
       </header>
 
       {/* Tabs */}
-      <nav className="market__tabs">
+      <nav className="market__tabs" role="tablist" aria-label="Product categories">
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`${tab.id}-panel`}
             className={`market__tab ${activeTab === tab.id ? "market__tab--active" : ""}`}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -485,7 +489,7 @@ export default function Market() {
       </nav>
 
       {/* Content */}
-      <div className="market__content">
+      <div className="market__content" id={`${activeTab}-panel`} role="tabpanel">
         {renderContent()}
       </div>
 

@@ -58,17 +58,17 @@ export default function Footer() {
               {t.company.companyLocationValue}
             </p>
             <p className="footer__phone">
-              <a href="tel:+817077746436" style={{ color: 'inherit', textDecoration: 'none' }}>
+              <a href="tel:+817077746436" className="footer__contact-link">
                 +81 70-7774-6436
               </a> (English)
             </p>
             <p className="footer__phone">
-              <a href="tel:+819080864799" style={{ color: 'inherit', textDecoration: 'none' }}>
+              <a href="tel:+819080864799" className="footer__contact-link">
                 +81 90-8086-4799
               </a> (Japanese)
             </p>
             <p className="footer__email">
-              <a href="mailto:info@ndongworldwide.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+              <a href="mailto:info@ndongworldwide.com" className="footer__contact-link">
                 info@ndongworldwide.com
               </a>
             </p>
