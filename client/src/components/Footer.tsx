@@ -8,9 +8,9 @@ export default function Footer() {
   const navLinks = [
     { name: t.nav.home, href: "/" },
     { name: t.nav.market, href: "/market" },
-    { name: t.nav.business, href: "#" },
-    { name: t.nav.flow, href: "#" },
-    { name: t.nav.company, href: "#" },
+    { name: t.nav.business, href: "/business" },
+    { name: t.nav.flow, href: "/flow" },
+    { name: t.nav.company, href: "/company" },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -68,7 +68,9 @@ export default function Footer() {
               </a> (Japanese)
             </p>
             <p className="footer__email">
-              info@ndongworldwide.com
+              <a href="mailto:info@ndongworldwide.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+                info@ndongworldwide.com
+              </a>
             </p>
           </div>
         </div>

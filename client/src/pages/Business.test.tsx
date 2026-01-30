@@ -50,7 +50,7 @@ const mockUsedTires = [
     _id: '4',
     brand: 'Dunlop',
     size: '195/65R15',
-    price: 65,
+    price: 99,
     condition: 'used',
     images: [],
   },
@@ -338,9 +338,8 @@ describe('Business', () => {
       await waitFor(() => {
         expect(screen.getByText('Dunlop')).toBeInTheDocument()
         expect(screen.getByText('195/65R15')).toBeInTheDocument()
-        // Check that the price contains 65
-        const priceElements = screen.getAllByText(/65/)
-        expect(priceElements.length).toBeGreaterThan(0)
+        // Check that the price is displayed (using unique price value that doesn't overlap with size)
+        expect(screen.getByText(/99/)).toBeInTheDocument()
       })
     })
 

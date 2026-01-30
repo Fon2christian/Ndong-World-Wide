@@ -54,7 +54,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
     }
   }, [wheelDrum]);
 
-  const handleChange = (field: keyof WheelDrumFormData, value: any) => {
+  const handleChange = (field: keyof WheelDrumFormData, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
@@ -101,9 +101,12 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
     setIsSubmitting(true);
 
     try {
-      await onSubmit(formData);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save wheel drum');
+      await onSubmit(result.data);
+    } catch (err) {
+      const message = err && typeof err === 'object' && 'response' in err
+        ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+        : undefined;
+      setError(message || 'Failed to save wheel drum');
     } finally {
       setIsSubmitting(false);
     }
@@ -207,7 +210,7 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
           <p className="form__file-upload-text">
             <strong>Click to upload</strong> or drag and drop
           </p>
-          <p className="form__file-upload-text">PNG, JPG up to 10MB</p>
+          <p className="form__file-upload-text">PNG, JPG (images will be compressed automatically)</p>
         </div>
 
         {/* Image Preview */}

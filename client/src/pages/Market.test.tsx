@@ -124,7 +124,7 @@ describe('Market', () => {
       render(<Market />)
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
       const newTiresTab = screen.getByRole('button', { name: /new tires/i })
@@ -330,6 +330,7 @@ describe('Market', () => {
 
   describe('error handling', () => {
     it('should handle API error gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       mockedAxios.get.mockRejectedValue(new Error('Network error'))
 
       render(<Market />)
@@ -338,6 +339,11 @@ describe('Market', () => {
       await waitFor(() => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
+
+      // Error should be logged
+      expect(consoleSpy).toHaveBeenCalled()
+
+      consoleSpy.mockRestore()
     })
   })
 

@@ -126,7 +126,7 @@ Email: ${contact.email}
 Phone: ${contact.phone}
 ${contact.inquiryDetails ? `\nInquiry Details:\n${contact.inquiryDetails}` : ''}
 
-Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString() : 'Just now'}
+Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }) : 'Just now'}
     `.trim(),
   };
 

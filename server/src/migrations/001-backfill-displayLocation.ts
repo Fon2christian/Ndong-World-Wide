@@ -67,7 +67,7 @@ async function backfillDisplayLocation() {
 
   } catch (error) {
     console.error("❌ Migration failed:", error);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
     // Close MongoDB connection
     await mongoose.connection.close();

@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 import WheelDrum from "../models/WheelDrum.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ function isValidObjectId(id: string): boolean {
 }
 
 // CREATE wheel drum
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const validation = wheelDrumSchema.safeParse(req.body);
     if (!validation.success) {
@@ -46,6 +47,11 @@ router.get("/", async (req: Request, res: Response) => {
     const filter: { displayLocation?: { $in: string[] } } = {};
     if (req.query.location) {
       const location = req.query.location as string;
+      // Validate against allowed values
+      const validLocations = ["market", "business", "both"];
+      if (!validLocations.includes(location)) {
+        return res.status(400).json({ message: "Invalid location filter. Must be 'market', 'business', or 'both'" });
+      }
       // Match items that are set to this location OR "both"
       filter.displayLocation = { $in: [location, "both"] };
     }
@@ -72,7 +78,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // DELETE wheel drum
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
@@ -89,7 +95,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // UPDATE wheel drum
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {

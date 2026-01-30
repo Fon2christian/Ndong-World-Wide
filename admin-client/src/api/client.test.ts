@@ -1,19 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { api } from './client';
 import { TOKEN_KEY } from '../contexts/AuthContext';
 
-// Mock window.location
-const mockLocation = {
-  href: '',
-};
-delete (window as any).location;
-window.location = mockLocation as any;
-
 describe('API Client', () => {
+  const mockLocation = { href: '' };
+
   beforeEach(() => {
     localStorage.clear();
     mockLocation.href = '';
     vi.clearAllMocks();
+    // Use vi.stubGlobal for safe window.location mocking
+    vi.stubGlobal('location', mockLocation);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('should add JWT token to request headers', () => {
