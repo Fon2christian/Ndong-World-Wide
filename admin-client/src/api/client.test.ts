@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { api } from './client';
+import MockAdapter from 'axios-mock-adapter';
 import { TOKEN_KEY } from '../contexts/AuthContext';
 
 describe('API Client', () => {
@@ -9,87 +9,82 @@ describe('API Client', () => {
     localStorage.clear();
     mockLocation.href = '';
     vi.clearAllMocks();
-    // Use vi.stubGlobal for safe window.location mocking
     vi.stubGlobal('location', mockLocation);
+    // Reset modules to clear the isRedirecting guard between tests
+    vi.resetModules();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('should add JWT token to request headers', () => {
+  it('should add JWT token to request headers', async () => {
+    const { api } = await import('./client');
+    const mock = new MockAdapter(api);
+
     localStorage.setItem(TOKEN_KEY, 'test-token');
 
-    let handlerTested = false;
-    api.interceptors.request.handlers.forEach((handler) => {
-      if (handler.fulfilled) {
-        const config = { headers: {} } as any;
-        const result = handler.fulfilled(config);
-        expect(result.headers.Authorization).toBe('Bearer test-token');
-        handlerTested = true;
-      }
+    let capturedHeaders: Record<string, string> = {};
+    mock.onGet('/test').reply((config) => {
+      capturedHeaders = config.headers as Record<string, string>;
+      return [200, { success: true }];
     });
-    expect(handlerTested).toBe(true); // Ensure at least one handler was tested
+
+    await api.get('/test');
+
+    expect(capturedHeaders.Authorization).toBe('Bearer test-token');
+    mock.restore();
   });
 
-  it('should not add Authorization header when no token exists', () => {
-    let handlerTested = false;
-    api.interceptors.request.handlers.forEach((handler) => {
-      if (handler.fulfilled) {
-        const config = { headers: {} } as any;
-        const result = handler.fulfilled(config);
-        expect(result.headers.Authorization).toBeUndefined();
-        handlerTested = true;
-      }
+  it('should not add Authorization header when no token exists', async () => {
+    const { api } = await import('./client');
+    const mock = new MockAdapter(api);
+
+    let capturedHeaders: Record<string, string> = {};
+    mock.onGet('/test').reply((config) => {
+      capturedHeaders = config.headers as Record<string, string>;
+      return [200, { success: true }];
     });
-    expect(handlerTested).toBe(true); // Ensure at least one handler was tested
+
+    await api.get('/test');
+
+    expect(capturedHeaders.Authorization).toBeUndefined();
+    mock.restore();
   });
 
   it('should redirect to login on 401 error', async () => {
+    const { api } = await import('./client');
+    const mock = new MockAdapter(api);
+
     localStorage.setItem(TOKEN_KEY, 'test-token');
+    mock.onGet('/test').reply(401);
 
-    let handlerTested = false;
-    for (const handler of api.interceptors.response.handlers) {
-      if (handler.rejected) {
-        const error = {
-          response: { status: 401 },
-        };
-
-        try {
-          await handler.rejected(error);
-        } catch (e) {
-          // Expected to reject
-        }
-
-        expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
-        expect(mockLocation.href).toBe('/login');
-        handlerTested = true;
-      }
+    try {
+      await api.get('/test');
+    } catch {
+      // Expected to throw
     }
-    expect(handlerTested).toBe(true); // Ensure at least one handler was tested
+
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+    expect(mockLocation.href).toBe('/login');
+    mock.restore();
   });
 
   it('should redirect to login on 403 error', async () => {
+    const { api } = await import('./client');
+    const mock = new MockAdapter(api);
+
     localStorage.setItem(TOKEN_KEY, 'test-token');
+    mock.onGet('/test').reply(403);
 
-    let handlerTested = false;
-    for (const handler of api.interceptors.response.handlers) {
-      if (handler.rejected) {
-        const error = {
-          response: { status: 403 },
-        };
-
-        try {
-          await handler.rejected(error);
-        } catch (e) {
-          // Expected to reject
-        }
-
-        expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
-        expect(mockLocation.href).toBe('/login');
-        handlerTested = true;
-      }
+    try {
+      await api.get('/test');
+    } catch {
+      // Expected to throw
     }
-    expect(handlerTested).toBe(true); // Ensure at least one handler was tested
+
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+    expect(mockLocation.href).toBe('/login');
+    mock.restore();
   });
 });
