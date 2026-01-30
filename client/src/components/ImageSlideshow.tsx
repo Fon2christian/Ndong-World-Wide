@@ -167,6 +167,127 @@ function MissionSection() {
   );
 }
 
+const ceoImages = [
+  "/assets/images/yoko.JPG",
+  "/assets/images/Fon.JPG",
+];
+
+function CEOSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [currentCeoIndex, setCurrentCeoIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "-50px 0px"
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-rotate CEOs every 8 seconds (only when not paused)
+  useEffect(() => {
+    if (isPaused) return;
+
+    const timer = setInterval(() => {
+      setCurrentCeoIndex((prev) => (prev + 1) % t.ceo.leaders.length);
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, [t.ceo.leaders.length, isPaused]);
+
+  const themeClass = currentCeoIndex === 0 ? "ceo-section--yokomo" : "ceo-section--tebit";
+
+  const handleDotClick = (index: number) => {
+    setCurrentCeoIndex(index);
+    setIsPaused(true); // Pause when user manually navigates
+  };
+
+  const togglePause = () => {
+    setIsPaused((prev) => !prev);
+  };
+
+  return (
+    <div
+      id="ceo"
+      ref={sectionRef}
+      className={`ceo-section ${themeClass} ${isVisible ? "ceo-section--visible" : ""}`}
+    >
+      <h2 className="ceo-section__main-title">{t.ceo.title}</h2>
+
+      <div className="ceo-section__slideshow">
+        {t.ceo.leaders.map((leader, index) => (
+          <div
+            key={index}
+            className={`ceo-section__slide ${index === currentCeoIndex ? "ceo-section__slide--active" : ""}`}
+          >
+            <div className="ceo-section__content">
+              <div className="ceo-section__image-container">
+                <img
+                  src={ceoImages[index]}
+                  alt={leader.name}
+                  className="ceo-section__image"
+                />
+              </div>
+              <div className="ceo-section__text-content">
+                <blockquote className="ceo-section__message">
+                  "{leader.message}"
+                </blockquote>
+                <div className="ceo-section__signature">
+                  <span className="ceo-section__name">{leader.name}</span>
+                  <span className="ceo-section__position">{leader.position}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation Controls */}
+      <div className="ceo-section__controls">
+        <div className="ceo-section__dots">
+          {t.ceo.leaders.map((_, index) => (
+            <button
+              key={index}
+              className={`ceo-section__dot ${index === currentCeoIndex ? "ceo-section__dot--active" : ""}`}
+              onClick={() => handleDotClick(index)}
+              aria-label={`View ${t.ceo.leaders[index].name}'s message`}
+            />
+          ))}
+        </div>
+        <button
+          className="ceo-section__pause-btn"
+          onClick={togglePause}
+          aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
+        >
+          {isPaused ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+            </svg>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ImageSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { t } = useLanguage();
@@ -245,6 +366,9 @@ export default function ImageSlideshow() {
 
       {/* Mission Section */}
       <MissionSection />
+
+      {/* CEO Section */}
+      <CEOSection />
 
       {/* Car Provision Section */}
       <CarProvisionSection />
