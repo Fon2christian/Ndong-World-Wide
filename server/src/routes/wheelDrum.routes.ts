@@ -1,9 +1,22 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
+import { z } from "zod";
 import WheelDrum from "../models/WheelDrum.js";
 
 const router = Router();
+
+// Validation schemas
+const wheelDrumSchema = z.object({
+  brand: z.string().min(1, "Brand is required"),
+  size: z.string().min(1, "Size is required"),
+  price: z.number().positive("Price must be positive"),
+  condition: z.string().min(1, "Condition is required"),
+  images: z.array(z.string()).default([]),
+  displayLocation: z.enum(["market", "business", "both"]).default("market"),
+});
+
+const updateWheelDrumSchema = wheelDrumSchema.partial();
 
 // Helper function to validate MongoDB ObjectId
 function isValidObjectId(id: string): boolean {
@@ -13,7 +26,14 @@ function isValidObjectId(id: string): boolean {
 // CREATE wheel drum
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const wheelDrum = await WheelDrum.create(req.body);
+    const validation = wheelDrumSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
+    const wheelDrum = await WheelDrum.create(validation.data);
     res.status(201).json(wheelDrum);
   } catch (error) {
     res.status(400).json({ message: "Failed to create wheel drum", error });
@@ -75,9 +95,16 @@ router.put("/:id", async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid wheel drum ID format" });
     }
+    const validation = updateWheelDrumSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
     const wheelDrum = await WheelDrum.findByIdAndUpdate(
       id,
-      req.body,
+      validation.data,
       { new: true, runValidators: true }
     );
     if (!wheelDrum) {
