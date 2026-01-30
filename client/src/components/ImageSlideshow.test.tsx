@@ -99,7 +99,7 @@ describe('ImageSlideshow', () => {
       render(<ImageSlideshow />)
 
       const ceoSection = document.getElementById('ceo')
-      expect(ceoSection).toHaveClass('ceo-section--yokomo')
+      expect(ceoSection).toHaveClass('ceo-section--yoko')
     })
 
     it('should render CEO images', () => {

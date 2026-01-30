@@ -974,8 +974,8 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
-/* Yokomo's warm pinkish theme */
-.ceo-section--yokomo {
+/* Yoko's warm pinkish theme */
+.ceo-section--yoko {
   background: linear-gradient(135deg, #4a1942 0%, #6b2d5c 50%, #8b4373 100%);
 }
 
@@ -1053,7 +1053,7 @@
 }
 
 /* Pinkish glow for Yokomo */
-.ceo-section--yokomo .ceo-section__image {
+.ceo-section--yoko .ceo-section__image {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(255, 182, 193, 0.3);
 }
 
@@ -1088,7 +1088,7 @@
 }
 
 /* Pinkish accent for Yokomo */
-.ceo-section--yokomo .ceo-section__message {
+.ceo-section--yoko .ceo-section__message {
   border-left-color: #ffb6c1;
 }
 
@@ -1111,7 +1111,7 @@
 }
 
 /* Pinkish accent for Yokomo */
-.ceo-section--yokomo .ceo-section__position {
+.ceo-section--yoko .ceo-section__position {
   color: #ffb6c1;
 }
 
@@ -1144,7 +1144,7 @@
   border-color: #ff9a56;
 }
 
-.ceo-section--yokomo .ceo-section__dot--active {
+.ceo-section--yoko .ceo-section__dot--active {
   background: #ffb6c1;
   border-color: #ffb6c1;
 }
@@ -1193,7 +1193,7 @@
   border-color: #ff9a56;
 }
 
-.ceo-section--yokomo .ceo-section__pause-btn:hover {
+.ceo-section--yoko .ceo-section__pause-btn:hover {
   background: rgba(255, 182, 193, 0.3);
   border-color: #ffb6c1;
 }
@@ -1221,7 +1221,7 @@
     padding-top: var(--space-md);
   }
 
-  .ceo-section--yokomo .ceo-section__message {
+  .ceo-section--yoko .ceo-section__message {
     border-top-color: #ffb6c1;
   }
 

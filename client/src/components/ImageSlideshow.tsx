@@ -204,7 +204,8 @@ function CEOSection() {
     return () => clearInterval(timer);
   }, [t.ceo.leaders.length, isPaused]);
 
-  const themeClass = currentCeoIndex === 0 ? "ceo-section--yokomo" : "ceo-section--tebit";
+  const currentLeader = t.ceo.leaders[currentCeoIndex];
+  const themeClass = `ceo-section--${currentLeader.theme}`;
 
   const handleDotClick = (index: number) => {
     setCurrentCeoIndex(index);
