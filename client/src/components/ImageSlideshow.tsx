@@ -261,6 +261,7 @@ function CEOSection() {
         <div className="ceo-section__dots">
           {t.ceo.leaders.map((_, index) => (
             <button
+              type="button"
               key={index}
               className={`ceo-section__dot ${index === currentCeoIndex ? "ceo-section__dot--active" : ""}`}
               onClick={() => handleDotClick(index)}
@@ -269,16 +270,17 @@ function CEOSection() {
           ))}
         </div>
         <button
+          type="button"
           className="ceo-section__pause-btn"
           onClick={togglePause}
           aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
         >
           {isPaused ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
           ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
             </svg>
           )}
