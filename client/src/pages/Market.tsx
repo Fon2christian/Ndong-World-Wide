@@ -124,7 +124,7 @@ export default function Market() {
     }));
   };
 
-  // Handle keyboard navigation
+  // Handle keyboard navigation for lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!lightbox.isOpen) return;
@@ -135,6 +135,16 @@ export default function Market() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightbox.isOpen]);
+
+  // Handle keyboard navigation for contact modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!showContactModal) return;
+      if (e.key === "Escape") closeContactModal();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showContactModal]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -531,14 +541,24 @@ export default function Market() {
 
       {/* Contact Modal */}
       {showContactModal && (
-        <div className="contact-modal" onClick={closeContactModal}>
-          <div className="contact-modal__overlay" />
-          <div className="contact-modal__content" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="contact-modal"
+          onClick={closeContactModal}
+          role="presentation"
+        >
+          <div className="contact-modal__overlay" aria-hidden="true" />
+          <div
+            className="contact-modal__content"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-modal-title"
+          >
             <button className="contact-modal__close" onClick={closeContactModal} aria-label="Close">
               ×
             </button>
             <div className="contact-modal__header">
-              <h3 className="contact-modal__title">{t.market.contactModal.title}</h3>
+              <h3 id="contact-modal-title" className="contact-modal__title">{t.market.contactModal.title}</h3>
               <p className="contact-modal__subtitle">{t.market.contactModal.subtitle}</p>
             </div>
             <div className="contact-modal__options">
