@@ -18,6 +18,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { path: '/contacts', label: 'Customer Inquiries', icon: '📧' },
   ];
 
+  const isNavItemActive = (itemPath: string) => {
+    if (itemPath === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname === itemPath || location.pathname.startsWith(`${itemPath}/`);
+  };
+
   return (
     <div className="dashboard-container">
       <main className="main-content">
@@ -35,7 +42,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              className={`nav-item ${isNavItemActive(item.path) ? 'active' : ''}`}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
