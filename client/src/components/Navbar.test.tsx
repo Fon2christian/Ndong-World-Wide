@@ -30,19 +30,16 @@ describe('Navbar', () => {
       expect(screen.getByLabelText('Select language')).toBeInTheDocument()
     })
 
-    it('should render Admin Login button when not logged in', () => {
+    it('should render Contact link', () => {
       render(<Navbar />)
-      // Both desktop and mobile nav have admin login link
-      const adminLoginLinks = screen.getAllByRole('link', { name: /admin login/i })
-      expect(adminLoginLinks.length).toBeGreaterThanOrEqual(1)
+      const contactLinks = screen.getAllByRole('link', { name: /contact/i })
+      expect(contactLinks.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('should render Dashboard button when logged in', () => {
-      localStorage.setItem('isAdmin', 'true')
+    it('should render Business link', () => {
       render(<Navbar />)
-      // Both desktop and mobile nav have dashboard link
-      const dashboardLinks = screen.getAllByRole('link', { name: /dashboard/i })
-      expect(dashboardLinks.length).toBeGreaterThanOrEqual(1)
+      const businessLinks = screen.getAllByRole('link', { name: /business/i })
+      expect(businessLinks.length).toBeGreaterThanOrEqual(1)
     })
   })
 
@@ -61,11 +58,10 @@ describe('Navbar', () => {
       expect(marketLinks[0]).toHaveAttribute('href', '/market')
     })
 
-    it('should have correct href for Admin Login link', () => {
+    it('should have correct href for Contact link', () => {
       render(<Navbar />)
-      // Get first admin login link (desktop version)
-      const loginLinks = screen.getAllByRole('link', { name: /admin login/i })
-      expect(loginLinks[0]).toHaveAttribute('href', '/login')
+      const contactLinks = screen.getAllByRole('link', { name: /contact/i })
+      expect(contactLinks[0]).toHaveAttribute('href', '/contact')
     })
   })
 
@@ -137,7 +133,7 @@ describe('Navbar', () => {
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     })
 
-    it('should close mobile menu when Admin Login link is clicked', async () => {
+    it('should close mobile menu when Contact link is clicked', async () => {
       const user = userEvent.setup()
       render(<Navbar />)
 
@@ -147,20 +143,19 @@ describe('Navbar', () => {
       await user.click(toggleButton)
       expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
 
-      // Find Admin Login link in the mobile dropdown
-      const mobileAdminLink = screen.getAllByRole('link', { name: /admin login/i }).find(
+      // Find Contact link in the mobile dropdown
+      const mobileContactLink = screen.getAllByRole('link', { name: /contact/i }).find(
         link => link.classList.contains('navbar__dropdown-link')
       )
 
       // Click the mobile menu link
-      await user.click(mobileAdminLink!)
+      await user.click(mobileContactLink!)
 
       // Menu should close
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     })
 
-    it('should show Admin Dashboard in mobile menu when logged in', async () => {
-      localStorage.setItem('isAdmin', 'true')
+    it('should show Business link in mobile menu', async () => {
       const user = userEvent.setup()
       render(<Navbar />)
 
@@ -169,17 +164,16 @@ describe('Navbar', () => {
       // Open the menu
       await user.click(toggleButton)
 
-      // Find Admin Dashboard link in the mobile dropdown
-      const mobileAdminLink = screen.getAllByRole('link', { name: /admin dashboard/i }).find(
+      // Find Business link in the mobile dropdown
+      const mobileBusinessLink = screen.getAllByRole('link', { name: /business/i }).find(
         link => link.classList.contains('navbar__dropdown-link')
       )
 
-      expect(mobileAdminLink).toBeInTheDocument()
-      expect(mobileAdminLink).toHaveAttribute('href', '/admin')
+      expect(mobileBusinessLink).toBeInTheDocument()
+      expect(mobileBusinessLink).toHaveAttribute('href', '/business')
     })
 
-    it('should close mobile menu when Admin Dashboard link is clicked while logged in', async () => {
-      localStorage.setItem('isAdmin', 'true')
+    it('should close mobile menu when Business link is clicked', async () => {
       const user = userEvent.setup()
       render(<Navbar />)
 
@@ -189,26 +183,26 @@ describe('Navbar', () => {
       await user.click(toggleButton)
       expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
 
-      // Find Admin Dashboard link in the mobile dropdown
-      const mobileAdminLink = screen.getAllByRole('link', { name: /admin dashboard/i }).find(
+      // Find Business link in the mobile dropdown
+      const mobileBusinessLink = screen.getAllByRole('link', { name: /business/i }).find(
         link => link.classList.contains('navbar__dropdown-link')
       )
 
       // Click the mobile menu link
-      await user.click(mobileAdminLink!)
+      await user.click(mobileBusinessLink!)
 
       // Menu should close
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     })
   })
 
-  describe('admin state', () => {
-    it('should show Admin link in desktop nav when logged in', () => {
-      localStorage.setItem('isAdmin', 'true')
+  describe('active state', () => {
+    it('should apply navbar__link class to navigation links', () => {
       render(<Navbar />)
 
-      const adminLinks = screen.getAllByRole('link', { name: /admin/i })
-      expect(adminLinks.length).toBeGreaterThan(0)
+      // Verify home link has the base navbar__link class
+      const homeLinks = screen.getAllByRole('link', { name: /home/i })
+      expect(homeLinks[0]).toHaveClass('navbar__link')
     })
   })
 })

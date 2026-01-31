@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
-import { afterEach, beforeAll, afterAll, vi } from 'vitest'
+import { afterEach, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
+
+// Mock VITE_API_URL for all tests
+beforeEach(() => {
+  vi.stubEnv('VITE_API_URL', 'http://localhost:5002')
+})
 
 // Mock localStorage
 const localStorageMock = (() => {
