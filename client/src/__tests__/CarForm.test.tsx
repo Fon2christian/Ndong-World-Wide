@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import CarForm from "../components/createCarForm";
+import CarForm from "../components/CreateCarForm";
 
 vi.mock("axios");
 const mockedAxios = vi.mocked(axios);
