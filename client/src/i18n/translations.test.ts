@@ -66,6 +66,59 @@ describe('translations', () => {
     })
   })
 
+  describe('CEO translations', () => {
+    it('should have all CEO keys in all languages', () => {
+      languages.forEach(lang => {
+        expect(translations[lang].ceo).toHaveProperty('title')
+        expect(translations[lang].ceo).toHaveProperty('leaders')
+      })
+    })
+
+    it('should have exactly two leaders in all languages', () => {
+      languages.forEach(lang => {
+        expect(Array.isArray(translations[lang].ceo.leaders)).toBe(true)
+        expect(translations[lang].ceo.leaders.length).toBe(2)
+      })
+    })
+
+    it('should have correct leader structure in all languages', () => {
+      languages.forEach(lang => {
+        translations[lang].ceo.leaders.forEach(leader => {
+          expect(leader).toHaveProperty('message')
+          expect(leader).toHaveProperty('name')
+          expect(leader).toHaveProperty('position')
+          expect(leader).toHaveProperty('image')
+          expect(leader).toHaveProperty('theme')
+          expect(leader.message.length).toBeGreaterThan(0)
+          expect(leader.name.length).toBeGreaterThan(0)
+          expect(leader.position.length).toBeGreaterThan(0)
+          expect(leader.image.length).toBeGreaterThan(0)
+          expect(leader.theme.length).toBeGreaterThan(0)
+        })
+      })
+    })
+
+    it('should have Yoko Hitomi as first leader (CEO) in English', () => {
+      expect(translations.en.ceo.leaders[0].name).toBe('Yoko Hitomi')
+      expect(translations.en.ceo.leaders[0].position).toBe('CEO')
+    })
+
+    it('should have Tebit Fidglas Fon as second leader (Co-CEO) in English', () => {
+      expect(translations.en.ceo.leaders[1].name).toBe('Tebit Fidglas Fon')
+      expect(translations.en.ceo.leaders[1].position).toBe('Co-CEO')
+    })
+
+    it('should have correct CEO positions in French', () => {
+      expect(translations.fr.ceo.leaders[0].position).toBe('PDG')
+      expect(translations.fr.ceo.leaders[1].position).toBe('Co-PDG')
+    })
+
+    it('should have correct CEO positions in Japanese', () => {
+      expect(translations.ja.ceo.leaders[0].position).toBe('CEO')
+      expect(translations.ja.ceo.leaders[1].position).toBe('共同CEO')
+    })
+  })
+
   describe('provision translations', () => {
     const provisionTypes = ['carProvision', 'tyresProvision', 'wheelsProvision'] as const
 

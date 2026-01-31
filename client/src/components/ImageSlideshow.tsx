@@ -167,6 +167,132 @@ function MissionSection() {
   );
 }
 
+function CEOSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [currentCeoIndex, setCurrentCeoIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "-50px 0px"
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const leaders = t.ceo.leaders;
+
+  // Auto-rotate CEOs every 8 seconds (only when not paused and leaders exist)
+  useEffect(() => {
+    if (isPaused || leaders.length === 0) return;
+
+    const timer = setInterval(() => {
+      setCurrentCeoIndex((prev) => (prev + 1) % leaders.length);
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, [leaders.length, isPaused]);
+
+  // Guard against empty leader list
+  if (leaders.length === 0) {
+    return null;
+  }
+
+  const currentLeader = leaders[currentCeoIndex] ?? leaders[0];
+  const themeClass = `ceo-section--${currentLeader.theme}`;
+
+  const handleDotClick = (index: number) => {
+    setCurrentCeoIndex(index);
+    setIsPaused(true); // Pause when user manually navigates
+  };
+
+  const togglePause = () => {
+    setIsPaused((prev) => !prev);
+  };
+
+  return (
+    <div
+      id="ceo"
+      ref={sectionRef}
+      className={`ceo-section ${themeClass} ${isVisible ? "ceo-section--visible" : ""}`}
+    >
+      <h2 className="ceo-section__main-title">{t.ceo.title}</h2>
+
+      <div className="ceo-section__slideshow">
+        {leaders.map((leader, index) => (
+          <div
+            key={index}
+            className={`ceo-section__slide ${index === currentCeoIndex ? "ceo-section__slide--active" : ""}`}
+          >
+            <div className="ceo-section__content">
+              <div className="ceo-section__image-container">
+                <img
+                  src={leader.image}
+                  alt={leader.name}
+                  className="ceo-section__image"
+                />
+              </div>
+              <div className="ceo-section__text-content">
+                <blockquote className="ceo-section__message">
+                  "{leader.message}"
+                </blockquote>
+                <div className="ceo-section__signature">
+                  <span className="ceo-section__name">{leader.name}</span>
+                  <span className="ceo-section__position">{leader.position}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation Controls */}
+      <div className="ceo-section__controls">
+        <div className="ceo-section__dots">
+          {leaders.map((leader, index) => (
+            <button
+              type="button"
+              key={index}
+              className={`ceo-section__dot ${index === currentCeoIndex ? "ceo-section__dot--active" : ""}`}
+              onClick={() => handleDotClick(index)}
+              aria-label={`View ${leader.name}'s message`}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          className="ceo-section__pause-btn"
+          onClick={togglePause}
+          aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
+        >
+          {isPaused ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+            </svg>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ImageSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { t } = useLanguage();
@@ -245,6 +371,9 @@ export default function ImageSlideshow() {
 
       {/* Mission Section */}
       <MissionSection />
+
+      {/* CEO Section */}
+      <CEOSection />
 
       {/* Car Provision Section */}
       <CarProvisionSection />

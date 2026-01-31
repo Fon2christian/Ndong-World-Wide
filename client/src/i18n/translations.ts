@@ -22,6 +22,26 @@ export const translations = {
       title: "Our Mission",
       text: "At Ndong World Wide Trading, we are committed to delivering high-quality used vehicles and tyres directly from Japan to customers worldwide. Our mission is to provide reliable, affordable, and well-maintained automobiles that meet the highest standards of safety and performance. We believe in building lasting relationships with our clients through transparency, integrity, and exceptional customer service.",
     },
+    // CEO Section
+    ceo: {
+      title: "Message from Our Leadership",
+      leaders: [
+        {
+          message: "For over two decades, I stood beside my husband as he built Ndong World Wide Trading from the ground up. His vision was to bring the finest Japanese vehicles and tyres to customers worldwide. Though he is no longer with us, his spirit lives on in every vehicle we export. Together with Tebit, I am honored to continue this legacy. Japan's automotive excellence is in our hearts, and we are committed to delivering that quality to you with the same passion and dedication my husband instilled in this company.",
+          name: "Yoko Hitomi",
+          position: "CEO",
+          image: "/assets/images/yoko.JPG",
+          theme: "yoko",
+        },
+        {
+          message: "Growing up, I watched my father build this company with unwavering dedication and integrity. His sudden passing left a void, but also a mission – to carry forward everything he stood for. With the incredible support of Yoko, who has been a pillar of strength for our family and business, we continue to honor his legacy. Every vehicle and tyre we export represents my father's vision: quality, reliability, and customer satisfaction above all else. Thank you for trusting us with your automotive journey.",
+          name: "Tebit Fidglas Fon",
+          position: "Co-CEO",
+          image: "/assets/images/Fon.JPG",
+          theme: "tebit",
+        },
+      ],
+    },
     // Car Provision
     carProvision: {
       title: "Car Provision",
@@ -196,7 +216,7 @@ export const translations = {
       capital: "Capital",
       yen: "yen",
       representative: "Representative",
-      representativeValue: "Yokomo Hitomi\nTebit Fidglas Fon",
+      representativeValue: "Yoko Hitomi\nTebit Fidglas Fon",
       businessDetails: "Business Details",
       businessDescription: "Tire and car export",
       license: "Secondhand Goods Dealer License",
@@ -260,6 +280,26 @@ export const translations = {
     mission: {
       title: "Notre Mission",
       text: "Chez Ndong World Wide Trading, nous nous engageons à livrer des véhicules et des pneus d'occasion de haute qualité directement du Japon aux clients du monde entier. Notre mission est de fournir des automobiles fiables, abordables et bien entretenues qui répondent aux normes les plus élevées de sécurité et de performance. Nous croyons en l'établissement de relations durables avec nos clients grâce à la transparence, l'intégrité et un service client exceptionnel.",
+    },
+    // CEO Section
+    ceo: {
+      title: "Message de Notre Direction",
+      leaders: [
+        {
+          message: "Pendant plus de deux décennies, j'ai été aux côtés de mon mari alors qu'il construisait Ndong World Wide Trading de zéro. Sa vision était d'apporter les meilleurs véhicules et pneus japonais aux clients du monde entier. Bien qu'il ne soit plus parmi nous, son esprit vit dans chaque véhicule que nous exportons. Avec Tebit, j'ai l'honneur de perpétuer cet héritage. L'excellence automobile japonaise est dans nos cœurs, et nous nous engageons à vous offrir cette qualité avec la même passion et le même dévouement que mon mari a insufflés à cette entreprise.",
+          name: "Yoko Hitomi",
+          position: "PDG",
+          image: "/assets/images/yoko.JPG",
+          theme: "yoko",
+        },
+        {
+          message: "En grandissant, j'ai vu mon père construire cette entreprise avec un dévouement et une intégrité sans faille. Sa disparition soudaine a laissé un vide, mais aussi une mission – perpétuer tout ce qu'il représentait. Avec le soutien incroyable de Yoko, qui a été un pilier de force pour notre famille et notre entreprise, nous continuons d'honorer son héritage. Chaque véhicule et pneu que nous exportons représente la vision de mon père : qualité, fiabilité et satisfaction client avant tout. Merci de nous faire confiance pour votre parcours automobile.",
+          name: "Tebit Fidglas Fon",
+          position: "Co-PDG",
+          image: "/assets/images/Fon.JPG",
+          theme: "tebit",
+        },
+      ],
     },
     // Car Provision
     carProvision: {
@@ -435,7 +475,7 @@ export const translations = {
       capital: "Capital",
       yen: "yen",
       representative: "Représentant",
-      representativeValue: "Yokomo Hitomi\nTebit Fidglas Fon",
+      representativeValue: "Yoko Hitomi\nTebit Fidglas Fon",
       businessDetails: "Détails de l'Activité",
       businessDescription: "Exportation de pneus et voitures",
       license: "Licence de Revendeur de Biens d'Occasion",
@@ -499,6 +539,26 @@ export const translations = {
     mission: {
       title: "私たちの使命",
       text: "Ndong World Wide Tradingでは、日本から世界中のお客様に高品質な中古車とタイヤを直接お届けすることに尽力しています。私たちの使命は、安全性と性能の最高基準を満たす、信頼性が高く、手頃な価格で、よく整備された自動車を提供することです。透明性、誠実さ、そして卓越したカスタマーサービスを通じて、お客様との永続的な関係を築くことを信じています。",
+    },
+    // CEO Section
+    ceo: {
+      title: "経営陣からのメッセージ",
+      leaders: [
+        {
+          message: "20年以上にわたり、私は夫がNdong World Wide Tradingをゼロから築き上げる姿を見守り、支えてまいりました。彼が亡くなった後、私は彼の遺志を引き継ぐことを決意しました。それは義務感だけでなく、彼の情熱と、世界中の無数のお客様に奉仕してきたこの事業への深い愛情からです。今日、私はテビットと一緒に、20年以上前に夫が植えた種を育て続けることを誇りに思っています。私たちが輸出するすべての車両とタイヤは、品質と誠実さへの彼の約束を体現しています。",
+          name: "陽子 ひとみ",
+          position: "CEO",
+          image: "/assets/images/yoko.JPG",
+          theme: "yoko",
+        },
+        {
+          message: "私は幼い頃から、父がこの会社を揺るぎない献身と誠実さで築き上げるのを見てきました。彼の急逝は大きな打撃でしたが、彼の遺産は私たちを通じて生き続けています。陽子ひとみと共に、私は父のビジョンを世界中のお客様にお届けすることに尽力しています。共同CEOとして、私は次世代に品質と信頼性への同じ揺るぎないコミットメントをもたらします。私たちは単にビジネスを継続しているのではありません – 私たちは家族の遺産を讃えているのです。",
+          name: "テビット・フィドグラス・フォン",
+          position: "共同CEO",
+          image: "/assets/images/Fon.JPG",
+          theme: "tebit",
+        },
+      ],
     },
     // Car Provision
     carProvision: {
