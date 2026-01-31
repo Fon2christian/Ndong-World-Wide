@@ -8,9 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "migrate:displayLocation": "tsx src/migrations/001-backfill-displayLocation.ts"
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -30,12 +28,12 @@
     "@types/express-rate-limit": "^5.1.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.6",
-    "@types/nodemailer": "^7.0.5",
     "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^4.0.18",
     "mongodb-memory-server": "^11.0.1",
     "supertest": "^7.2.2",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   }
 }
