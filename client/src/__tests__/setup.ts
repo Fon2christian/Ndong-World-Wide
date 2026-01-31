@@ -7,13 +7,7 @@ afterEach(() => {
 });
 
 // Mock import.meta.env
-vi.stubGlobal("import", {
-  meta: {
-    env: {
-      VITE_API_URL: "http://localhost:5002",
-    },
-  },
-});
+vi.stubEnv("VITE_API_URL", "http://localhost:5002");
 
 // Mock window.confirm and window.alert
 vi.stubGlobal("confirm", vi.fn(() => true));
