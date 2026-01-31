@@ -81,10 +81,10 @@ describe('Market', () => {
   describe('tabs navigation', () => {
     beforeEach(() => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('/cars')) return Promise.resolve({ data: mockCars })
-        if (url.includes('condition=new')) return Promise.resolve({ data: mockNewTires })
-        if (url.includes('condition=used')) return Promise.resolve({ data: mockUsedTires })
-        if (url.includes('/wheel-drums')) return Promise.resolve({ data: mockWheelDrums })
+        if (url.includes('/api/cars')) return Promise.resolve({ data: mockCars })
+        if (url.includes('/api/tires') && url.includes('condition=new')) return Promise.resolve({ data: mockNewTires })
+        if (url.includes('/api/tires') && url.includes('condition=used')) return Promise.resolve({ data: mockUsedTires })
+        if (url.includes('/api/wheel-drums')) return Promise.resolve({ data: mockWheelDrums })
         return Promise.resolve({ data: [] })
       })
     })
@@ -93,10 +93,10 @@ describe('Market', () => {
       render(<Market />)
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /cars/i })).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /new tires/i })).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /used tires/i })).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /wheel drums/i })).toBeInTheDocument()
+        expect(screen.getByRole('tab', { name: /cars/i })).toBeInTheDocument()
+        expect(screen.getByRole('tab', { name: /new tires/i })).toBeInTheDocument()
+        expect(screen.getByRole('tab', { name: /used tires/i })).toBeInTheDocument()
+        expect(screen.getByRole('tab', { name: /wheel drums/i })).toBeInTheDocument()
       })
     })
 
@@ -104,7 +104,7 @@ describe('Market', () => {
       render(<Market />)
 
       await waitFor(() => {
-        const carsTab = screen.getByRole('button', { name: /cars/i })
+        const carsTab = screen.getByRole('tab', { name: /cars/i })
         expect(carsTab).toHaveClass('market__tab--active')
       })
     })
@@ -114,7 +114,7 @@ describe('Market', () => {
 
       await waitFor(() => {
         // Check for count badges
-        const tabs = screen.getAllByRole('button')
+        const tabs = screen.getAllByRole('tab')
         expect(tabs.length).toBeGreaterThanOrEqual(4)
       })
     })
@@ -127,7 +127,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      const newTiresTab = screen.getByRole('tab', { name: /new tires/i })
       await user.click(newTiresTab)
 
       expect(newTiresTab).toHaveClass('market__tab--active')
@@ -141,7 +141,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const usedTiresTab = screen.getByRole('button', { name: /used tires/i })
+      const usedTiresTab = screen.getByRole('tab', { name: /used tires/i })
       await user.click(usedTiresTab)
 
       expect(usedTiresTab).toHaveClass('market__tab--active')
@@ -155,7 +155,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      const wheelDrumsTab = screen.getByRole('tab', { name: /wheel drums/i })
       await user.click(wheelDrumsTab)
 
       expect(wheelDrumsTab).toHaveClass('market__tab--active')
@@ -165,10 +165,10 @@ describe('Market', () => {
   describe('cars content', () => {
     beforeEach(() => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('/cars')) return Promise.resolve({ data: mockCars })
-        if (url.includes('condition=new')) return Promise.resolve({ data: [] })
-        if (url.includes('condition=used')) return Promise.resolve({ data: [] })
-        if (url.includes('/wheel-drums')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/cars')) return Promise.resolve({ data: mockCars })
+        if (url.includes('/api/tires') && url.includes('condition=new')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/tires') && url.includes('condition=used')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/wheel-drums')) return Promise.resolve({ data: [] })
         return Promise.resolve({ data: [] })
       })
     })
@@ -205,10 +205,10 @@ describe('Market', () => {
   describe('tires content', () => {
     beforeEach(() => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('/cars')) return Promise.resolve({ data: [] })
-        if (url.includes('condition=new')) return Promise.resolve({ data: mockNewTires })
-        if (url.includes('condition=used')) return Promise.resolve({ data: mockUsedTires })
-        if (url.includes('/wheel-drums')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/cars')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/tires') && url.includes('condition=new')) return Promise.resolve({ data: mockNewTires })
+        if (url.includes('/api/tires') && url.includes('condition=used')) return Promise.resolve({ data: mockUsedTires })
+        if (url.includes('/api/wheel-drums')) return Promise.resolve({ data: [] })
         return Promise.resolve({ data: [] })
       })
     })
@@ -221,7 +221,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      const newTiresTab = screen.getByRole('tab', { name: /new tires/i })
       await user.click(newTiresTab)
 
       await waitFor(() => {
@@ -239,7 +239,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const usedTiresTab = screen.getByRole('button', { name: /used tires/i })
+      const usedTiresTab = screen.getByRole('tab', { name: /used tires/i })
       await user.click(usedTiresTab)
 
       await waitFor(() => {
@@ -257,7 +257,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      const newTiresTab = screen.getByRole('tab', { name: /new tires/i })
       await user.click(newTiresTab)
 
       await waitFor(() => {
@@ -269,10 +269,10 @@ describe('Market', () => {
   describe('wheel drums content', () => {
     beforeEach(() => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('/cars')) return Promise.resolve({ data: [] })
-        if (url.includes('condition=new')) return Promise.resolve({ data: [] })
-        if (url.includes('condition=used')) return Promise.resolve({ data: [] })
-        if (url.includes('/wheel-drums')) return Promise.resolve({ data: mockWheelDrums })
+        if (url.includes('/api/cars')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/tires') && url.includes('condition=new')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/tires') && url.includes('condition=used')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/wheel-drums')) return Promise.resolve({ data: mockWheelDrums })
         return Promise.resolve({ data: [] })
       })
     })
@@ -285,7 +285,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      const wheelDrumsTab = screen.getByRole('tab', { name: /wheel drums/i })
       await user.click(wheelDrumsTab)
 
       await waitFor(() => {
@@ -319,7 +319,7 @@ describe('Market', () => {
         expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
       })
 
-      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      const newTiresTab = screen.getByRole('tab', { name: /new tires/i })
       await user.click(newTiresTab)
 
       await waitFor(() => {
@@ -353,10 +353,10 @@ describe('Market', () => {
   describe('contact seller modal', () => {
     beforeEach(() => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('/cars')) return Promise.resolve({ data: mockCars })
-        if (url.includes('condition=new')) return Promise.resolve({ data: [] })
-        if (url.includes('condition=used')) return Promise.resolve({ data: [] })
-        if (url.includes('/wheel-drums')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/cars')) return Promise.resolve({ data: mockCars })
+        if (url.includes('/api/tires') && url.includes('condition=new')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/tires') && url.includes('condition=used')) return Promise.resolve({ data: [] })
+        if (url.includes('/api/wheel-drums')) return Promise.resolve({ data: [] })
         return Promise.resolve({ data: [] })
       })
     })
