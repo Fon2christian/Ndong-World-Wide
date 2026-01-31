@@ -1,23 +1,38 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
+import { z } from "zod";
 import Car from "../models/Car.js";
 import { requireAuth } from "../middleware/auth.js";
+import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
 
 const router = Router();
 
-// Helper function to validate MongoDB ObjectId
-function isValidObjectId(id: string): boolean {
-  return mongoose.Types.ObjectId.isValid(id);
-}
+// Validation schemas
+const carSchema = z.object({
+  brand: z.string().min(1, "Brand is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
+  price: z.number().positive("Price must be positive"),
+  mileage: z.number().nonnegative("Mileage must be non-negative"),
+  fuel: z.enum(["petrol", "diesel", "hybrid", "electric"]),
+  transmission: z.enum(["automatic", "manual"]),
+  images: z.array(z.string()).default([]),
+  displayLocation: z.enum(["market", "business", "both"]).default("market"),
+});
 
-// Valid location values for filtering
-const validLocations = ["market", "business", "both"];
+const updateCarSchema = carSchema.partial();
 
 // CREATE car (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
-    const car = await Car.create(req.body);
+    const validation = carSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
+    const car = await Car.create(validation.data);
     res.status(201).json(car);
   } catch (error) {
     console.error("Failed to create car:", error);
@@ -35,9 +50,9 @@ router.get("/", async (req: Request, res: Response) => {
         ? req.query.location[0]
         : req.query.location;
 
-      if (typeof location !== "string" || !validLocations.includes(location)) {
+      if (typeof location !== "string" || !validDisplayLocations.includes(location as typeof validDisplayLocations[number])) {
         return res.status(400).json({
-          message: `Invalid location. Must be one of: ${validLocations.join(", ")}`,
+          message: `Invalid location. Must be one of: ${validDisplayLocations.join(", ")}`,
         });
       }
       // Match items that are set to this location OR "both"
@@ -92,9 +107,16 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid car ID format" });
     }
+    const validation = updateCarSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
     const car = await Car.findByIdAndUpdate(
       id,
-      req.body,
+      validation.data,
       { new: true, runValidators: true }
     );
     if (!car) {

@@ -178,6 +178,100 @@ describe("Auth Middleware", () => {
     });
   });
 
+  describe("Invalid JWT Payload Shape", () => {
+    it("should return 401 for token with missing id field", () => {
+      const invalidPayload = { email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with missing email field", () => {
+      const invalidPayload = { id: "123" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with empty id", () => {
+      const invalidPayload = { id: "", email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with non-string id", () => {
+      const invalidPayload = { id: 123, email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+  });
+
   describe("Valid JWT Token", () => {
     it("should call next() and attach admin info to request for valid token", () => {
       const adminData = { id: "123", email: "admin@test.com" };

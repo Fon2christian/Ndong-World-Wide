@@ -38,6 +38,29 @@ function sanitizeFromName(value: string | undefined, defaultValue: string): stri
   return sanitized || defaultValue;
 }
 
+/**
+ * Sanitize plain text content for email body
+ * Removes control characters (except newlines/tabs) and normalizes whitespace
+ */
+function sanitizePlainText(text: string): string {
+  return text
+    // Remove control characters except newline (\n), carriage return (\r), and tab (\t)
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // Normalize line endings to \n
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    // Collapse multiple spaces (but not newlines) into single space
+    .replace(/[^\S\n]+/g, ' ')
+    // Trim each line
+    .split('\n')
+    .map(line => line.trim())
+    .join('\n')
+    // Collapse multiple blank lines into single blank line
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 // Create reusable transporter
 const createTransporter = () => {
   // Check if email configuration is available
@@ -136,11 +159,11 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
     text: `
 New Contact Inquiry
 
-Name: ${contact.name}
-Furigana: ${contact.furigana}
-Email: ${contact.email}
-Phone: ${contact.phone}
-${contact.inquiryDetails ? `\nInquiry Details:\n${contact.inquiryDetails}` : ''}
+Name: ${sanitizePlainText(contact.name)}
+Furigana: ${sanitizePlainText(contact.furigana)}
+Email: ${sanitizePlainText(contact.email)}
+Phone: ${sanitizePlainText(contact.phone)}
+${contact.inquiryDetails ? `\nInquiry Details:\n${sanitizePlainText(contact.inquiryDetails)}` : ''}
 
 Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }) : 'Just now'}
     `.trim(),

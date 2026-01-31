@@ -1,16 +1,11 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
 import Contact from "../models/Contact.js";
 import { sendContactEmail } from "../services/emailService.js";
 import { requireAuth } from "../middleware/auth.js";
+import { isValidObjectId, validContactStatuses } from "../utils/validation.js";
 
 const router = Router();
-
-// Helper function to validate MongoDB ObjectId
-function isValidObjectId(id: string): boolean {
-  return mongoose.Types.ObjectId.isValid(id);
-}
 
 // Helper function to validate email format
 function isValidEmail(email: string): boolean {
@@ -106,7 +101,13 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const filter: { status?: string } = {};
     if (req.query.status) {
-      filter.status = req.query.status as string;
+      const status = req.query.status as string;
+      if (!validContactStatuses.includes(status as typeof validContactStatuses[number])) {
+        return res.status(400).json({
+          message: `Invalid status. Must be one of: ${validContactStatuses.join(", ")}`,
+        });
+      }
+      filter.status = status;
     }
 
     // Pagination with bounds checking to prevent abuse and invalid values

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
 import { z } from "zod";
 import WheelDrum from "../models/WheelDrum.js";
 import { requireAuth } from "../middleware/auth.js";
+import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
 
 const router = Router();
 
@@ -18,11 +18,6 @@ const wheelDrumSchema = z.object({
 });
 
 const updateWheelDrumSchema = wheelDrumSchema.partial();
-
-// Helper function to validate MongoDB ObjectId
-function isValidObjectId(id: string): boolean {
-  return mongoose.Types.ObjectId.isValid(id);
-}
 
 // CREATE wheel drum
 router.post("/", requireAuth, async (req: Request, res: Response) => {
@@ -42,9 +37,6 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// Valid location values for filtering
-const validLocations = ["market", "business", "both"];
-
 // GET all wheel drums (with optional displayLocation filter)
 router.get("/", async (req: Request, res: Response) => {
   try {
@@ -55,9 +47,9 @@ router.get("/", async (req: Request, res: Response) => {
         ? req.query.location[0]
         : req.query.location;
 
-      if (typeof location !== "string" || !validLocations.includes(location)) {
+      if (typeof location !== "string" || !validDisplayLocations.includes(location as typeof validDisplayLocations[number])) {
         return res.status(400).json({
-          message: `Invalid location filter. Must be one of: ${validLocations.join(", ")}`,
+          message: `Invalid location filter. Must be one of: ${validDisplayLocations.join(", ")}`,
         });
       }
       // Match items that are set to this location OR "both"
