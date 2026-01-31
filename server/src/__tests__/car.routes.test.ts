@@ -86,15 +86,15 @@ describe("Car Routes", () => {
       expect(res.body.model).toBe("Accord");
     });
 
-    it("should return null when updating non-existent car", async () => {
+    it("should return 404 when updating non-existent car", async () => {
       const fakeId = "507f1f77bcf86cd799439011";
 
       const res = await request(app)
         .put(`/api/cars/${fakeId}`)
         .send({ brand: "Honda" });
 
-      expect(res.status).toBe(200);
-      expect(res.body).toBeNull();
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe("Car not found");
     });
   });
 
