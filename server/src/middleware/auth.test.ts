@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { requireAuth, type AuthRequest } from "./auth.js";

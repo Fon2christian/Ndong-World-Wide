@@ -87,5 +87,10 @@ async function backfillDisplayLocation() {
   }
 }
 
-// Run the migration
-backfillDisplayLocation();
+// Only run when executed directly (not when imported)
+// Usage: npx tsx src/migrations/001-backfill-displayLocation.ts
+if (import.meta.url === `file://${process.argv[1]}`) {
+  backfillDisplayLocation();
+}
+
+export { backfillDisplayLocation };

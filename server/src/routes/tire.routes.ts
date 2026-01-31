@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import Tire from "../models/Tire.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -10,13 +11,17 @@ function isValidObjectId(id: string): boolean {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
-// CREATE tire
-router.post("/", async (req: Request, res: Response) => {
+// Valid location values for filtering
+const validLocations = ["market", "business", "both"];
+
+// CREATE tire (protected)
+router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const tire = await Tire.create(req.body);
     res.status(201).json(tire);
   } catch (error) {
-    res.status(400).json({ message: "Failed to create tire", error });
+    console.error("Failed to create tire:", error);
+    res.status(400).json({ message: "Failed to create tire" });
   }
 });
 
@@ -28,14 +33,24 @@ router.get("/", async (req: Request, res: Response) => {
       filter.condition = req.query.condition as string;
     }
     if (req.query.location) {
-      const location = req.query.location as string;
+      // Handle array query params
+      const location = Array.isArray(req.query.location)
+        ? req.query.location[0]
+        : req.query.location;
+
+      if (typeof location !== "string" || !validLocations.includes(location)) {
+        return res.status(400).json({
+          message: `Invalid location. Must be one of: ${validLocations.join(", ")}`,
+        });
+      }
       // Match items that are set to this location OR "both"
       filter.displayLocation = { $in: [location, "both"] };
     }
     const tires = await Tire.find(filter).sort({ createdAt: -1 });
     res.json(tires);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch tires", error });
+    console.error("Failed to fetch tires:", error);
+    res.status(500).json({ message: "Failed to fetch tires" });
   }
 });
 
@@ -50,12 +65,13 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!tire) return res.status(404).json({ message: "Tire not found" });
     res.json(tire);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch tire", error });
+    console.error("Failed to fetch tire:", error);
+    res.status(500).json({ message: "Failed to fetch tire" });
   }
 });
 
-// DELETE tire
-router.delete("/:id", async (req: Request, res: Response) => {
+// DELETE tire (protected)
+router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
@@ -67,12 +83,13 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete tire", error });
+    console.error("Failed to delete tire:", error);
+    res.status(500).json({ message: "Failed to delete tire" });
   }
 });
 
-// UPDATE tire
-router.put("/:id", async (req: Request, res: Response) => {
+// UPDATE tire (protected)
+router.put("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     if (!isValidObjectId(id)) {
@@ -87,8 +104,9 @@ router.put("/:id", async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Tire not found" });
     }
     res.json(tire);
-  } catch (err) {
-    res.status(400).json({ message: "Failed to update tire", error: err });
+  } catch (error) {
+    console.error("Failed to update tire:", error);
+    res.status(400).json({ message: "Failed to update tire" });
   }
 });
 

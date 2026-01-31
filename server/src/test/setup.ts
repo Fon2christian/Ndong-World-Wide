@@ -5,12 +5,13 @@ import { beforeAll, afterAll, afterEach } from "vitest";
 let mongoServer: MongoMemoryServer;
 
 // Setup MongoDB Memory Server before all tests
+// Timeout set to 60 seconds to handle slow CI environments
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
   await mongoose.connect(mongoUri);
-});
+}, 60000);
 
 // Clean up after each test
 afterEach(async () => {

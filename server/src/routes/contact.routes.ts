@@ -46,8 +46,14 @@ function validateContactInput(body: any): { valid: boolean; error?: string } {
   if (phone.length > 50) {
     return { valid: false, error: "Phone must be less than 50 characters" };
   }
-  if (inquiryDetails && typeof inquiryDetails === 'string' && inquiryDetails.length > 5000) {
-    return { valid: false, error: "Inquiry details must be less than 5000 characters" };
+  // Validate inquiryDetails if provided
+  if (inquiryDetails !== undefined) {
+    if (typeof inquiryDetails !== 'string') {
+      return { valid: false, error: "Inquiry details must be a string" };
+    }
+    if (inquiryDetails.length > 5000) {
+      return { valid: false, error: "Inquiry details must be less than 5000 characters" };
+    }
   }
 
   return { valid: true };
@@ -110,7 +116,7 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     const [contacts, total] = await Promise.all([
-      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       Contact.countDocuments(filter),
     ]);
 
@@ -159,10 +165,10 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     const allowedUpdates: Partial<{ status: string; isRead: boolean }> = {};
     if (req.body.status) {
       allowedUpdates.status = req.body.status;
-      // Automatically mark as read when status changes
+      // Automatically mark as read when status changes (cannot be overridden)
       allowedUpdates.isRead = true;
-    }
-    if (req.body.isRead !== undefined) {
+    } else if (req.body.isRead !== undefined) {
+      // Only allow explicit isRead change when status is not being updated
       allowedUpdates.isRead = req.body.isRead;
     }
 

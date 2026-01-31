@@ -24,6 +24,20 @@ function sanitizeHeader(value: string): string {
   return value.replace(/[\r\n]+/g, ' ').trim();
 }
 
+/**
+ * Sanitize the from name to prevent header injection
+ * Removes CRLF, quotes, and limits length
+ */
+function sanitizeFromName(value: string | undefined, defaultValue: string): string {
+  if (!value) return defaultValue;
+  // Remove CRLF and quotes, trim, and limit length
+  const sanitized = value
+    .replace(/[\r\n"]+/g, '')
+    .trim()
+    .slice(0, 100);
+  return sanitized || defaultValue;
+}
+
 // Create reusable transporter
 const createTransporter = () => {
   // Check if email configuration is available
@@ -69,8 +83,10 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
   // Sanitize header values to prevent CRLF injection
   const safeSubjectName = sanitizeHeader(contact.name);
 
+  const fromName = sanitizeFromName(process.env.EMAIL_FROM_NAME, 'Ndong World Wide');
+
   const mailOptions = {
-    from: `"${process.env.EMAIL_FROM_NAME || 'Ndong World Wide'}" <${process.env.EMAIL_USER}>`,
+    from: `"${fromName}" <${process.env.EMAIL_USER}>`,
     to: recipientEmail,
     subject: `New Contact Inquiry from ${safeSubjectName}`,
     html: `

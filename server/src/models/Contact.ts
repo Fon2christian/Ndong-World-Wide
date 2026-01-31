@@ -1,5 +1,5 @@
 // server/src/models/Contact.ts
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 // Interface for the contact inquiry fields
 export interface ContactAttrs {
@@ -12,6 +12,9 @@ export interface ContactAttrs {
   emailSent?: boolean;
   isRead?: boolean;
 }
+
+// Document interface with Mongoose methods
+export interface ContactDocument extends ContactAttrs, Document {}
 
 // Create schema
 const ContactSchema = new Schema<ContactAttrs>(
@@ -50,4 +53,4 @@ ContactSchema.index({ status: 1, createdAt: -1 }); // For filtering by status an
 ContactSchema.index({ isRead: 1, createdAt: -1 }); // For filtering by read status and sorting
 
 // Export model
-export default mongoose.model<ContactAttrs>("Contact", ContactSchema);
+export default mongoose.model<ContactDocument>("Contact", ContactSchema);

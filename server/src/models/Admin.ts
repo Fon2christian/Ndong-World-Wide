@@ -45,14 +45,10 @@ AdminSchema.pre("save", async function () {
 });
 
 // Method to compare passwords
-AdminSchema.methods.comparePassword = async function (
+AdminSchema.methods.comparePassword = function (
   candidatePassword: string
 ): Promise<boolean> {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw error;
-  }
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Export model

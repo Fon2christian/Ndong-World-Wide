@@ -47,15 +47,27 @@ export function requireAuth(
     }
 
     // Verify token
-    const decoded = jwt.verify(token, jwtSecret) as {
-      id: string;
-      email: string;
-    };
+    const decoded = jwt.verify(token, jwtSecret);
+
+    // Validate decoded payload has required properties
+    if (
+      typeof decoded !== "object" ||
+      decoded === null ||
+      typeof (decoded as Record<string, unknown>).id !== "string" ||
+      typeof (decoded as Record<string, unknown>).email !== "string" ||
+      !(decoded as Record<string, unknown>).id ||
+      !(decoded as Record<string, unknown>).email
+    ) {
+      res.status(401).json({ message: "Invalid token payload" });
+      return;
+    }
+
+    const payload = decoded as { id: string; email: string };
 
     // Attach admin info to request
     req.admin = {
-      id: decoded.id,
-      email: decoded.email,
+      id: payload.id,
+      email: payload.email,
     };
 
     next();

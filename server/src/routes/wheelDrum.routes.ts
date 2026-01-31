@@ -37,20 +37,28 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
     const wheelDrum = await WheelDrum.create(validation.data);
     res.status(201).json(wheelDrum);
   } catch (error) {
-    res.status(400).json({ message: "Failed to create wheel drum", error });
+    console.error("Failed to create wheel drum:", error);
+    res.status(400).json({ message: "Failed to create wheel drum" });
   }
 });
+
+// Valid location values for filtering
+const validLocations = ["market", "business", "both"];
 
 // GET all wheel drums (with optional displayLocation filter)
 router.get("/", async (req: Request, res: Response) => {
   try {
     const filter: { displayLocation?: { $in: string[] } } = {};
     if (req.query.location) {
-      const location = req.query.location as string;
-      // Validate against allowed values
-      const validLocations = ["market", "business", "both"];
-      if (!validLocations.includes(location)) {
-        return res.status(400).json({ message: "Invalid location filter. Must be 'market', 'business', or 'both'" });
+      // Handle array query params (e.g., ?location=market&location=business)
+      const location = Array.isArray(req.query.location)
+        ? req.query.location[0]
+        : req.query.location;
+
+      if (typeof location !== "string" || !validLocations.includes(location)) {
+        return res.status(400).json({
+          message: `Invalid location filter. Must be one of: ${validLocations.join(", ")}`,
+        });
       }
       // Match items that are set to this location OR "both"
       filter.displayLocation = { $in: [location, "both"] };
@@ -58,7 +66,8 @@ router.get("/", async (req: Request, res: Response) => {
     const wheelDrums = await WheelDrum.find(filter).sort({ createdAt: -1 });
     res.json(wheelDrums);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch wheel drums", error });
+    console.error("Failed to fetch wheel drums:", error);
+    res.status(500).json({ message: "Failed to fetch wheel drums" });
   }
 });
 
@@ -73,7 +82,8 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!wheelDrum) return res.status(404).json({ message: "Wheel drum not found" });
     res.json(wheelDrum);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch wheel drum", error });
+    console.error("Failed to fetch wheel drum:", error);
+    res.status(500).json({ message: "Failed to fetch wheel drum" });
   }
 });
 
@@ -90,7 +100,8 @@ router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
     }
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete wheel drum", error });
+    console.error("Failed to delete wheel drum:", error);
+    res.status(500).json({ message: "Failed to delete wheel drum" });
   }
 });
 
@@ -117,8 +128,9 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Wheel drum not found" });
     }
     res.json(wheelDrum);
-  } catch (err) {
-    res.status(400).json({ message: "Failed to update wheel drum", error: err });
+  } catch (error) {
+    console.error("Failed to update wheel drum:", error);
+    res.status(400).json({ message: "Failed to update wheel drum" });
   }
 });
 
