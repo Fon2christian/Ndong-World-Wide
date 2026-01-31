@@ -80,18 +80,20 @@ router.post("/", async (req: Request, res: Response) => {
     // Create contact in database
     const contact = await Contact.create(contactData);
 
-    // Send email notification
-    try {
-      await sendContactEmail(contact);
-      // Update emailSent status
-      contact.emailSent = true;
-      await contact.save();
-    } catch (emailError) {
-      console.error("Failed to send email notification:", emailError);
-      // Continue even if email fails - contact is saved in database
-    }
-
+    // Send response immediately without waiting for email
     res.status(201).json(contact);
+
+    // Send email notification asynchronously in the background
+    sendContactEmail(contact)
+      .then(async () => {
+        // Update emailSent status after successful send
+        contact.emailSent = true;
+        await contact.save();
+      })
+      .catch((emailError) => {
+        console.error("Failed to send email notification:", emailError);
+        // Email failure is logged but doesn't affect the API response
+      });
   } catch (error) {
     console.error("Error creating contact inquiry:", error);
     // Return sanitized error message
@@ -170,6 +172,12 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     // Whitelist only updatable fields to prevent modification of sensitive data
     const allowedUpdates: Partial<{ status: string; isRead: boolean }> = {};
     if (req.body.status) {
+      // Validate status against allowed values
+      if (!validContactStatuses.includes(req.body.status as typeof validContactStatuses[number])) {
+        return res.status(400).json({
+          message: `Invalid status. Must be one of: ${validContactStatuses.join(", ")}`,
+        });
+      }
       allowedUpdates.status = req.body.status;
       // Automatically mark as read when status changes (cannot be overridden)
       allowedUpdates.isRead = true;

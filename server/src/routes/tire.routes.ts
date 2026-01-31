@@ -12,7 +12,7 @@ const tireSchema = z.object({
   brand: z.string().min(1, "Brand is required"),
   size: z.string().min(1, "Size is required"),
   price: z.number().positive("Price must be positive"),
-  condition: z.string().min(1, "Condition is required"),
+  condition: z.enum(["new", "used"]),
   images: z.array(z.string()).default([]),
   displayLocation: z.enum(["market", "business", "both"]).default("market"),
 });

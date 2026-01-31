@@ -128,6 +128,15 @@ describe("Contact Routes - Authentication", () => {
 
       expect(response.body.contacts).toBeDefined();
     });
+
+    it("should reject invalid status query parameter", async () => {
+      const response = await request(app)
+        .get("/api/contacts?status=invalid")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(400);
+
+      expect(response.body.message).toContain("Invalid status");
+    });
   });
 
   describe("GET /api/contacts/:id (Protected Endpoint)", () => {

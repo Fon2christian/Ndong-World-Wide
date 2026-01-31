@@ -61,7 +61,7 @@ router.get("/", async (req: Request, res: Response) => {
       // Match items that are set to this location OR "both"
       filter.displayLocation = { $in: [location, "both"] };
     }
-    const cars = await Car.find(filter).sort({ createdAt: -1 });
+    const cars = await Car.find(filter).sort({ createdAt: -1 }).lean();
     res.json(cars);
   } catch (error) {
     console.error("Failed to fetch cars:", error);
@@ -76,7 +76,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid car ID format" });
     }
-    const car = await Car.findById(id);
+    const car = await Car.findById(id).lean();
     if (!car) return res.status(404).json({ message: "Car not found" });
     res.json(car);
   } catch (error) {
