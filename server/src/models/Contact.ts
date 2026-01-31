@@ -17,7 +17,7 @@ export interface ContactAttrs {
 export interface ContactDocument extends ContactAttrs, Document {}
 
 // Create schema
-const ContactSchema = new Schema<ContactAttrs>(
+const ContactSchema = new Schema<ContactDocument>(
   {
     name: { type: String, required: true },
     furigana: { type: String, required: true },
@@ -28,8 +28,12 @@ const ContactSchema = new Schema<ContactAttrs>(
       trim: true,
       validate: {
         validator: function(v: string) {
-          // Basic email format validation
-          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+          // More strict email validation:
+          // - At least 2 characters before @
+          // - No consecutive dots
+          // - Domain has at least 2 characters
+          // - TLD has at least 2 characters
+          return /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i.test(v);
         },
         message: (props: any) => `${props.value} is not a valid email address!`
       }

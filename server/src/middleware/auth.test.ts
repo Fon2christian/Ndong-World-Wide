@@ -7,7 +7,6 @@ describe("Auth Middleware", () => {
   let mockRequest: Partial<AuthRequest>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
-  const originalJwtSecret = process.env.JWT_SECRET;
 
   beforeEach(() => {
     // Setup mock request
@@ -24,17 +23,13 @@ describe("Auth Middleware", () => {
     // Setup next function
     nextFunction = vi.fn();
 
-    // Set JWT_SECRET for tests
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET for tests using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
   });
 
   afterEach(() => {
-    // Restore original JWT_SECRET
-    if (originalJwtSecret) {
-      process.env.JWT_SECRET = originalJwtSecret;
-    } else {
-      delete process.env.JWT_SECRET;
-    }
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("Missing Authorization Header", () => {
@@ -93,7 +88,7 @@ describe("Auth Middleware", () => {
 
   describe("JWT_SECRET Not Configured", () => {
     it("should return 500 when JWT_SECRET is not set", () => {
-      delete process.env.JWT_SECRET;
+      vi.unstubAllEnvs();
 
       mockRequest.headers = {
         authorization: "Bearer sometoken",

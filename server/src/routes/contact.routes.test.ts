@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import Admin from "../models/Admin.js";
@@ -13,8 +13,8 @@ describe("Contact Routes - Authentication", () => {
     await Admin.deleteMany({});
     await Contact.deleteMany({});
 
-    // Set JWT_SECRET
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
 
     // Register admin and get token
     const adminResponse = await request(app).post("/api/admin/register").send({
@@ -33,6 +33,11 @@ describe("Contact Routes - Authentication", () => {
       inquiryDetails: "Test inquiry",
     });
     testContactId = contactResponse.body._id;
+  });
+
+  afterEach(() => {
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("POST /api/contacts (Public Endpoint)", () => {

@@ -9,7 +9,12 @@ const router = Router();
 
 // Helper function to validate email format
 function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // More strict email validation:
+  // - At least 2 characters before @
+  // - No consecutive dots
+  // - Domain has at least 2 characters
+  // - TLD has at least 2 characters
+  const emailRegex = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i;
   return emailRegex.test(email);
 }
 

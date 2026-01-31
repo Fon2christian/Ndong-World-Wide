@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../app.js";
@@ -27,8 +27,14 @@ let authToken: string;
 
 describe("Car Routes", () => {
   beforeEach(() => {
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET for tests using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
     authToken = generateAuthToken();
+  });
+
+  afterEach(() => {
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("POST /api/cars", () => {

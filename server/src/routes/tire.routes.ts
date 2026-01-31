@@ -1,15 +1,35 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import { z } from "zod";
 import Tire from "../models/Tire.js";
 import { requireAuth } from "../middleware/auth.js";
 import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
 
 const router = Router();
 
+// Validation schemas
+const tireSchema = z.object({
+  brand: z.string().min(1, "Brand is required"),
+  size: z.string().min(1, "Size is required"),
+  price: z.number().positive("Price must be positive"),
+  condition: z.string().min(1, "Condition is required"),
+  images: z.array(z.string()).default([]),
+  displayLocation: z.enum(["market", "business", "both"]).default("market"),
+});
+
+const updateTireSchema = tireSchema.partial();
+
 // CREATE tire (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
-    const tire = await Tire.create(req.body);
+    const validation = tireSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
+    const tire = await Tire.create(validation.data);
     res.status(201).json(tire);
   } catch (error) {
     console.error("Failed to create tire:", error);
@@ -87,9 +107,16 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid tire ID format" });
     }
+    const validation = updateTireSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validation.error.issues
+      });
+    }
     const tire = await Tire.findByIdAndUpdate(
       id,
-      req.body,
+      validation.data,
       { new: true, runValidators: true }
     );
     if (!tire) {

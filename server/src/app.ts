@@ -10,6 +10,10 @@ import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
+// Trust proxy to correctly identify client IPs behind reverse proxies (nginx, load balancers, etc.)
+// This ensures rate limiting works correctly for clients behind proxies
+app.set('trust proxy', 1);
+
 app.use(cors());
 
 // Rate limiting to prevent DoS attacks

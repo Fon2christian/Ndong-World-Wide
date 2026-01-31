@@ -61,8 +61,16 @@ function sanitizePlainText(text: string): string {
     .trim();
 }
 
-// Create reusable transporter
-const createTransporter = () => {
+// Cached transporter instance
+let transporter: nodemailer.Transporter | null = null;
+
+// Create and cache reusable transporter
+const getTransporter = () => {
+  // Return cached transporter if it exists
+  if (transporter) {
+    return transporter;
+  }
+
   // Check if email configuration is available
   if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.warn("Email configuration missing. Emails will not be sent.");
@@ -73,7 +81,8 @@ const createTransporter = () => {
   const port = parseInt(process.env.EMAIL_PORT || "587");
   const validPort = !isNaN(port) && port > 0 && port <= 65535 ? port : 587;
 
-  return nodemailer.createTransport({
+  // Create and cache the transporter
+  transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: validPort,
     secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
@@ -82,15 +91,17 @@ const createTransporter = () => {
       pass: process.env.EMAIL_PASS,
     },
   });
+
+  return transporter;
 };
 
 /**
  * Send email notification when a new contact inquiry is submitted
  */
 export async function sendContactEmail(contact: ContactAttrs & { _id?: any; createdAt?: Date }): Promise<void> {
-  const transporter = createTransporter();
+  const emailTransporter = getTransporter();
 
-  if (!transporter) {
+  if (!emailTransporter) {
     throw new Error("Email service not configured");
   }
 
@@ -169,5 +180,5 @@ Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-
     `.trim(),
   };
 
-  await transporter.sendMail(mailOptions);
+  await emailTransporter.sendMail(mailOptions);
 }

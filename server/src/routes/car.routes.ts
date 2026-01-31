@@ -11,7 +11,10 @@ const router = Router();
 const carSchema = z.object({
   brand: z.string().min(1, "Brand is required"),
   model: z.string().min(1, "Model is required"),
-  year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
+  year: z.number().int().min(1900).refine(
+    (year) => year <= new Date().getFullYear() + 1,
+    (year) => ({ message: `Year must not exceed ${new Date().getFullYear() + 1}` })
+  ),
   price: z.number().positive("Price must be positive"),
   mileage: z.number().nonnegative("Mileage must be non-negative"),
   fuel: z.enum(["petrol", "diesel", "hybrid", "electric"]),
