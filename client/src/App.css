@@ -1206,7 +1206,7 @@
   }
 
   .ceo-section__slideshow {
-    min-height: auto;
+    min-height: 480px;
   }
 
   .ceo-section__image {
