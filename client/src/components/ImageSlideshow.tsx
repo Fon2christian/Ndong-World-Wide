@@ -193,18 +193,25 @@ function CEOSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Auto-rotate CEOs every 8 seconds (only when not paused)
+  const leaders = t.ceo.leaders;
+
+  // Auto-rotate CEOs every 8 seconds (only when not paused and leaders exist)
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || leaders.length === 0) return;
 
     const timer = setInterval(() => {
-      setCurrentCeoIndex((prev) => (prev + 1) % t.ceo.leaders.length);
+      setCurrentCeoIndex((prev) => (prev + 1) % leaders.length);
     }, 8000);
 
     return () => clearInterval(timer);
-  }, [t.ceo.leaders.length, isPaused]);
+  }, [leaders.length, isPaused]);
 
-  const currentLeader = t.ceo.leaders[currentCeoIndex];
+  // Guard against empty leader list
+  if (leaders.length === 0) {
+    return null;
+  }
+
+  const currentLeader = leaders[currentCeoIndex] ?? leaders[0];
   const themeClass = `ceo-section--${currentLeader.theme}`;
 
   const handleDotClick = (index: number) => {
@@ -225,7 +232,7 @@ function CEOSection() {
       <h2 className="ceo-section__main-title">{t.ceo.title}</h2>
 
       <div className="ceo-section__slideshow">
-        {t.ceo.leaders.map((leader, index) => (
+        {leaders.map((leader, index) => (
           <div
             key={index}
             className={`ceo-section__slide ${index === currentCeoIndex ? "ceo-section__slide--active" : ""}`}
@@ -255,13 +262,13 @@ function CEOSection() {
       {/* Navigation Controls */}
       <div className="ceo-section__controls">
         <div className="ceo-section__dots">
-          {t.ceo.leaders.map((_, index) => (
+          {leaders.map((leader, index) => (
             <button
               type="button"
               key={index}
               className={`ceo-section__dot ${index === currentCeoIndex ? "ceo-section__dot--active" : ""}`}
               onClick={() => handleDotClick(index)}
-              aria-label={`View ${t.ceo.leaders[index].name}'s message`}
+              aria-label={`View ${leader.name}'s message`}
             />
           ))}
         </div>

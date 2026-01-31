@@ -1234,6 +1234,24 @@
   }
 }
 
+/* Respect prefers-reduced-motion for CEO animations */
+@media (prefers-reduced-motion: reduce) {
+  .ceo-section {
+    transition: none;
+  }
+
+  .ceo-section__slide--active .ceo-section__image-container,
+  .ceo-section__slide--active .ceo-section__text-content {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ceo-section__pause-btn {
+    transition: none;
+  }
+}
+
 /* Car Provision Section */
 .provision-section {
   display: flex;
