@@ -15,9 +15,6 @@ build/
 # Test coverage
 coverage/
 
-# Test coverage
-coverage/
-
 # Logs
 logs/
 *.log
