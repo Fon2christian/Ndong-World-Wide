@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import CarForm from "../components/createCarForm";
-
 
 interface Car {
   _id: string;
@@ -19,8 +17,7 @@ interface Car {
 
 export default function CarDashboard() {
   const [cars, setCars] = useState<Car[]>([]);
-  const [editingCar, setEditingCar] = useState<Car | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchCars = async () => {
     try {
@@ -28,7 +25,8 @@ export default function CarDashboard() {
       setCars(res.data);
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch cars");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,88 +34,115 @@ export default function CarDashboard() {
     fetchCars();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this car?")) return;
-    try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/cars/${id}`);
-      setCars(cars.filter((c) => c._id !== id));
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete car");
-    }
-  };
-
-  const handleEdit = (car: Car) => {
-    setEditingCar(car);
-    setShowForm(true);
-  };
-
-  const handleFormSaved = () => {
-    fetchCars();
-    setEditingCar(null);
-    setShowForm(false);
-  };
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="loading__spinner"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Car Dashboard</h1>
+    <div className="dashboard">
+      {/* Header */}
+      <header className="dashboard__header">
+        <div className="dashboard__title">
+          <div className="dashboard__logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 17H21V15L19 7H5L3 15V17H5M19 17H5M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h1>Car Market</h1>
+        </div>
 
-      {showForm ? (
-        <div className="border p-4 rounded">
-          <button
-            onClick={() => {
-              setShowForm(false);
-              setEditingCar(null);
-            }}
-          >
-            Cancel
-          </button>
-          <CarForm
-            carId={editingCar?._id}
-            initialData={editingCar ?? undefined}
-            onSaved={handleFormSaved}
-          />
+        <div className="dashboard__stats">
+          <div className="stat-badge">
+            Available Cars: <span className="stat-badge__value">{cars.length}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Car Grid */}
+      {cars.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state__icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 17H21V15L19 7H5L3 15V17H5M19 17H5M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h3 className="empty-state__title">No cars available</h3>
+          <p className="empty-state__description">
+            Check back later for new listings.
+          </p>
         </div>
       ) : (
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Create New Car
-        </button>
-      )}
-
-      <div className="space-y-2">
-        {cars.map((car) => (
-          <div key={car._id} className="border p-2 rounded flex gap-4 items-center">
-            <div className="flex-1">
-              <h2 className="font-bold">{car.brand} {car.model} ({car.year})</h2>
-              <p>Price: ${car.price.toLocaleString()}</p>
-              <p>Mileage: {car.mileage.toLocaleString()} km</p>
-              <p>Fuel: {car.fuel}, Transmission: {car.transmission}</p>
-              <div className="flex gap-2 mt-2">
-                {car.images.map((img, i) => (
-                  <img key={i} src={img} alt="car" className="w-24 h-16 object-cover rounded" />
-                ))}
+        <div className="car-grid">
+          {cars.map((car) => (
+            <article key={car._id} className="car-card">
+              {/* Image Gallery */}
+              <div className="car-card__gallery">
+                {car.images.length > 0 ? (
+                  <>
+                    <img
+                      src={car.images[0]}
+                      alt={`${car.brand} ${car.model}`}
+                      className="car-card__image"
+                    />
+                    {car.images.length > 1 && (
+                      <span className="car-card__image-count">
+                        +{car.images.length - 1} photos
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <div className="car-card__gallery-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 17H21V15L19 7H5L3 15V17H5M19 17H5M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => handleEdit(car)}
-                className="bg-yellow-400 px-2 py-1 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(car._id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+
+              {/* Card Body */}
+              <div className="car-card__body">
+                <div className="car-card__header">
+                  <h2 className="car-card__title">
+                    {car.brand} {car.model}
+                  </h2>
+                  <span className="car-card__year">{car.year}</span>
+                </div>
+
+                <p className="car-card__price">
+                  ¥{car.price.toLocaleString()}
+                </p>
+
+                {/* Specs Grid */}
+                <div className="car-card__specs">
+                  <div className="car-spec">
+                    <span className="car-spec__label">Mileage</span>
+                    <span className="car-spec__value">{car.mileage.toLocaleString()} km</span>
+                  </div>
+                  <div className="car-spec">
+                    <span className="car-spec__label">Fuel</span>
+                    <span className="car-spec__value">{car.fuel}</span>
+                  </div>
+                  <div className="car-spec">
+                    <span className="car-spec__label">Trans.</span>
+                    <span className="car-spec__value">{car.transmission}</span>
+                  </div>
+                </div>
+
+                {/* Contact Button */}
+                <div className="car-card__actions">
+                  <button className="btn btn--primary btn--small">
+                    Contact Seller
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,76 +1,60 @@
-// client/src/components/CarForm.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { compressImages } from "../utils/imageCompression";
 
-// Zod schema for validation
-const carSchema = z.object({
+const wheelDrumSchema = z.object({
   brand: z.string().min(1),
-  model: z.string().min(1),
-  year: z.number().min(1900).max(new Date().getFullYear()),
+  size: z.string().min(1),
   price: z.number().min(0),
-  mileage: z.number().min(0),
-  fuel: z.string().min(1),
-  transmission: z.string().min(1),
+  condition: z.string().min(1),
   images: z.array(z.string()),
   displayLocation: z.enum(["market", "business", "both"]),
 });
 
-// Car form type
-interface CarForm {
+interface WheelDrumFormData {
   brand: string;
-  model: string;
-  year: number;
+  size: string;
   price: number;
-  mileage: number;
-  fuel: string;
-  transmission: string;
+  condition: string;
   images: string[];
   displayLocation: "market" | "business" | "both";
 }
 
-interface CarFormProps {
-  initialData?: CarForm;
-  carId?: string; // pass this for editing
-  onSaved?: () => void; // callback after create/update
+interface WheelDrumFormProps {
+  initialData?: WheelDrumFormData;
+  wheelDrumId?: string;
+  onSaved?: () => void;
 }
 
-export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
-  const [form, setForm] = useState<CarForm>(
+export default function WheelDrumForm({ initialData, wheelDrumId, onSaved }: WheelDrumFormProps) {
+  const [form, setForm] = useState<WheelDrumFormData>(
     initialData || {
       brand: "",
-      model: "",
-      year: 2020,
+      size: "",
       price: 0,
-      mileage: 0,
-      fuel: "",
-      transmission: "",
+      condition: "",
       images: [],
       displayLocation: "market",
     }
   );
 
-  // Sync form state when initialData changes (e.g., switching to edit a different car)
+  // Sync form state when initialData changes (e.g., switching to edit a different wheel drum)
   useEffect(() => {
     if (initialData) {
       setForm(initialData);
     } else {
       setForm({
         brand: "",
-        model: "",
-        year: 2020,
+        size: "",
         price: 0,
-        mileage: 0,
-        fuel: "",
-        transmission: "",
+        condition: "",
         images: [],
         displayLocation: "market",
       });
     }
-  }, [initialData, carId]);
+  }, [initialData, wheelDrumId]);
 
-  // Handle text/number input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;
     setForm({ ...form, [e.target.name]: value });
@@ -98,12 +82,10 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form using Zod
-    const result = carSchema.safeParse(form);
+    const result = wheelDrumSchema.safeParse(form);
     if (!result.success) {
       alert(
         "Validation error: " +
@@ -118,56 +100,39 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
     }
 
     try {
-      // Ensure number fields are numbers
       const payload = {
         ...form,
-        year: Number(form.year),
         price: Number(form.price),
-        mileage: Number(form.mileage),
       };
 
-      const url = carId
-      ? `${import.meta.env.VITE_API_URL}/api/cars/${carId}`
-      : `${import.meta.env.VITE_API_URL}/api/cars`;
-    console.log("Submitting to:", url);
-    console.log("Payload:", payload);
-
       let res;
-      
-      if (carId) {
-        // Update existing car
-        res = await axios.put(`${import.meta.env.VITE_API_URL}/api/cars/${carId}`, payload);
-        alert("Car updated! ID: " + res.data._id);
+      if (wheelDrumId) {
+        res = await axios.put(`${import.meta.env.VITE_API_URL}/api/wheel-drums/${wheelDrumId}`, payload);
+        alert("Wheel Drum updated! ID: " + res.data._id);
       } else {
-        // Create new car
-        res = await axios.post(`${import.meta.env.VITE_API_URL}/api/cars`, payload);
-        alert("Car created! ID: " + res.data._id);
+        res = await axios.post(`${import.meta.env.VITE_API_URL}/api/wheel-drums`, payload);
+        alert("Wheel Drum created! ID: " + res.data._id);
       }
 
-      // Reset form
       setForm({
         brand: "",
-        model: "",
-        year: 2020,
+        size: "",
         price: 0,
-        mileage: 0,
-        fuel: "",
-        transmission: "",
+        condition: "",
         images: [],
         displayLocation: "market",
       });
 
-      // Notify parent to refresh list
       onSaved?.();
     } catch (err) {
-      console.error("Error saving car:", err);
-      alert("Failed to save car. Check server logs.");
+      console.error("Error saving wheel drum:", err);
+      alert("Failed to save wheel drum. Check server logs.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      {/* Row 1: Brand & Model */}
+      {/* Row 1: Brand & Size */}
       <div className="form__row">
         <div className="form__group">
           <label className="form__label" htmlFor="brand">Brand</label>
@@ -176,37 +141,25 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
             name="brand"
             value={form.brand}
             onChange={handleChange}
-            placeholder="e.g. Toyota"
+            placeholder="e.g. BPW"
             className="form__input"
           />
         </div>
         <div className="form__group">
-          <label className="form__label" htmlFor="model">Model</label>
+          <label className="form__label" htmlFor="size">Size</label>
           <input
-            id="model"
-            name="model"
-            value={form.model}
+            id="size"
+            name="size"
+            value={form.size}
             onChange={handleChange}
-            placeholder="e.g. Camry"
+            placeholder="e.g. 10 hole"
             className="form__input"
           />
         </div>
       </div>
 
-      {/* Row 2: Year & Price */}
+      {/* Row 2: Price & Condition */}
       <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="year">Year</label>
-          <input
-            id="year"
-            name="year"
-            type="number"
-            value={form.year}
-            onChange={handleChange}
-            placeholder="e.g. 2023"
-            className="form__input"
-          />
-        </div>
         <div className="form__group">
           <label className="form__label" htmlFor="price">Price (¥)</label>
           <input
@@ -215,63 +168,24 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
             type="number"
             value={form.price}
             onChange={handleChange}
-            placeholder="e.g. 25000"
+            placeholder="e.g. 200"
             className="form__input"
           />
         </div>
-      </div>
-
-      {/* Row 3: Mileage */}
-      <div className="form__row">
         <div className="form__group">
-          <label className="form__label" htmlFor="mileage">Mileage (km)</label>
+          <label className="form__label" htmlFor="condition">Condition</label>
           <input
-            id="mileage"
-            name="mileage"
-            type="number"
-            value={form.mileage}
+            id="condition"
+            name="condition"
+            value={form.condition}
             onChange={handleChange}
-            placeholder="e.g. 50000"
+            placeholder="e.g. Good, Excellent"
             className="form__input"
           />
         </div>
       </div>
 
-      {/* Row 4: Fuel & Transmission */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="fuel">Fuel Type</label>
-          <select
-            id="fuel"
-            name="fuel"
-            value={form.fuel}
-            onChange={handleChange}
-            className="form__select"
-          >
-            <option value="">Select fuel type</option>
-            <option value="petrol">Petrol</option>
-            <option value="diesel">Diesel</option>
-            <option value="electric">Electric</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="transmission">Transmission</label>
-          <select
-            id="transmission"
-            name="transmission"
-            value={form.transmission}
-            onChange={handleChange}
-            className="form__select"
-          >
-            <option value="">Select transmission</option>
-            <option value="automatic">Automatic</option>
-            <option value="manual">Manual</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Row 5: Display Location */}
+      {/* Row 3: Display Location */}
       <div className="form__group">
         <label className="form__label" htmlFor="displayLocation">Display Location</label>
         <select
@@ -287,9 +201,9 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
         </select>
       </div>
 
-      {/* Row 6: Image Upload */}
+      {/* Row 4: Image Upload */}
       <div className="form__group">
-        <label className="form__label">Car Images</label>
+        <label className="form__label">Wheel Drum Images</label>
         <div className="form__file-upload">
           <input
             type="file"
@@ -303,7 +217,6 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
           <p className="form__file-upload-text">PNG, JPG up to 10MB</p>
         </div>
 
-        {/* Image Preview */}
         {form.images.length > 0 && (
           <div className="form__image-preview">
             {form.images.map((img, i) => (
@@ -330,7 +243,7 @@ export default function CarForm({ initialData, carId, onSaved }: CarFormProps) {
       {/* Form Actions */}
       <div className="form__actions">
         <button type="submit" className="btn btn--primary">
-          {carId ? "Update Car" : "Create Car"}
+          {wheelDrumId ? "Update Wheel Drum" : "Create Wheel Drum"}
         </button>
       </div>
     </form>
