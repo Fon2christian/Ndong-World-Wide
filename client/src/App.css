@@ -1005,7 +1005,7 @@
   right: 0;
   opacity: 0;
   transform: translateX(50px);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 
@@ -1139,6 +1139,11 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+.ceo-section__dot:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
 .ceo-section__dot--active {
   background: #ff9a56;
   border-color: #ff9a56;
@@ -1182,6 +1187,11 @@
   border-color: white;
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
+}
+
+.ceo-section__pause-btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
 }
 
 .ceo-section__pause-btn:active {
