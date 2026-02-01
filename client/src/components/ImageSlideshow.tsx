@@ -3,7 +3,10 @@ import { useLanguage } from "../context/LanguageContext";
 
 const images = [
   "/assets/images/image1.png",
-  "/assets/images/image2.png",
+  "/assets/images/ship1.JPG",
+  "/assets/images/ship-image25.JPG",
+  "/assets/images/ship-image24.JPG",
+  "/assets/images/ship-image23.JPG",
 ];
 
 function ScrollToTopButton() {
@@ -98,7 +101,7 @@ function CarProvisionSection() {
   return (
     <ProvisionSection
       id="car-provision"
-      image="/assets/images/used cars.jpg"
+      image="/assets/images/car-image.jpg"
       title={t.carProvision.title}
       altText="Quality Used Cars"
       description={t.carProvision.description}
@@ -112,7 +115,7 @@ function TyresProvisionSection() {
   return (
     <ProvisionSection
       id="tyres-provision"
-      image="/assets/images/tyres.jpg"
+      image="/assets/images/tyre-mage1.JPG"
       title={t.tyresProvision.title}
       altText="Quality Used Tyres"
       description={t.tyresProvision.description}
@@ -126,7 +129,7 @@ function WheelsProvisionSection() {
   return (
     <ProvisionSection
       id="wheels-provision"
-      image="/assets/images/wheels.jpg"
+      image="/assets/images/wheel-image.png"
       title={t.wheelsProvision.title}
       altText="Quality Wheels"
       description={t.wheelsProvision.description}

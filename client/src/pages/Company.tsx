@@ -101,7 +101,7 @@ export default function Company() {
       <div className="company-hero">
         <div
           className="company-hero__image"
-          style={{ backgroundImage: `url(/assets/images/pic1.jpg)` }}
+          style={{ backgroundImage: `url(/assets/images/ship-image19.JPG)` }}
         />
         <div className="company-hero__overlay" />
         <div className="company-hero__content">

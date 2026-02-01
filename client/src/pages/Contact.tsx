@@ -117,7 +117,7 @@ export default function Contact() {
       <div className="contact-hero">
         <div
           className="contact-hero__image"
-          style={{ backgroundImage: `url(/assets/images/pic2.jpg)` }}
+          style={{ backgroundImage: `url(/assets/images/ship8.JPG)` }}
         />
         <div className="contact-hero__overlay" />
         <div className="contact-hero__content">

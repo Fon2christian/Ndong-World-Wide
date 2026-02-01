@@ -130,7 +130,7 @@ describe('ImageSlideshow', () => {
     it('should render slideshow dots', () => {
       render(<ImageSlideshow />)
       const dots = screen.getAllByLabelText(/Go to slide/i)
-      expect(dots.length).toBeGreaterThanOrEqual(2)
+      expect(dots.length).toBe(5)
     })
   })
 
