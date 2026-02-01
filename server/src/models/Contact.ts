@@ -1,5 +1,5 @@
 // server/src/models/Contact.ts
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 // Interface for the contact inquiry fields
 export interface ContactAttrs {
@@ -13,8 +13,11 @@ export interface ContactAttrs {
   isRead?: boolean;
 }
 
+// Document interface with Mongoose methods
+export interface ContactDocument extends ContactAttrs, Document {}
+
 // Create schema
-const ContactSchema = new Schema<ContactAttrs>(
+const ContactSchema = new Schema<ContactDocument>(
   {
     name: { type: String, required: true },
     furigana: { type: String, required: true },
@@ -25,8 +28,12 @@ const ContactSchema = new Schema<ContactAttrs>(
       trim: true,
       validate: {
         validator: function(v: string) {
-          // Basic email format validation
-          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+          // More strict email validation:
+          // - At least 2 characters before @
+          // - No consecutive dots
+          // - Domain has at least 2 characters
+          // - TLD has at least 2 characters
+          return /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i.test(v);
         },
         message: (props: any) => `${props.value} is not a valid email address!`
       }
@@ -50,4 +57,4 @@ ContactSchema.index({ status: 1, createdAt: -1 }); // For filtering by status an
 ContactSchema.index({ isRead: 1, createdAt: -1 }); // For filtering by read status and sorting
 
 // Export model
-export default mongoose.model<ContactAttrs>("Contact", ContactSchema);
+export default mongoose.model<ContactDocument>("Contact", ContactSchema);

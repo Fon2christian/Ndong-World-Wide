@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import Admin from "../models/Admin.js";
@@ -7,8 +7,13 @@ describe("Admin Routes", () => {
   beforeEach(async () => {
     // Clear admins before each test
     await Admin.deleteMany({});
-    // Set JWT_SECRET for tests
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET for tests using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
+  });
+
+  afterEach(() => {
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("POST /api/admin/register", () => {

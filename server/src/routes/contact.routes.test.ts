@@ -1,8 +1,13 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import Admin from "../models/Admin.js";
 import Contact from "../models/Contact.js";
+
+// Mock the email service to prevent actual email sends and async race conditions
+vi.mock("../services/emailService.js", () => ({
+  sendContactEmail: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe("Contact Routes - Authentication", () => {
   let authToken: string;
@@ -13,8 +18,8 @@ describe("Contact Routes - Authentication", () => {
     await Admin.deleteMany({});
     await Contact.deleteMany({});
 
-    // Set JWT_SECRET
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
 
     // Register admin and get token
     const adminResponse = await request(app).post("/api/admin/register").send({
@@ -33,6 +38,11 @@ describe("Contact Routes - Authentication", () => {
       inquiryDetails: "Test inquiry",
     });
     testContactId = contactResponse.body._id;
+  });
+
+  afterEach(() => {
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("POST /api/contacts (Public Endpoint)", () => {
@@ -122,6 +132,15 @@ describe("Contact Routes - Authentication", () => {
         .expect(200);
 
       expect(response.body.contacts).toBeDefined();
+    });
+
+    it("should reject invalid status query parameter", async () => {
+      const response = await request(app)
+        .get("/api/contacts?status=invalid")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(400);
+
+      expect(response.body.message).toContain("Invalid status");
     });
   });
 

@@ -1,25 +1,30 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
 import Contact from "../models/Contact.js";
 import { sendContactEmail } from "../services/emailService.js";
 import { requireAuth } from "../middleware/auth.js";
+import { isValidObjectId, validContactStatuses } from "../utils/validation.js";
 
 const router = Router();
 
-// Helper function to validate MongoDB ObjectId
-function isValidObjectId(id: string): boolean {
-  return mongoose.Types.ObjectId.isValid(id);
-}
-
 // Helper function to validate email format
 function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // More strict email validation:
+  // - At least 2 characters before @
+  // - No consecutive dots
+  // - Domain has at least 2 characters
+  // - TLD has at least 2 characters
+  const emailRegex = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i;
   return emailRegex.test(email);
 }
 
 // Helper function to validate contact input
 function validateContactInput(body: any): { valid: boolean; error?: string } {
+  // Guard against null/undefined and non-object types
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
   const { name, furigana, email, phone, inquiryDetails } = body;
 
   // Check required fields exist and are strings
@@ -46,8 +51,14 @@ function validateContactInput(body: any): { valid: boolean; error?: string } {
   if (phone.length > 50) {
     return { valid: false, error: "Phone must be less than 50 characters" };
   }
-  if (inquiryDetails && typeof inquiryDetails === 'string' && inquiryDetails.length > 5000) {
-    return { valid: false, error: "Inquiry details must be less than 5000 characters" };
+  // Validate inquiryDetails if provided
+  if (inquiryDetails !== undefined) {
+    if (typeof inquiryDetails !== 'string') {
+      return { valid: false, error: "Inquiry details must be a string" };
+    }
+    if (inquiryDetails.length > 5000) {
+      return { valid: false, error: "Inquiry details must be less than 5000 characters" };
+    }
   }
 
   return { valid: true };
@@ -68,29 +79,34 @@ router.post("/", async (req: Request, res: Response) => {
       furigana: req.body.furigana,
       email: req.body.email,
       phone: req.body.phone,
-      ...(req.body.inquiryDetails && { inquiryDetails: req.body.inquiryDetails })
+      ...(req.body.inquiryDetails !== undefined && { inquiryDetails: req.body.inquiryDetails })
     };
 
     // Create contact in database
     const contact = await Contact.create(contactData);
 
-    // Send email notification
-    try {
-      await sendContactEmail(contact);
-      // Update emailSent status
-      contact.emailSent = true;
-      await contact.save();
-    } catch (emailError) {
-      console.error("Failed to send email notification:", emailError);
-      // Continue even if email fails - contact is saved in database
-    }
-
+    // Send response immediately without waiting for email
     res.status(201).json(contact);
+
+    // Send email notification asynchronously in the background
+    sendContactEmail(contact)
+      .then(async () => {
+        // Update emailSent status after successful send
+        contact.emailSent = true;
+        await contact.save();
+      })
+      .catch((emailError) => {
+        console.error("Failed to send email notification:", emailError);
+        // Email failure is logged but doesn't affect the API response
+      });
   } catch (error) {
     console.error("Error creating contact inquiry:", error);
-    // Return sanitized error message
-    const message = error instanceof Error ? error.message : "Failed to create contact inquiry";
-    res.status(400).json({ message });
+    // Distinguish between validation errors and server errors
+    if (error instanceof Error && error.name === 'ValidationError') {
+      res.status(400).json({ message: "Invalid request" });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 });
 
@@ -100,7 +116,13 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const filter: { status?: string } = {};
     if (req.query.status) {
-      filter.status = req.query.status as string;
+      const status = req.query.status as string;
+      if (!validContactStatuses.includes(status as typeof validContactStatuses[number])) {
+        return res.status(400).json({
+          message: `Invalid status. Must be one of: ${validContactStatuses.join(", ")}`,
+        });
+      }
+      filter.status = status;
     }
 
     // Pagination with bounds checking to prevent abuse and invalid values
@@ -110,7 +132,7 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     const [contacts, total] = await Promise.all([
-      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       Contact.countDocuments(filter),
     ]);
 
@@ -157,12 +179,24 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
 
     // Whitelist only updatable fields to prevent modification of sensitive data
     const allowedUpdates: Partial<{ status: string; isRead: boolean }> = {};
-    if (req.body.status) {
+    if ('status' in req.body) {
+      // Validate status against allowed values (including empty strings)
+      if (!validContactStatuses.includes(req.body.status as typeof validContactStatuses[number])) {
+        return res.status(400).json({
+          message: `Invalid status. Must be one of: ${validContactStatuses.join(", ")}`,
+        });
+      }
       allowedUpdates.status = req.body.status;
-      // Automatically mark as read when status changes
+      // Automatically mark as read when status changes (cannot be overridden)
       allowedUpdates.isRead = true;
-    }
-    if (req.body.isRead !== undefined) {
+    } else if (req.body.isRead !== undefined) {
+      // Validate isRead is a boolean
+      if (typeof req.body.isRead !== 'boolean') {
+        return res.status(400).json({
+          message: 'isRead must be a boolean value',
+        });
+      }
+      // Only allow explicit isRead change when status is not being updated
       allowedUpdates.isRead = req.body.isRead;
     }
 

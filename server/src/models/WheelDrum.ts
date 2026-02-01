@@ -21,7 +21,8 @@ const WheelDrumSchema = new Schema<WheelDrumAttrs>(
       type: String,
       required: true,
       trim: true,
-      minlength: [1, 'Condition cannot be empty']
+      minlength: [1, 'Condition cannot be empty'],
+      maxlength: [200, 'Condition cannot exceed 200 characters']
     },
     images: { type: [String], default: [] },
     displayLocation: {

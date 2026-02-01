@@ -26,7 +26,7 @@ export default function Dashboard() {
         api.get('/api/cars'),
         api.get('/api/tires'),
         api.get('/api/wheel-drums'),
-        api.get('/api/contact', { params: { status: 'new' } }),
+        api.get('/api/contacts', { params: { status: 'new' } }),
       ]);
 
       const cars = carsRes.data;

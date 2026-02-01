@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { requireAuth, type AuthRequest } from "./auth.js";
@@ -7,7 +7,6 @@ describe("Auth Middleware", () => {
   let mockRequest: Partial<AuthRequest>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
-  const originalJwtSecret = process.env.JWT_SECRET;
 
   beforeEach(() => {
     // Setup mock request
@@ -24,17 +23,13 @@ describe("Auth Middleware", () => {
     // Setup next function
     nextFunction = vi.fn();
 
-    // Set JWT_SECRET for tests
-    process.env.JWT_SECRET = "test-secret-key";
+    // Set JWT_SECRET for tests using vi.stubEnv for better isolation
+    vi.stubEnv('JWT_SECRET', 'test-secret-key');
   });
 
   afterEach(() => {
-    // Restore original JWT_SECRET
-    if (originalJwtSecret) {
-      process.env.JWT_SECRET = originalJwtSecret;
-    } else {
-      delete process.env.JWT_SECRET;
-    }
+    // Clean up environment variable stubs
+    vi.unstubAllEnvs();
   });
 
   describe("Missing Authorization Header", () => {
@@ -93,7 +88,7 @@ describe("Auth Middleware", () => {
 
   describe("JWT_SECRET Not Configured", () => {
     it("should return 500 when JWT_SECRET is not set", () => {
-      delete process.env.JWT_SECRET;
+      vi.unstubAllEnvs();
 
       mockRequest.headers = {
         authorization: "Bearer sometoken",
@@ -173,6 +168,100 @@ describe("Auth Middleware", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Token expired",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Invalid JWT Payload Shape", () => {
+    it("should return 401 for token with missing id field", () => {
+      const invalidPayload = { email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with missing email field", () => {
+      const invalidPayload = { id: "123" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with empty id", () => {
+      const invalidPayload = { id: "", email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+
+    it("should return 401 for token with non-string id", () => {
+      const invalidPayload = { id: 123, email: "admin@test.com" };
+      const token = jwt.sign(invalidPayload, "test-secret-key", {
+        expiresIn: "1h",
+      });
+
+      mockRequest.headers = {
+        authorization: `Bearer ${token}`,
+      };
+
+      requireAuth(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
       });
       expect(nextFunction).not.toHaveBeenCalled();
     });

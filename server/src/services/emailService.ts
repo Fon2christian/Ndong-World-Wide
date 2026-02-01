@@ -24,8 +24,53 @@ function sanitizeHeader(value: string): string {
   return value.replace(/[\r\n]+/g, ' ').trim();
 }
 
-// Create reusable transporter
-const createTransporter = () => {
+/**
+ * Sanitize the from name to prevent header injection
+ * Removes CRLF, quotes, and limits length
+ */
+function sanitizeFromName(value: string | undefined, defaultValue: string): string {
+  if (!value) return defaultValue;
+  // Remove CRLF and quotes, trim, and limit length
+  const sanitized = value
+    .replace(/[\r\n"]+/g, '')
+    .trim()
+    .slice(0, 100);
+  return sanitized || defaultValue;
+}
+
+/**
+ * Sanitize plain text content for email body
+ * Removes control characters (except newlines/tabs) and normalizes whitespace
+ */
+function sanitizePlainText(text: string): string {
+  return text
+    // Remove control characters except newline (\n), carriage return (\r), and tab (\t)
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // Normalize line endings to \n
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    // Collapse multiple spaces (but not newlines) into single space
+    .replace(/[^\S\n]+/g, ' ')
+    // Trim each line
+    .split('\n')
+    .map(line => line.trim())
+    .join('\n')
+    // Collapse multiple blank lines into single blank line
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+// Cached transporter instance
+let transporter: nodemailer.Transporter | null = null;
+
+// Create and cache reusable transporter
+const getTransporter = () => {
+  // Return cached transporter if it exists
+  if (transporter) {
+    return transporter;
+  }
+
   // Check if email configuration is available
   if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.warn("Email configuration missing. Emails will not be sent.");
@@ -36,7 +81,8 @@ const createTransporter = () => {
   const port = parseInt(process.env.EMAIL_PORT || "587");
   const validPort = !isNaN(port) && port > 0 && port <= 65535 ? port : 587;
 
-  return nodemailer.createTransport({
+  // Create and cache the transporter
+  transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: validPort,
     secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
@@ -45,15 +91,17 @@ const createTransporter = () => {
       pass: process.env.EMAIL_PASS,
     },
   });
+
+  return transporter;
 };
 
 /**
  * Send email notification when a new contact inquiry is submitted
  */
 export async function sendContactEmail(contact: ContactAttrs & { _id?: any; createdAt?: Date }): Promise<void> {
-  const transporter = createTransporter();
+  const emailTransporter = getTransporter();
 
-  if (!transporter) {
+  if (!emailTransporter) {
     throw new Error("Email service not configured");
   }
 
@@ -69,8 +117,10 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
   // Sanitize header values to prevent CRLF injection
   const safeSubjectName = sanitizeHeader(contact.name);
 
+  const fromName = sanitizeFromName(process.env.EMAIL_FROM_NAME, 'Ndong World Wide');
+
   const mailOptions = {
-    from: `"${process.env.EMAIL_FROM_NAME || 'Ndong World Wide'}" <${process.env.EMAIL_USER}>`,
+    from: `"${fromName}" <${process.env.EMAIL_USER}>`,
     to: recipientEmail,
     subject: `New Contact Inquiry from ${safeSubjectName}`,
     html: `
@@ -120,15 +170,15 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
     text: `
 New Contact Inquiry
 
-Name: ${contact.name}
-Furigana: ${contact.furigana}
-Email: ${contact.email}
-Phone: ${contact.phone}
-${contact.inquiryDetails ? `\nInquiry Details:\n${contact.inquiryDetails}` : ''}
+Name: ${sanitizePlainText(contact.name)}
+Furigana: ${sanitizePlainText(contact.furigana)}
+Email: ${sanitizePlainText(contact.email)}
+Phone: ${sanitizePlainText(contact.phone)}
+${contact.inquiryDetails ? `\nInquiry Details:\n${sanitizePlainText(contact.inquiryDetails)}` : ''}
 
 Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }) : 'Just now'}
     `.trim(),
   };
 
-  await transporter.sendMail(mailOptions);
+  await emailTransporter.sendMail(mailOptions);
 }

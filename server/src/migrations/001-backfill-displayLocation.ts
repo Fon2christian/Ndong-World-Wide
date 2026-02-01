@@ -11,6 +11,8 @@
  */
 
 import mongoose from "mongoose";
+import path from "path";
+import { pathToFileURL } from "url";
 import Car from "../models/Car.js";
 import Tire from "../models/Tire.js";
 import WheelDrum from "../models/WheelDrum.js";
@@ -87,5 +89,17 @@ async function backfillDisplayLocation() {
   }
 }
 
-// Run the migration
-backfillDisplayLocation();
+// Only run when executed directly (not when imported)
+// Usage: npx tsx src/migrations/001-backfill-displayLocation.ts
+const isMainModule = (() => {
+  if (!process.argv[1]) return false;
+  const scriptPath = path.resolve(process.argv[1]);
+  const scriptUrl = pathToFileURL(scriptPath).href;
+  return import.meta.url === scriptUrl;
+})();
+
+if (isMainModule) {
+  backfillDisplayLocation();
+}
+
+export { backfillDisplayLocation };

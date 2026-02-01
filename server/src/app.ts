@@ -10,6 +10,10 @@ import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
+// Trust proxy to correctly identify client IPs behind reverse proxies (nginx, load balancers, etc.)
+// This ensures rate limiting works correctly for clients behind proxies
+app.set('trust proxy', 1);
+
 app.use(cors());
 
 // Rate limiting to prevent DoS attacks
@@ -21,6 +25,7 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skip: (req: Request) => req.originalUrl === '/api/health', // Exempt health checks from rate limiting
 });
 
 // Apply rate limiting to all API routes
