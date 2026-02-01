@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "installCommand": "npm install --prefix=server && npm install --prefix=client && npm install --prefix=admin-client",
-  "buildCommand": "npm run build --prefix=server && npm run build --prefix=client && npm run build --prefix=admin-client",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "functions": {
     "server/dist/server.js": {
       "runtime": "nodejs20.x"
