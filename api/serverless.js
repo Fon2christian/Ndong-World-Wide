@@ -5,6 +5,11 @@ let cachedApp = null;
 
 // Simple direct export - let Vercel handle the Express app
 module.exports = async (req, res) => {
+  // Fix the URL path - remove the extra /api/ prefix that Vercel adds
+  if (req.url && req.url.startsWith('/api/')) {
+    req.url = req.url.replace('/api/', '/');
+  }
+
   try {
     if (!cachedApp) {
       // Lazy-load dependencies to avoid cold start issues
