@@ -23,27 +23,22 @@
       }
     }
   ],
-  "routes": [
-    { "handle": "filesystem" },
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "server/dist/server.js"
+      "source": "/api/(.*)",
+      "destination": "server/dist/server.js"
     },
     {
-      "src": "/admin",
-      "dest": "admin-client/dist/index.html"
+      "source": "/admin",
+      "destination": "admin-client/dist/index.html"
     },
     {
-      "src": "/admin/(.*)",
-      "dest": "admin-client/dist/index.html"
+      "source": "/admin/(.*)",
+      "destination": "admin-client/dist/index.html"
     },
     {
-      "src": "/",
-      "dest": "client/dist/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "client/dist/index.html"
+      "source": "/((?!api|admin).*)",
+      "destination": "client/dist/index.html"
     }
   ],
   "env": {
