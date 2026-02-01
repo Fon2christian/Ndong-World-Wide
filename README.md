@@ -11,7 +11,7 @@ A full-stack tire and wheel drum e-commerce platform with admin dashboard.
 
 ## Project Structure
 
-```
+```text
 Ndong-World-Wide/
 ├── client/                 # Main website (React)
 ├── admin-client/           # Admin dashboard (React)
@@ -104,9 +104,9 @@ npm run dev
 
 5. **Access the applications**
 
-- Client: http://localhost:5173
-- Admin: http://localhost:5175
-- API: http://localhost:5002
+- Client: <http://localhost:5173>
+- Admin: <http://localhost:5175>
+- API: <http://localhost:5002>
 
 ### Create Admin Account
 
@@ -189,7 +189,7 @@ API URL is automatically configured based on environment:
 
 ### Public Endpoints
 
-```
+```http
 GET  /api/tires           # List all tires
 GET  /api/tires/:id       # Get tire details
 GET  /api/wheeldrums      # List all wheel drums
@@ -199,7 +199,7 @@ GET  /api/health          # Health check
 
 ### Admin Endpoints (Requires Authentication)
 
-```
+```http
 POST /api/admin/register  # Register first admin
 POST /api/admin/login     # Login
 GET  /api/admin/me        # Get current admin

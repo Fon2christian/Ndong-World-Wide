@@ -6,7 +6,7 @@ This guide explains how to deploy the Ndong World Wide application to Vercel.
 
 The application uses a monorepo structure with path-based routing:
 
-```
+```text
 https://your-domain.vercel.app/          → Client (React SPA)
 https://your-domain.vercel.app/admin    → Admin Dashboard (React SPA)
 https://your-domain.vercel.app/api/*    → Server (Express API)
@@ -102,14 +102,14 @@ The CLI will prompt you to configure the project on first deployment.
 
 After deployment, create your first admin account:
 
-**Option A: Using local script (connects to production DB)**
+#### Option A: Using local script (connects to production DB)
 
 ```bash
 cd server
 npm run create-admin
 ```
 
-**Option B: Using API directly**
+#### Option B: Using API directly
 
 ```bash
 curl -X POST https://your-project.vercel.app/api/admin/register \
@@ -130,22 +130,26 @@ curl -X POST https://your-project.vercel.app/api/admin/register \
 
 ### 3. Test Your Deployment
 
-**Test Client:**
+#### Test Client
+
 ```bash
 curl https://your-project.vercel.app/
 ```
 
-**Test Admin:**
+#### Test Admin
+
 ```bash
 curl https://your-project.vercel.app/admin
 ```
 
-**Test API:**
+#### Test API
+
 ```bash
 curl https://your-project.vercel.app/api/health
 ```
 
-**Test Admin Login:**
+#### Test Admin Login
+
 ```bash
 curl -X POST https://your-project.vercel.app/api/admin/login \
   -H "Content-Type: application/json" \
@@ -310,12 +314,14 @@ Vercel automatically scales based on traffic:
 
 ## Cost Estimation
 
-**Hobby Plan (Free):**
+### Hobby Plan (Free)
+
 - Unlimited deployments
 - 100 GB bandwidth/month
 - Serverless function: 100 GB-hours
 
-**Pro Plan ($20/month per user):**
+### Pro Plan ($20/month per user)
+
 - 1 TB bandwidth/month
 - Serverless function: 1000 GB-hours
 - Advanced analytics
