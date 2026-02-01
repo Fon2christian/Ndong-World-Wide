@@ -7,7 +7,7 @@
     "dev:admin": "concurrently -n server,admin -c blue,yellow \"npm run dev -w server\" \"npm run dev -w admin-client\"",
     "dev:all": "concurrently -n server,client,admin -c blue,green,yellow \"npm run dev -w server\" \"npm run dev -w client\" \"npm run dev -w admin-client\"",
     "build": "npm run build:setup && npm run build:client && npm run build:admin && npm run build:server && npm run build:config",
-    "build:setup": "mkdir -p .vercel/output/static .vercel/output/functions/api/serverless.func",
+    "build:setup": "mkdir -p .vercel/output/static/admin .vercel/output/functions/api/serverless.func",
     "build:client": "cd client && npm run build && cd .. && cp -r client/dist/* .vercel/output/static/",
     "build:admin": "cd admin-client && npm run build && cd .. && cp -r admin-client/dist/* .vercel/output/static/admin/",
     "build:server": "cd server && npm run vercel-build && cd .. && cp api/serverless.js .vercel/output/functions/api/serverless.func/index.js && echo '{\"runtime\":\"nodejs20.x\",\"handler\":\"index.js\",\"launcherType\":\"Nodejs\"}' > .vercel/output/functions/api/serverless.func/.vc-config.json",
