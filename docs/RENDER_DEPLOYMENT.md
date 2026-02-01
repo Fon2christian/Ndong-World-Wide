@@ -102,7 +102,8 @@ After deployment:
 2. Settings → Custom Domains → Add Custom Domain
 3. Enter your domain: `yourdomain.com`
 4. Add DNS records (Render shows you exactly what to add):
-   ```
+
+   ```text
    Type: CNAME
    Name: @ or www
    Value: ndong-nginx.onrender.com
@@ -310,7 +311,7 @@ Render deploys only if tests pass.
 - **Render Docs**: [render.com/docs](https://render.com/docs)
 - **Community**: [community.render.com](https://community.render.com)
 - **Status**: [status.render.com](https://status.render.com)
-- **Contact**: help@render.com
+- **Contact**: [help@render.com](mailto:help@render.com)
 
 ## Next Steps
 

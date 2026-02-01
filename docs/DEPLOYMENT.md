@@ -206,7 +206,6 @@ https://yourdomain.com/api/*     → Server (Express API)
    - Strict-Transport-Security (HSTS)
    - X-Frame-Options (prevents clickjacking)
    - X-Content-Type-Options (prevents MIME sniffing)
-   - X-XSS-Protection
    - Referrer-Policy
 3. **Rate Limiting**: API endpoints rate-limited (10 req/s, burst 20)
 4. **HTTP → HTTPS Redirect**: All HTTP traffic redirected to HTTPS
