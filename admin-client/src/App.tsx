@@ -91,7 +91,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
