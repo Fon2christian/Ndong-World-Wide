@@ -62,7 +62,7 @@ curl -X POST https://your-domain.com/api/admin/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@example.com",
-    "password": "securePassword123",
+    "password": "Secure@Password123!",
     "name": "Admin User"
   }'
 ```
@@ -74,7 +74,7 @@ curl -X POST https://your-domain.com/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@example.com",
-    "password": "securePassword123"
+    "password": "Secure@Password123!"
   }'
 ```
 
