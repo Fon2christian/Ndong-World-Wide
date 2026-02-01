@@ -1,61 +1,36 @@
-// MongoDB connection caching
-let cachedDb = null;
+// Load environment variables
+require('dotenv').config();
 
-async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
-  const mongoose = await import("mongoose");
-  const dotenv = await import("dotenv");
-
-  dotenv.default.config();
-
-  const mongoUri = process.env.MONGO_URI;
-
-  if (!mongoUri) {
-    throw new Error("❌ MONGO_URI is not defined in environment variables");
-  }
-
+// Simple direct export - let Vercel handle the Express app
+module.exports = async (req, res) => {
   try {
-    await mongoose.default.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    cachedDb = mongoose.default.connection;
-    console.log("✅ MongoDB connected");
-    return cachedDb;
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
-    throw err;
-  }
-}
+    // Lazy-load dependencies to avoid cold start issues
+    const mongoose = await import('mongoose');
 
-// Cache the Express app
-let app = null;
+    // Connect to MongoDB if not already connected
+    if (mongoose.default.connection.readyState === 0) {
+      const mongoUri = process.env.MONGO_URI;
+      if (!mongoUri) {
+        throw new Error("MONGO_URI is not defined");
+      }
+      await mongoose.default.connect(mongoUri, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      console.log("✅ MongoDB connected");
+    }
 
-async function getApp() {
-  if (!app) {
-    await connectToDatabase();
-    const appModule = await import("./dist/app.js");
-    app = appModule.default;
-  }
-  return app;
-}
+    // Import and use the Express app
+    const { default: app } = await import('./dist/app.js');
 
-// Vercel serverless function handler
-module.exports = async function(req, res) {
-  try {
-    const expressApp = await getApp();
-    // Call the Express app as a request handler
-    expressApp(req, res);
+    // Let Express handle the request
+    return app(req, res);
   } catch (error) {
     console.error("Serverless function error:", error);
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: "Internal server error",
-        message: error.message
-      });
-    }
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
