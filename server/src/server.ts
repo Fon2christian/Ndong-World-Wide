@@ -18,7 +18,7 @@ mongoose
     process.exit(1);
   });
 
-const PORT = 5002;
+const PORT = parseInt(process.env.PORT || '5002', 10);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

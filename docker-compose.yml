@@ -1,0 +1,86 @@
+services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ndong-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./client/dist:/usr/share/nginx/html/client:ro
+      - ./admin-client/dist:/usr/share/nginx/html/admin:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - server
+      - client
+      - admin
+    restart: unless-stopped
+    networks:
+      - ndong-network
+
+  # Certbot for SSL
+  certbot:
+    image: certbot/certbot
+    container_name: ndong-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - ndong-network
+
+  # Express API server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ndong-server
+    env_file:
+      - ./server/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=5002
+    expose:
+      - "5002"
+    restart: unless-stopped
+    networks:
+      - ndong-network
+
+  # Client build (for nginx to serve)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+    container_name: ndong-client-build
+    command: echo "Client built successfully"
+    volumes:
+      - ./client/dist:/app/dist
+    networks:
+      - ndong-network
+
+  # Admin build (for nginx to serve)
+  admin:
+    build:
+      context: ./admin-client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+    container_name: ndong-admin-build
+    command: echo "Admin built successfully"
+    volumes:
+      - ./admin-client/dist:/app/dist
+    networks:
+      - ndong-network
+
+volumes:
+  nginx_logs:
+
+networks:
+  ndong-network:
+    driver: bridge

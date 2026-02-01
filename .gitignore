@@ -39,3 +39,7 @@ Thumbs.db
 
 # Local files
 *.local
+
+# SSL certificates and certbot data
+certbot/
+nginx_logs/
