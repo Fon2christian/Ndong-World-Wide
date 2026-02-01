@@ -1,4 +1,5 @@
-import { Component, ReactNode, ErrorInfo } from 'react';
+import { Component } from 'react';
+import type { ReactNode, ErrorInfo } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -49,6 +50,7 @@ class ErrorBoundary extends Component<Props, State> {
               : 'An unexpected error occurred while loading the page.'}
           </p>
           <button
+            type="button"
             onClick={() => window.location.reload()}
             style={{
               padding: '0.75rem 2rem',
@@ -63,6 +65,8 @@ class ErrorBoundary extends Component<Props, State> {
             }}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4f46e5'}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#6366f1'}
+            onFocus={(e) => e.currentTarget.style.backgroundColor = '#4f46e5'}
+            onBlur={(e) => e.currentTarget.style.backgroundColor = '#6366f1'}
           >
             Reload Page
           </button>

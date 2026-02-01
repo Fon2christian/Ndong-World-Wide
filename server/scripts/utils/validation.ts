@@ -12,6 +12,16 @@ export interface EmailValidationResult {
   error?: string;
 }
 
+// Password validation regexes - hoisted to module scope
+const UPPERCASE_REGEX = /[A-Z]/;
+const LOWERCASE_REGEX = /[a-z]/;
+const DIGIT_REGEX = /\d/;
+// Expanded special character set to include more common characters
+const SPECIAL_CHAR_REGEX = /[!@#$%^&*(),.?":{}|<>\-_\[\]\\/;'`~+=]/;
+
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /**
  * Validates password complexity requirements
  */
@@ -22,11 +32,10 @@ export function validatePassword(password: string): PasswordValidationResult {
     errors.push("Password must be at least 8 characters");
   }
 
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasDigit = /\d/.test(password);
-  // Expanded special character set to include more common characters
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>\-_\[\]\\/;'`~+=]/.test(password);
+  const hasUppercase = UPPERCASE_REGEX.test(password);
+  const hasLowercase = LOWERCASE_REGEX.test(password);
+  const hasDigit = DIGIT_REGEX.test(password);
+  const hasSpecial = SPECIAL_CHAR_REGEX.test(password);
 
   if (!hasUppercase) {
     errors.push("At least one uppercase letter (A-Z)");
@@ -51,10 +60,10 @@ export function validatePassword(password: string): PasswordValidationResult {
  * Validates email format
  */
 export function validateEmail(email: string): EmailValidationResult {
-  // Basic email validation - acceptable for admin tooling
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Trim whitespace from email input
+  const trimmedEmail = email.trim();
 
-  if (!emailRegex.test(email)) {
+  if (!EMAIL_REGEX.test(trimmedEmail)) {
     return {
       valid: false,
       error: "Invalid email format",

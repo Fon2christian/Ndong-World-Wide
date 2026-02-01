@@ -11,10 +11,11 @@ export default defineConfig({
         manualChunks(id) {
           // Split vendor libraries into separate chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+            // Use path delimiters for precise matching
+            if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router-dom/')) {
               return 'react-vendor';
             }
-            if (id.includes('axios') || id.includes('zod')) {
+            if (id.includes('/axios/') || id.includes('/zod/')) {
               return 'utils';
             }
           }
