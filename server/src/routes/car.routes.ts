@@ -23,7 +23,13 @@ const carSchema = z.object({
   displayLocation: z.enum(["market", "business", "both"]).default("market"),
 });
 
-const updateCarSchema = carSchema.partial();
+const updateCarSchema = carSchema
+  .omit({ images: true, displayLocation: true })
+  .partial()
+  .extend({
+    images: z.array(z.string()).optional(),
+    displayLocation: z.enum(["market", "business", "both"]).optional(),
+  });
 
 // CREATE car (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {

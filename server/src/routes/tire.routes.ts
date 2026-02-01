@@ -17,7 +17,13 @@ const tireSchema = z.object({
   displayLocation: z.enum(["market", "business", "both"]).default("market"),
 });
 
-const updateTireSchema = tireSchema.partial();
+const updateTireSchema = tireSchema
+  .omit({ images: true, displayLocation: true })
+  .partial()
+  .extend({
+    images: z.array(z.string()).optional(),
+    displayLocation: z.enum(["market", "business", "both"]).optional(),
+  });
 
 // CREATE tire (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {
@@ -33,7 +39,12 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
     res.status(201).json(tire);
   } catch (error) {
     console.error("Failed to create tire:", error);
-    res.status(400).json({ message: "Failed to create tire" });
+    // Distinguish between Mongoose validation errors and server errors
+    if (error instanceof Error && error.name === 'ValidationError') {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 });
 
@@ -135,7 +146,12 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     res.json(tire);
   } catch (error) {
     console.error("Failed to update tire:", error);
-    res.status(400).json({ message: "Failed to update tire" });
+    // Distinguish between Mongoose validation errors and server errors
+    if (error instanceof Error && error.name === 'ValidationError') {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 });
 

@@ -101,9 +101,12 @@ router.post("/", async (req: Request, res: Response) => {
       });
   } catch (error) {
     console.error("Error creating contact inquiry:", error);
-    // Return sanitized error message
-    const message = error instanceof Error ? error.message : "Failed to create contact inquiry";
-    res.status(400).json({ message });
+    // Distinguish between validation errors and server errors
+    if (error instanceof Error && error.name === 'ValidationError') {
+      res.status(400).json({ message: "Invalid request" });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 });
 
@@ -176,8 +179,8 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
 
     // Whitelist only updatable fields to prevent modification of sensitive data
     const allowedUpdates: Partial<{ status: string; isRead: boolean }> = {};
-    if (req.body.status) {
-      // Validate status against allowed values
+    if ('status' in req.body) {
+      // Validate status against allowed values (including empty strings)
       if (!validContactStatuses.includes(req.body.status as typeof validContactStatuses[number])) {
         return res.status(400).json({
           message: `Invalid status. Must be one of: ${validContactStatuses.join(", ")}`,
