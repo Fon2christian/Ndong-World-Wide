@@ -11,10 +11,7 @@ RUN npm ci
 
 # Copy source and build
 COPY . .
-RUN npm run build
-
-# Change ownership to non-root user
-RUN chown -R nodejs:nodejs /app
+RUN npm run build && chown -R nodejs:nodejs /app
 
 # Switch to non-root user
 USER nodejs

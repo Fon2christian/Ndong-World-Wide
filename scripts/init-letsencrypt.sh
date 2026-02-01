@@ -103,8 +103,8 @@ done
 if ! docker-compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $domain_args \
-    --email $email \
-    --rsa-key-size $rsa_key_size \
+    --email \"$email\" \
+    --rsa-key-size \"$rsa_key_size\" \
     --agree-tos \
     --force-renewal" certbot; then
   echo "❌ Error: Failed to obtain Let's Encrypt certificate" >&2
@@ -119,14 +119,14 @@ echo "✓ Certificate obtained successfully"
 
 # Test nginx configuration before reload
 echo "### Testing nginx configuration ..."
-if ! docker-compose exec nginx nginx -t; then
+if ! docker-compose exec -T nginx nginx -t; then
   echo "❌ Error: Nginx configuration test failed" >&2
   exit 1
 fi
 
 # Reload nginx
 echo "### Reloading nginx ..."
-if ! docker-compose exec nginx nginx -s reload; then
+if ! docker-compose exec -T nginx nginx -s reload; then
   echo "❌ Error: Failed to reload nginx" >&2
   exit 1
 fi

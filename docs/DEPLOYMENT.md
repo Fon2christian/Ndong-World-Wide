@@ -83,6 +83,7 @@
 Certificates automatically renew via the certbot container (runs every 12 hours).
 
 Manual renewal:
+
 ```bash
 ./scripts/renew-ssl.sh
 ```

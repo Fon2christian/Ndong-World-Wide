@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../app.js";
-import Tire from "../models/Tire.js";
+import Tire, { type TireAttrs } from "../models/Tire.js";
 
 const validTire = {
   brand: "Michelin",
@@ -131,7 +131,7 @@ describe("Tire Routes", () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(2);
       // Should return market and both
-      const brands = res.body.map((t: any) => t.brand);
+      const brands = res.body.map((t: TireAttrs) => t.brand);
       expect(brands).toContain("Michelin");
       expect(brands).toContain("Goodyear");
       expect(brands).not.toContain("Bridgestone");
@@ -147,7 +147,7 @@ describe("Tire Routes", () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(2);
       // Should return business and both
-      const brands = res.body.map((t: any) => t.brand);
+      const brands = res.body.map((t: TireAttrs) => t.brand);
       expect(brands).toContain("Bridgestone");
       expect(brands).toContain("Goodyear");
       expect(brands).not.toContain("Michelin");

@@ -23,6 +23,62 @@ function question(query: string): Promise<string> {
   });
 }
 
+function questionHidden(query: string): Promise<string> {
+  return new Promise((resolve) => {
+    const stdin = process.stdin;
+    const stdout = process.stdout;
+
+    let password = "";
+
+    stdout.write(query);
+
+    // Enable raw mode to capture keystrokes
+    stdin.setRawMode?.(true);
+    stdin.resume();
+    stdin.setEncoding("utf8");
+
+    const onData = (char: string) => {
+      const charCode = char.charCodeAt(0);
+
+      // Handle Ctrl+C
+      if (charCode === 3) {
+        stdout.write("\n");
+        stdin.setRawMode?.(false);
+        stdin.pause();
+        stdin.removeListener("data", onData);
+        process.exit(0);
+      }
+
+      // Handle Enter/Return
+      if (charCode === 13) {
+        stdout.write("\n");
+        stdin.setRawMode?.(false);
+        stdin.pause();
+        stdin.removeListener("data", onData);
+        resolve(password);
+        return;
+      }
+
+      // Handle Backspace/Delete
+      if (charCode === 127 || charCode === 8) {
+        if (password.length > 0) {
+          password = password.slice(0, -1);
+          stdout.write("\b \b");
+        }
+        return;
+      }
+
+      // Handle printable characters
+      if (charCode >= 32 && charCode <= 126) {
+        password += char;
+        stdout.write("*");
+      }
+    };
+
+    stdin.on("data", onData);
+  });
+}
+
 async function createAdmin() {
   try {
     // Connect to MongoDB
@@ -44,8 +100,8 @@ async function createAdmin() {
 
     const email = await question("Email address: ");
     const name = await question("Full name: ");
-    const password = await question("Password (min 8 characters): ");
-    const confirmPassword = await question("Confirm password: ");
+    const password = await questionHidden("Password (min 8 characters, must include uppercase, lowercase, digit, and special character): ");
+    const confirmPassword = await questionHidden("Confirm password: ");
 
     // Validate input
     if (!email || !name || !password) {
@@ -60,6 +116,21 @@ async function createAdmin() {
 
     if (password.length < 8) {
       console.error("\n❌ Error: Password must be at least 8 characters");
+      process.exit(1);
+    }
+
+    // Validate password complexity
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasDigit = /\d/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecial) {
+      console.error("\n❌ Error: Password must include:");
+      console.error("   - At least one uppercase letter (A-Z)");
+      console.error("   - At least one lowercase letter (a-z)");
+      console.error("   - At least one digit (0-9)");
+      console.error("   - At least one special character (!@#$%^&*...)");
       process.exit(1);
     }
 

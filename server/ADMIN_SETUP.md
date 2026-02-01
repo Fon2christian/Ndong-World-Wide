@@ -25,7 +25,7 @@ The script will prompt you for:
 
 ### Example Output
 
-```
+```text
 🔌 Connecting to MongoDB...
 ✅ Connected to MongoDB
 
@@ -110,6 +110,7 @@ curl -X POST https://your-domain.com/api/admin/login \
 ## Security Best Practices
 
 ### 1. Use Strong Passwords
+
 ```bash
 # Good password examples:
 MySecure@Pass2024!
@@ -156,6 +157,10 @@ curl -X GET https://your-domain.com/api/admin/me \
 
 - **Expiration**: 7 days
 - **Storage**: Automatically stored in browser (localStorage)
+  - ⚠️ **Security Note**: localStorage is accessible to any page JavaScript and vulnerable to XSS attacks
+  - For production deployments, consider using httpOnly, Secure cookies instead
+  - Mitigate XSS risks with Content Security Policy (CSP) and proper input sanitization
+  - Evaluate token storage strategy based on your threat model and session requirements
 - **Usage**: Included in all authenticated requests
 
 ## Troubleshooting

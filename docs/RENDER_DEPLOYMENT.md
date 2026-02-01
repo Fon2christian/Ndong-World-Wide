@@ -59,15 +59,15 @@ Deploy your application to Render with auto-deployment from GitHub in under 10 m
 
    Click on `ndong-api` service → Environment → Add:
 
-   | Variable | Value |
-   |----------|-------|
-   | `MONGO_URI` | Your MongoDB connection string from Step 1 |
-   | `EMAIL_HOST` | `smtp.gmail.com` |
-   | `EMAIL_PORT` | `587` |
-   | `EMAIL_SECURE` | `false` |
-   | `EMAIL_USER` | Your Gmail address |
-   | `EMAIL_PASS` | [Gmail App Password](#gmail-setup-for-contact-forms) |
-   | `CONTACT_NOTIFICATION_EMAIL` | Email to receive contact forms |
+   | Variable                        | Value                                                     |
+   |---------------------------------|-----------------------------------------------------------|
+   | `MONGO_URI`                     | Your MongoDB connection string from Step 1                |
+   | `EMAIL_HOST`                    | `smtp.gmail.com`                                          |
+   | `EMAIL_PORT`                    | `587`                                                     |
+   | `EMAIL_SECURE`                  | `false`                                                   |
+   | `EMAIL_USER`                    | Your Gmail address                                        |
+   | `EMAIL_PASS`                    | [Gmail App Password](#gmail-setup-for-contact-forms)     |
+   | `CONTACT_NOTIFICATION_EMAIL`    | Email to receive contact forms                            |
 
 4. **Click "Apply"** - Render will:
    - Create 2 services (ndong-api, ndong-nginx)

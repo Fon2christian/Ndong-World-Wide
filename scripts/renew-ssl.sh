@@ -15,14 +15,14 @@ if docker-compose run --rm certbot renew; then
 
   # Test nginx configuration before reload
   echo "### Testing nginx configuration ..."
-  if ! docker-compose exec nginx nginx -t; then
+  if ! docker-compose exec -T nginx nginx -t; then
     echo "❌ Error: Nginx configuration test failed" >&2
     exit 1
   fi
 
   # Reload nginx only if renewal succeeded
   echo "### Reloading nginx ..."
-  if docker-compose exec nginx nginx -s reload; then
+  if docker-compose exec -T nginx nginx -s reload; then
     echo "✅ Nginx reloaded successfully"
   else
     echo "❌ Error: Failed to reload nginx" >&2
