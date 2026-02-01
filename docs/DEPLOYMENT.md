@@ -214,7 +214,7 @@ https://yourdomain.com/api/*     → Server (Express API)
 
 ## Performance Optimizations
 
-1. **Static file caching**: 1 year cache for immutable assets (JS, CSS, images)
+1. **Static file caching**: 1-year cache for immutable assets (JS, CSS, images)
 2. **Gzip compression**: Text files compressed at level 6
 3. **HTTP/2**: Enabled for better performance
 4. **Keepalive connections**: Connection pooling to backend (32 connections)
