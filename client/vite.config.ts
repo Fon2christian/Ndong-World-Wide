@@ -8,11 +8,16 @@ export default defineConfig({
     // Optimize chunk splitting
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks(id) {
           // Split vendor libraries into separate chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Split other large dependencies
-          'utils': ['axios', 'zod'],
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('axios') || id.includes('zod')) {
+              return 'utils';
+            }
+          }
         },
       },
     },

@@ -5,6 +5,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ImageSlideshow from './components/ImageSlideshow'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Lazy load pages for better performance
 const Market = lazy(() => import('./pages/Market'))
@@ -58,20 +59,22 @@ function App() {
     <LanguageProvider>
       <Navbar />
       <main className="main-content">
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/business" element={<Business />} />
-            <Route path="/business/tires" element={<TiresProvision />} />
-            <Route path="/business/wheels" element={<WheelsProvision />} />
-            <Route path="/business/cars" element={<CarsProvision />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/flow" element={<Flow />} />
-            <Route path="/company" element={<Company />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/business" element={<Business />} />
+              <Route path="/business/tires" element={<TiresProvision />} />
+              <Route path="/business/wheels" element={<WheelsProvision />} />
+              <Route path="/business/cars" element={<CarsProvision />} />
+              <Route path="/market" element={<Market />} />
+              <Route path="/flow" element={<Flow />} />
+              <Route path="/company" element={<Company />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <Footer />
     </LanguageProvider>
