@@ -65,10 +65,15 @@ export function validateEmail(email: string): EmailValidationResult {
 }
 
 /**
- * Display validation errors and exit
+ * Display validation errors
+ * @param errors - Array of error messages to display
+ * @param header - Optional header message (defaults to "Password must include:")
  */
-export function displayValidationErrors(errors: string[]): void {
-  console.error("\n❌ Error: Password must include:");
+export function displayValidationErrors(
+  errors: string[],
+  header: string = "Password must include:"
+): void {
+  console.error(`\n❌ Error: ${header}`);
   errors.forEach((error) => {
     console.error(`   - ${error}`);
   });
