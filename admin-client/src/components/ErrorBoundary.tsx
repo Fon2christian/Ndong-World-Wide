@@ -45,7 +45,10 @@ class ErrorBoundary extends Component<Props, State> {
             Oops! Something went wrong
           </h1>
           <p style={{ fontSize: '1.1rem', color: '#64748b', marginBottom: '2rem' }}>
-            {this.state.error?.message.includes('Failed to fetch')
+            {this.state.error?.message &&
+             (this.state.error.message.includes('Failed to fetch') ||
+              this.state.error.message.includes('dynamically imported') ||
+              this.state.error.message.includes('Loading chunk'))
               ? 'Unable to load the admin page. This might be due to a network issue or an update.'
               : 'An unexpected error occurred while loading the page.'}
           </p>

@@ -15,11 +15,11 @@ export default defineConfig({
         manualChunks(id) {
           // Split vendor libraries into separate chunks
           if (id.includes('node_modules')) {
-            // Use path delimiters for precise matching
-            if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router-dom/')) {
+            // Use regex for cross-platform path matching (Windows and Unix)
+            if (/[\\/]react[\\/]/.test(id) || /[\\/]react-dom[\\/]/.test(id) || /[\\/]react-router-dom[\\/]/.test(id)) {
               return 'react-vendor';
             }
-            if (id.includes('/axios/') || id.includes('/zod/')) {
+            if (/[\\/]axios[\\/]/.test(id) || /[\\/]zod[\\/]/.test(id)) {
               return 'utils';
             }
           }
