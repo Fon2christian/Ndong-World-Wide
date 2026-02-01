@@ -11,7 +11,7 @@
     "build:client": "cd client && npm run build && cd .. && cp -r client/dist/* .vercel/output/static/",
     "build:admin": "cd admin-client && npm run build && cd .. && cp -r admin-client/dist/* .vercel/output/static/admin/",
     "build:server": "cd server && npm run vercel-build && cd .. && mkdir -p api/dist && cp -r server/dist/* api/dist/",
-    "build:config": "node -e \"const config={version:3};require('fs').writeFileSync('.vercel/output/config.json',JSON.stringify(config,null,2))\"",
+    "build:config": "node -e \"const config={version:3,routes:[{src:'/api/(.*)',dest:'/api/serverless'},{handle:'filesystem'},{src:'/admin/(.*)',dest:'/admin/$1'},{src:'/(.*)',dest:'/$1'}]};require('fs').writeFileSync('.vercel/output/config.json',JSON.stringify(config,null,2))\"",
     "start": "npm run start -w server",
     "install:all": "npm install"
   },

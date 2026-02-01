@@ -1,24 +1,6 @@
 {
   "installCommand": "npm install --include=dev",
   "buildCommand": "npm run build",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/serverless"
-    },
-    {
-      "source": "/admin",
-      "destination": "/admin/index.html"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/admin/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
-  ],
   "env": {
     "NODE_ENV": "production"
   },
