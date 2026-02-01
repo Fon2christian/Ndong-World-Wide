@@ -20,3 +20,10 @@ export type DisplayLocation = typeof validDisplayLocations[number];
 export const validContactStatuses = ["new", "in_progress", "resolved"] as const;
 
 export type ContactStatus = typeof validContactStatuses[number];
+
+/**
+ * Valid tire condition values
+ */
+export const validTireConditions = ["new", "used"] as const;
+
+export type TireCondition = typeof validTireConditions[number];

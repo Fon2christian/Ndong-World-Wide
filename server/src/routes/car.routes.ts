@@ -13,7 +13,7 @@ const carSchema = z.object({
   model: z.string().min(1, "Model is required"),
   year: z.number().int().min(1900).refine(
     (year) => year <= new Date().getFullYear() + 1,
-    (year) => ({ message: `Year must not exceed ${new Date().getFullYear() + 1}` })
+    { message: `Year must not exceed ${new Date().getFullYear() + 1}` }
   ),
   price: z.number().positive("Price must be positive"),
   mileage: z.number().nonnegative("Mileage must be non-negative"),
@@ -39,7 +39,7 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
     res.status(201).json(car);
   } catch (error) {
     console.error("Failed to create car:", error);
-    res.status(400).json({ message: "Failed to create car" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -128,7 +128,7 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
     res.json(car);
   } catch (error) {
     console.error("Failed to update car:", error);
-    res.status(400).json({ message: "Failed to update car" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

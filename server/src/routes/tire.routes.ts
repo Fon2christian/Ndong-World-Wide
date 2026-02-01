@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import Tire from "../models/Tire.js";
 import { requireAuth } from "../middleware/auth.js";
-import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
+import { isValidObjectId, validDisplayLocations, validTireConditions } from "../utils/validation.js";
 
 const router = Router();
 
@@ -42,7 +42,17 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const filter: { condition?: string; displayLocation?: { $in: string[] } } = {};
     if (req.query.condition) {
-      filter.condition = req.query.condition as string;
+      // Handle array query params
+      const condition = Array.isArray(req.query.condition)
+        ? req.query.condition[0]
+        : req.query.condition;
+
+      if (typeof condition !== "string" || !validTireConditions.includes(condition as typeof validTireConditions[number])) {
+        return res.status(400).json({
+          message: `Invalid condition. Must be one of: ${validTireConditions.join(", ")}`,
+        });
+      }
+      filter.condition = condition;
     }
     if (req.query.location) {
       // Handle array query params
@@ -58,7 +68,7 @@ router.get("/", async (req: Request, res: Response) => {
       // Match items that are set to this location OR "both"
       filter.displayLocation = { $in: [location, "both"] };
     }
-    const tires = await Tire.find(filter).sort({ createdAt: -1 });
+    const tires = await Tire.find(filter).sort({ createdAt: -1 }).lean();
     res.json(tires);
   } catch (error) {
     console.error("Failed to fetch tires:", error);

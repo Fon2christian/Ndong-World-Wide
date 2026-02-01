@@ -4,6 +4,11 @@ import app from "../app.js";
 import Admin from "../models/Admin.js";
 import Contact from "../models/Contact.js";
 
+// Mock the email service to prevent actual email sends and async race conditions
+vi.mock("../services/emailService.js", () => ({
+  sendContactEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe("Contact Routes - Authentication", () => {
   let authToken: string;
   let testContactId: string;

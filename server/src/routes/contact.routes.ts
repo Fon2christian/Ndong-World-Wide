@@ -20,6 +20,11 @@ function isValidEmail(email: string): boolean {
 
 // Helper function to validate contact input
 function validateContactInput(body: any): { valid: boolean; error?: string } {
+  // Guard against null/undefined and non-object types
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
   const { name, furigana, email, phone, inquiryDetails } = body;
 
   // Check required fields exist and are strings
@@ -74,7 +79,7 @@ router.post("/", async (req: Request, res: Response) => {
       furigana: req.body.furigana,
       email: req.body.email,
       phone: req.body.phone,
-      ...(req.body.inquiryDetails && { inquiryDetails: req.body.inquiryDetails })
+      ...(req.body.inquiryDetails !== undefined && { inquiryDetails: req.body.inquiryDetails })
     };
 
     // Create contact in database
@@ -182,6 +187,12 @@ router.put("/:id", requireAuth, async (req: Request, res: Response) => {
       // Automatically mark as read when status changes (cannot be overridden)
       allowedUpdates.isRead = true;
     } else if (req.body.isRead !== undefined) {
+      // Validate isRead is a boolean
+      if (typeof req.body.isRead !== 'boolean') {
+        return res.status(400).json({
+          message: 'isRead must be a boolean value',
+        });
+      }
       // Only allow explicit isRead change when status is not being updated
       allowedUpdates.isRead = req.body.isRead;
     }
