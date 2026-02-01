@@ -7,6 +7,7 @@
 import mongoose from "mongoose";
 import Admin from "../src/models/Admin.js";
 import dotenv from "dotenv";
+import { validatePassword, validateEmail, displayValidationErrors } from "./utils/validation.js";
 
 dotenv.config();
 
@@ -21,29 +22,16 @@ async function createAdmin() {
     }
 
     // Validate password complexity
-    if (password.length < 8) {
-      console.error("\n❌ Error: Password must be at least 8 characters");
-      process.exit(1);
-    }
-
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasDigit = /\d/.test(password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecial) {
-      console.error("\n❌ Error: Password must include:");
-      console.error("   - At least one uppercase letter (A-Z)");
-      console.error("   - At least one lowercase letter (a-z)");
-      console.error("   - At least one digit (0-9)");
-      console.error("   - At least one special character (!@#$%^&*...)");
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      displayValidationErrors(passwordValidation.errors);
       process.exit(1);
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.error("\n❌ Error: Invalid email format");
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      console.error(`\n❌ Error: ${emailValidation.error}`);
       process.exit(1);
     }
 
@@ -85,9 +73,11 @@ async function createAdmin() {
 
     await mongoose.connection.close();
   } catch (error) {
-    console.error("\n❌ Error creating admin:", error);
+    console.error("\n❌ Error creating admin:");
     if (error instanceof Error) {
       console.error(error.message);
+    } else {
+      console.error("An unknown error occurred");
     }
     process.exit(1);
   }

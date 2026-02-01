@@ -7,6 +7,7 @@
 import mongoose from "mongoose";
 import Admin from "../src/models/Admin.js";
 import dotenv from "dotenv";
+import { validatePassword, displayValidationErrors } from "./utils/validation.js";
 
 dotenv.config();
 
@@ -21,22 +22,9 @@ async function resetPassword() {
     }
 
     // Validate password complexity
-    if (newPassword.length < 8) {
-      console.error("\n❌ Error: Password must be at least 8 characters");
-      process.exit(1);
-    }
-
-    const hasUppercase = /[A-Z]/.test(newPassword);
-    const hasLowercase = /[a-z]/.test(newPassword);
-    const hasDigit = /\d/.test(newPassword);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
-
-    if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecial) {
-      console.error("\n❌ Error: Password must include:");
-      console.error("   - At least one uppercase letter (A-Z)");
-      console.error("   - At least one lowercase letter (a-z)");
-      console.error("   - At least one digit (0-9)");
-      console.error("   - At least one special character (!@#$%^&*...)");
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+      displayValidationErrors(passwordValidation.errors);
       process.exit(1);
     }
 
@@ -74,9 +62,11 @@ async function resetPassword() {
 
     await mongoose.connection.close();
   } catch (error) {
-    console.error("\n❌ Error resetting password:", error);
+    console.error("\n❌ Error resetting password:");
     if (error instanceof Error) {
       console.error(error.message);
+    } else {
+      console.error("An unknown error occurred");
     }
     process.exit(1);
   }
