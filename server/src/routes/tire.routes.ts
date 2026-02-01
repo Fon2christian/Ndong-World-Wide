@@ -94,7 +94,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) {
       return res.status(400).json({ message: "Invalid tire ID format" });
     }
-    const tire = await Tire.findById(id);
+    const tire = await Tire.findById(id).lean();
     if (!tire) return res.status(404).json({ message: "Tire not found" });
     res.json(tire);
   } catch (error) {
