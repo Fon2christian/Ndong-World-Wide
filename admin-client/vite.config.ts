@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -9,21 +8,23 @@ export default defineConfig({
   server: {
     port: 5175,
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        'src/main.tsx',
-        'src/vite-env.d.ts',
-      ],
+  build: {
+    // Optimize chunk splitting
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor libraries into separate chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Split other large dependencies
+          'utils': ['axios', 'zod'],
+        },
+      },
     },
+    // Increase chunk size warning limit (in KB)
+    chunkSizeWarningLimit: 1000,
+    // Enable minification with esbuild
+    minify: 'esbuild',
+    // Disable source maps for smaller bundle
+    sourcemap: false,
   },
 })
