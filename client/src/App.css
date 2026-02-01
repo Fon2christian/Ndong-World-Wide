@@ -634,9 +634,8 @@
 .flow-page,
 .company-page,
 .contact-page {
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Page Placeholder */
@@ -695,7 +694,7 @@
    ======================================== */
 .slideshow {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
 }
 
 .slideshow__container {
@@ -2339,9 +2338,8 @@
    Business Page
    ======================================== */
 .business-page {
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
 }
 
 .business-loading {
@@ -3014,10 +3012,12 @@
 
   .admin-table-container {
     overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
   }
 
   .admin-table {
-    min-width: 800px;
+    min-width: 600px;
   }
 }
 
