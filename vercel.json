@@ -24,6 +24,7 @@
     }
   ],
   "routes": [
+    { "handle": "filesystem" },
     {
       "src": "/api/(.*)",
       "dest": "server/dist/server.js"
@@ -34,7 +35,7 @@
     },
     {
       "src": "/admin/(.*)",
-      "dest": "admin-client/dist/$1"
+      "dest": "admin-client/dist/index.html"
     },
     {
       "src": "/",
@@ -42,7 +43,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "client/dist/$1"
+      "dest": "client/dist/index.html"
     }
   ],
   "env": {

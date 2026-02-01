@@ -27,18 +27,21 @@ Ndong-World-Wide/
 ## Features
 
 ### Client Website
+
 - Product catalog (tires and wheel drums)
 - Product search and filtering
 - Responsive design
 - SEO-friendly
 
 ### Admin Dashboard
+
 - Secure authentication (JWT)
 - Product management (CRUD operations)
 - Inventory tracking
 - Admin user management
 
 ### API Server
+
 - RESTful API
 - JWT authentication
 - Rate limiting
@@ -62,7 +65,7 @@ git clone https://github.com/Fon2christian/Ndong-World-Wide.git
 cd Ndong-World-Wide
 ```
 
-2. **Install dependencies**
+1. **Install dependencies**
 
 ```bash
 # Install server dependencies
@@ -78,7 +81,7 @@ cd ../admin-client
 npm install
 ```
 
-3. **Configure environment variables**
+1. **Configure environment variables**
 
 ```bash
 # In server directory
@@ -86,7 +89,7 @@ cp .env.example .env
 # Edit .env with your MongoDB URI and JWT secret
 ```
 
-4. **Start development servers**
+1. **Start development servers**
 
 ```bash
 # Terminal 1: Start API server
@@ -102,7 +105,7 @@ cd admin-client
 npm run dev
 ```
 
-5. **Access the applications**
+1. **Access the applications**
 
 - Client: <http://localhost:5173>
 - Admin: <http://localhost:5175>
@@ -163,6 +166,7 @@ API URL is automatically configured based on environment:
 ## Technology Stack
 
 ### Frontend
+
 - **React 19**: UI library
 - **TypeScript**: Type safety
 - **Vite**: Build tool and dev server
@@ -171,6 +175,7 @@ API URL is automatically configured based on environment:
 - **Zod**: Runtime type validation
 
 ### Backend
+
 - **Node.js**: Runtime
 - **Express 5**: Web framework
 - **TypeScript**: Type safety
@@ -180,6 +185,7 @@ API URL is automatically configured based on environment:
 - **bcrypt**: Password hashing
 
 ### DevOps
+
 - **Docker**: Containerization (for self-hosted)
 - **nginx**: Reverse proxy (for self-hosted)
 - **Vercel**: Serverless deployment
