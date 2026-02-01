@@ -35,3 +35,4 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile.render
     dockerContext: .
+    healthCheckPath: /health

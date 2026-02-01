@@ -27,6 +27,8 @@ Deploy your application to Render with auto-deployment from GitHub in under 10 m
    - Username: `ndong-admin`
    - Password: Generate strong password (save it!)
 5. Network Access → Add IP Address → **Allow Access from Anywhere** (0.0.0.0/0)
+
+   ⚠️ **Security Note**: For production, restrict access to Render's IP ranges instead of 0.0.0.0/0. Contact Render support for their outbound IP list, or use MongoDB Atlas VPC peering for better security.
 6. Get connection string:
    - Click **Connect** → **Connect your application**
    - Copy the connection string:
@@ -61,7 +63,7 @@ Deploy your application to Render with auto-deployment from GitHub in under 10 m
    | `EMAIL_PORT` | `587` |
    | `EMAIL_SECURE` | `false` |
    | `EMAIL_USER` | Your Gmail address |
-   | `EMAIL_PASS` | [Gmail App Password](#gmail-setup) |
+   | `EMAIL_PASS` | [Gmail App Password](#gmail-setup-for-contact-forms) |
    | `CONTACT_NOTIFICATION_EMAIL` | Email to receive contact forms |
 
 4. **Click "Apply"** - Render will:
