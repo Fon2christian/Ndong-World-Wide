@@ -30,7 +30,9 @@ describe("WheelDrum Routes", () => {
     authToken = generateAuthToken();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Clean up database
+    await WheelDrum.deleteMany({});
     // Clean up environment variable stubs
     vi.unstubAllEnvs();
   });

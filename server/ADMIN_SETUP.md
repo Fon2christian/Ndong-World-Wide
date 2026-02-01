@@ -82,7 +82,7 @@ curl -X POST https://your-domain.com/api/admin/login \
 ```json
 {
   "message": "Login successful",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token": "<JWT_TOKEN_HERE>",
   "admin": {
     "id": "507f1f77bcf86cd799439011",
     "email": "admin@example.com",
@@ -150,7 +150,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ```bash
 curl -X GET https://your-domain.com/api/admin/me \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+  -H "Authorization: Bearer <JWT_TOKEN_FROM_LOGIN>"
 ```
 
 ### Token Information

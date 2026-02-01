@@ -241,7 +241,7 @@ https://yourdomain.com/api/*     → Server (Express API)
 - Check server is running: `docker-compose ps server`
 - Check server logs: `docker-compose logs server`
 - Verify MongoDB connection in server/.env
-- Test server health directly: `docker-compose exec server curl http://localhost:5002/api/health`
+- Test server health directly: `docker-compose exec -T server curl http://localhost:5002/api/health`
 - Test nginx health: `curl http://localhost/health`
 
 ### Static files not loading
