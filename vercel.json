@@ -7,26 +7,23 @@
       "runtime": "nodejs20.x"
     }
   },
+  "outputDirectory": "client/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/server/dist/server.js"
+      "destination": "/api/serverless"
     },
     {
       "source": "/admin",
-      "destination": "/admin-client/dist/index.html"
+      "destination": "/admin/index.html"
     },
     {
       "source": "/admin/(.*)",
-      "destination": "/admin-client/dist/$1"
+      "destination": "/admin/$1"
     },
     {
-      "source": "/((?!api|admin).*)",
-      "destination": "/client/dist/$1"
-    },
-    {
-      "source": "/",
-      "destination": "/client/dist/index.html"
+      "source": "/(.*)",
+      "destination": "/$1"
     }
   ],
   "env": {
