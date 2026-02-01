@@ -3,9 +3,9 @@ import { useLanguage } from "../context/LanguageContext";
 import { Link } from "react-router-dom";
 
 const heroImages = [
-  "/assets/images/pic1.jpg",
-  "/assets/images/pic2.jpg",
-  "/assets/images/pic3.jpg",
+  "/assets/images/ship-image19.JPG",
+  "/assets/images/ship8.JPG",
+  "/assets/images/ship9.JPG",
 ];
 
 export default function Flow() {
