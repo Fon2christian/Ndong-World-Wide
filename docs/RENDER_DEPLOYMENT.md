@@ -313,6 +313,43 @@ Render deploys only if tests pass.
 - **Status**: [status.render.com](https://status.render.com)
 - **Contact**: [help@render.com](mailto:help@render.com)
 
+## Post-Deployment: Create Admin Account
+
+**IMPORTANT**: After your first deployment, you need to create an admin account to access the admin dashboard.
+
+### Quick Setup (2 minutes)
+
+1. **SSH into your Render service**:
+   ```bash
+   # From Render Dashboard → ndong-api service → Shell tab
+   # Or use Render CLI
+   ```
+
+2. **Run the admin creation script**:
+   ```bash
+   cd /app/server
+   npm run create-admin
+   ```
+
+3. **Follow the prompts**:
+   - Enter your admin email
+   - Enter your full name
+   - Create a secure password (min 8 characters)
+   - Confirm password
+
+4. **Done!** Log in at: `https://your-domain.com/admin`
+
+### Detailed Guide
+
+For more options and troubleshooting, see: [Admin Setup Guide](../server/ADMIN_SETUP.md)
+
+The guide covers:
+- Multiple methods to create admin accounts
+- Security best practices
+- Password requirements
+- Troubleshooting common issues
+- Managing multiple admin accounts
+
 ## Next Steps
 
 1. ✅ Sign up for Render: [render.com](https://render.com)
@@ -320,8 +357,9 @@ Render deploys only if tests pass.
 3. ✅ Deploy via Blueprint (uses render.yaml)
 4. ✅ Configure environment variables
 5. ✅ Test your app: `https://ndong-nginx.onrender.com`
-6. ✅ Add custom domain (optional)
-7. ✅ Set up monitoring/alerts
+6. ✅ **Create admin account** (see Post-Deployment section above)
+7. ✅ Add custom domain (optional)
+8. ✅ Set up monitoring/alerts
 
 **Questions?** Check the troubleshooting section above or ask in Render community!
 
