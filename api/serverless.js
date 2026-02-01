@@ -1,46 +1,55 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+// Import using require for CommonJS compatibility with Vercel
+const path = require("path");
 
-dotenv.config();
+// Re-export as ES module for proper handling
+let handler;
 
-const mongoUri = process.env.MONGO_URI;
+async function getHandler() {
+  if (!handler) {
+    // Import the compiled server app
+    const mongoose = await import("mongoose");
+    const dotenv = await import("dotenv");
 
-if (!mongoUri) {
-  throw new Error("❌ MONGO_URI is not defined in environment variables");
-}
+    dotenv.default.config();
 
-// Serverless function handler with connection caching
-let isConnected = false;
-let app;
+    const mongoUri = process.env.MONGO_URI;
 
-async function connectToDatabase() {
-  if (isConnected) {
-    console.log("Using existing database connection");
-    return;
+    if (!mongoUri) {
+      throw new Error("❌ MONGO_URI is not defined in environment variables");
+    }
+
+    // Connect to MongoDB
+    let isConnected = false;
+
+    if (!isConnected) {
+      try {
+        await mongoose.default.connect(mongoUri, {
+          serverSelectionTimeoutMS: 5000,
+          socketTimeoutMS: 45000,
+        });
+        isConnected = true;
+        console.log("✅ MongoDB connected");
+      } catch (err) {
+        console.error("❌ MongoDB connection error:", err);
+        throw err;
+      }
+    }
+
+    // Import the Express app
+    const serverPath = path.join(process.cwd(), "server", "dist", "app.js");
+    const appModule = await import(serverPath);
+    handler = appModule.default;
   }
 
+  return handler;
+}
+
+module.exports = async function(req, res) {
   try {
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    isConnected = true;
-    console.log("✅ MongoDB connected");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
-    throw err;
+    const app = await getHandler();
+    return app(req, res);
+  } catch (error) {
+    console.error("Serverless function error:", error);
+    res.status(500).json({ error: "Internal server error", message: error.message });
   }
-}
-
-// Vercel serverless function handler
-module.exports = async function handler(req, res) {
-  // Lazy load the app to ensure database connection is established first
-  if (!app) {
-    await connectToDatabase();
-    // Dynamically import the ES module app
-    const appModule = await import("../server/dist/app.js");
-    app = appModule.default;
-  }
-
-  return app(req, res);
 };
