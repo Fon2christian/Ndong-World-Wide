@@ -43,3 +43,8 @@ Thumbs.db
 # SSL certificates and certbot data
 certbot/
 nginx_logs/
+
+# Vercel
+.vercel
+.vercel.json
+*.vercel.app
