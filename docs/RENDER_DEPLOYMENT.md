@@ -32,12 +32,15 @@ Deploy your application to Render with auto-deployment from GitHub in under 10 m
 6. Get connection string:
    - Click **Connect** → **Connect your application**
    - Copy the connection string:
-     ```
+
+     ```text
      mongodb+srv://ndong-admin:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
      ```
+
    - Replace `<password>` with your actual password
    - Add database name before the `?`:
-     ```
+
+     ```text
      mongodb+srv://ndong-admin:yourpassword@cluster0.xxxxx.mongodb.net/ndong-db?retryWrites=true&w=majority
      ```
 

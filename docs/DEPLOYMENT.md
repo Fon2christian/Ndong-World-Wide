@@ -1,6 +1,7 @@
 # Production Deployment Guide
 
 ## Prerequisites
+
 - Docker and Docker Compose installed
 - Domain name pointed to server IP
 - Ports 80 and 443 open on firewall
@@ -89,6 +90,7 @@ Manual renewal:
 ## Maintenance Commands
 
 ### View logs
+
 ```bash
 # All services
 docker-compose logs -f
@@ -99,6 +101,7 @@ docker-compose logs -f server
 ```
 
 ### Restart services
+
 ```bash
 # All services
 docker-compose restart
@@ -108,16 +111,19 @@ docker-compose restart nginx
 ```
 
 ### Stop services
+
 ```bash
 docker-compose down
 ```
 
 ### Rebuild after code changes
+
 ```bash
 docker-compose up -d --build
 ```
 
 ### Remove all containers and volumes
+
 ```bash
 docker-compose down -v
 ```
@@ -144,9 +150,9 @@ After deployment, verify everything is working:
    # Should return 200 OK
    ```
 
-4. **Test API access**:
+4. **Test health endpoint**:
    ```bash
-   curl https://yourdomain.com/api/health
+   curl https://yourdomain.com/health
    # Should return "healthy"
    ```
 
@@ -165,14 +171,16 @@ After deployment, verify everything is working:
 ## Architecture
 
 ### Routing Structure
-```
+
+```text
 https://yourdomain.com/          → Client (React SPA)
 https://yourdomain.com/admin     → Admin Dashboard (React SPA)
 https://yourdomain.com/api/*     → Server (Express API)
 ```
 
 ### Container Architecture
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │           Nginx Container               │
 │   - Port 80 (HTTP → HTTPS redirect)    │
@@ -216,23 +224,28 @@ https://yourdomain.com/api/*     → Server (Express API)
 ## Troubleshooting
 
 ### Nginx won't start
+
 - Check nginx configuration syntax: `docker-compose exec nginx nginx -t`
 - Check logs: `docker-compose logs nginx`
 - Verify SSL certificates exist in `./certbot/conf/live/`
 
 ### SSL certificate errors
+
 - Ensure domain DNS points to server IP
 - Check ports 80 and 443 are open
 - Verify email in `scripts/init-letsencrypt.sh`
 - Check certbot logs: `docker-compose logs certbot`
 
 ### API not accessible
+
 - Check server is running: `docker-compose ps server`
 - Check server logs: `docker-compose logs server`
 - Verify MongoDB connection in server/.env
-- Test direct access: `docker-compose exec server curl http://localhost:5002/api/health`
+- Test server health directly: `docker-compose exec server curl http://localhost:5002/api/health`
+- Test nginx health: `curl http://localhost/health`
 
 ### Static files not loading
+
 - Verify build directories exist: `ls -la client/dist admin-client/dist`
 - Check nginx volume mounts in docker-compose.yml
 - Rebuild client/admin: `docker-compose up -d --build client admin`

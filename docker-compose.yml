@@ -42,6 +42,8 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: ndong-server
+    # Environment variables loaded from .env file
+    # Create from template: cp server/.env.example server/.env
     env_file:
       - ./server/.env
     environment:
@@ -67,9 +69,9 @@ services:
       args:
         VITE_API_URL: /api
     container_name: ndong-client-build
-    command: echo "Client built successfully"
+    command: sh -c "cp -r /app/dist/. /output/ && echo 'Client built successfully'"
     volumes:
-      - ./client/dist:/app/dist
+      - ./client/dist:/output
     networks:
       - ndong-network
 
@@ -81,9 +83,9 @@ services:
       args:
         VITE_API_URL: /api
     container_name: ndong-admin-build
-    command: echo "Admin built successfully"
+    command: sh -c "cp -r /app/dist/. /output/ && echo 'Admin built successfully'"
     volumes:
-      - ./admin-client/dist:/app/dist
+      - ./admin-client/dist:/output
     networks:
       - ndong-network
 
