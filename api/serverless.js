@@ -35,9 +35,8 @@ async function getHandler() {
       }
     }
 
-    // Import the Express app
-    const serverPath = path.join(process.cwd(), "server", "dist", "app.js");
-    const appModule = await import(serverPath);
+    // Import the Express app from the local dist directory
+    const appModule = await import("./dist/app.js");
     handler = appModule.default;
   }
 
