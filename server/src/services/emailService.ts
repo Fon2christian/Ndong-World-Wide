@@ -105,6 +105,7 @@ export async function sendContactEmail(contact: ContactAttrs & { _id?: any; crea
     throw new Error("Email service not configured");
   }
 
+  // Support comma-separated email addresses for multiple recipients
   const recipientEmail = process.env.CONTACT_NOTIFICATION_EMAIL || process.env.EMAIL_USER;
 
   // Escape all user-provided data to prevent HTML injection
