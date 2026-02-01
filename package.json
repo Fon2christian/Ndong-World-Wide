@@ -6,7 +6,7 @@
     "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
     "dev:admin": "concurrently -n server,admin -c blue,yellow \"npm run dev -w server\" \"npm run dev -w admin-client\"",
     "dev:all": "concurrently -n server,client,admin -c blue,green,yellow \"npm run dev -w server\" \"npm run dev -w client\" \"npm run dev -w admin-client\"",
-    "build": "npm run build -w client && npm run build -w admin-client && npm run build -w server",
+    "build": "npm run vercel-build -w client && npm run vercel-build -w admin-client && npm run vercel-build -w server",
     "start": "npm run start -w server",
     "install:all": "npm install"
   },
