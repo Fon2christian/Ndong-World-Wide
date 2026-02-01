@@ -79,6 +79,7 @@ curl -X POST https://your-domain.com/api/admin/login \
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Login successful",
@@ -120,11 +121,13 @@ Adm1n$Dashboard#2024
 ### 2. Secure Your JWT_SECRET
 
 In `server/.env`:
+
 ```env
 JWT_SECRET=your-very-long-random-secret-at-least-32-characters-long
 ```
 
 Generate a strong secret:
+
 ```bash
 # On Linux/Mac:
 openssl rand -base64 32
@@ -175,6 +178,7 @@ If you see this error, an admin with that email already exists. Either:
 ### "MONGO_URI not found"
 
 Ensure your `.env` file has the MongoDB connection string:
+
 ```env
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
 ```
@@ -182,6 +186,7 @@ MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
 ### "JWT_SECRET not configured"
 
 Add JWT_SECRET to your `.env` file:
+
 ```env
 JWT_SECRET=your-secret-key-here
 ```

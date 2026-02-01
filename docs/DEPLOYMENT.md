@@ -9,12 +9,14 @@
 ## Initial Setup
 
 1. Clone the repository:
+
    ```bash
    git clone <repository-url>
    cd Ndong-World-Wide
    ```
 
 2. Copy environment files:
+
    ```bash
    cp server/.env.example server/.env
    cp client/.env.example client/.env.production
@@ -36,15 +38,25 @@
    - Set `domains=(yourdomain.com www.yourdomain.com)`
    - Set your email address in the `email` variable
 
+6. Create build directories:
+
+   ```bash
+   mkdir -p client/dist admin-client/dist
+   ```
+
+   This ensures proper directory ownership before Docker builds.
+
 ## SSL Certificate Setup
 
 1. Make scripts executable:
+
    ```bash
    chmod +x scripts/init-letsencrypt.sh
    chmod +x scripts/renew-ssl.sh
    ```
 
 2. Initialize SSL certificates:
+
    ```bash
    ./scripts/init-letsencrypt.sh
    ```
@@ -59,16 +71,19 @@
 ## Build and Deploy
 
 1. Build all services:
+
    ```bash
    docker-compose build
    ```
 
 2. Start services:
+
    ```bash
    docker-compose up -d
    ```
 
 3. Check that all containers are running:
+
    ```bash
    docker-compose ps
    ```
