@@ -26,13 +26,19 @@ module.exports = async (req, res) => {
       // Import the Express app
       const appModule = await import('./dist/app.js');
 
-      // Debug: log what we're getting
-      console.log("App module keys:", Object.keys(appModule));
-      console.log("App module default:", appModule.default);
-      console.log("Is default a function?", typeof appModule.default === 'function');
+      // Vercel compiles ESM to CommonJS, which can cause double-wrapping
+      // Try to unwrap to get the actual Express app
+      let app = appModule.default;
 
-      // Try different ways to get the app
-      cachedApp = appModule.default || appModule.app || appModule;
+      // If default is an object with a default property, unwrap it
+      if (app && typeof app === 'object' && app.default) {
+        app = app.default;
+      }
+
+      console.log("Final app type:", typeof app);
+      console.log("Is app a function?", typeof app === 'function');
+
+      cachedApp = app;
     }
 
     // Check if we have a valid handler
