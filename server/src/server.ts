@@ -18,7 +18,15 @@ mongoose
     process.exit(1);
   });
 
-const PORT = parseInt(process.env.PORT || '5002', 10);
+// Parse and validate PORT
+const portValue = parseInt(process.env.PORT || '5002', 10);
+const PORT = Number.isInteger(portValue) && portValue > 0 && portValue <= 65535
+  ? portValue
+  : 5002;
+
+if (process.env.PORT && PORT === 5002) {
+  console.warn(`⚠️  Invalid PORT value "${process.env.PORT}", using default 5002`);
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
