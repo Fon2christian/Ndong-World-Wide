@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "tsx src/server.ts",
     "build": "tsc",
+    "vercel-build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
