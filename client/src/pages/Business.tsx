@@ -178,9 +178,9 @@ export default function Business() {
       {/* Hero Section */}
       <section className="business-hero">
         <div className="business-hero__content">
-          <h1 className="business-hero__title">Our Business</h1>
+          <h1 className="business-hero__title">{t.business.heroTitle}</h1>
           <p className="business-hero__subtitle">
-            Explore our complete inventory of quality vehicles, tires, and wheel drums from Japan
+            {t.business.heroSubtitle}
           </p>
         </div>
       </section>

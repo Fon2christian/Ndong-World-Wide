@@ -68,8 +68,8 @@ export default function Footer() {
               </a> (Japanese)
             </p>
             <p className="footer__email">
-              <a href="mailto:info@ndongworldwide.com" className="footer__contact-link">
-                info@ndongworldwide.com
+              <a href="mailto:fontebit72@gmail.com" className="footer__contact-link">
+                fontebit72@gmail.com
               </a>
             </p>
           </div>
