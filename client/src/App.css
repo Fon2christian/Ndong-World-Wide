@@ -2999,6 +2999,10 @@
   .business-card__image {
     height: 280px;
   }
+
+  .business-card--car .business-card__image {
+    height: 280px;
+  }
 }
 
 /* Small mobile: revert to 1 column */
@@ -3021,6 +3025,10 @@
   }
 
   .business-card__image {
+    height: 320px;
+  }
+
+  .business-card--car .business-card__image {
     height: 320px;
   }
 }
