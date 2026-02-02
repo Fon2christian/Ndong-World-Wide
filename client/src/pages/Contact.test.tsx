@@ -206,10 +206,11 @@ describe('Contact Page', () => {
     await waitFor(() => {
       expect(screen.getByText('Jane Doe')).toBeInTheDocument()
 
-      // Find all elements that could contain the furigana value
-      const confirmValues = screen.getAllByText('-')
-      // Verify at least one "-" exists (the furigana placeholder)
-      expect(confirmValues.length).toBeGreaterThan(0)
+      // Find the furigana label and verify its value is "-"
+      const furiganaLabel = screen.getByText('Furigana')
+      const furiganaItem = furiganaLabel.closest('.contact-confirm__item')
+      const furiganaValue = furiganaItem?.querySelector('.contact-confirm__value')
+      expect(furiganaValue).toHaveTextContent('-')
     })
   })
 })
