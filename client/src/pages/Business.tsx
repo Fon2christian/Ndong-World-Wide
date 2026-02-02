@@ -103,41 +103,49 @@ export default function Business() {
     return conditionTrimmed; // Return trimmed value for other conditions like "Excellent"
   };
 
-  const renderCarCard = (car: Car) => (
-    <div key={car._id} className="business-card">
-      {car.images && car.images[0] ? (
-        <img
-          src={car.images[0]}
-          alt={`${car.brand} ${car.model} ${car.year}`}
-          className="business-card__image"
-        />
-      ) : (
-        <div
-          className="business-card__placeholder"
-          role="img"
-          aria-label={`${car.brand} ${car.model} ${car.year} - ${t.business.noImageAvailable}`}
-        >
-          🚗
-        </div>
-      )}
-    </div>
-  );
-
-  const renderTireCard = (tire: Tire) => {
-    const conditionLabel = localizeCondition(tire.condition);
+  const renderCarCard = (car: Car) => {
+    const carAlt = `${car.brand} ${car.model} ${car.year}`;
     return (
-      <div key={tire._id} className="business-card">
-        {tire.images && tire.images[0] ? (
+      <div key={car._id} className="business-card">
+        {car.images && car.images[0] ? (
           <img
-            src={tire.images[0]}
-            alt={`${tire.brand} ${tire.size} ${conditionLabel} ${t.business.altTextTire}`}
+            src={car.images[0]}
+            alt={carAlt}
             className="business-card__image"
+            loading="lazy"
           />
         ) : (
           <div
             className="business-card__placeholder"
             role="img"
-            aria-label={`${tire.brand} ${tire.size} ${conditionLabel} ${t.business.altTextTire} - ${t.business.noImageAvailable}`}
+            aria-label={`${carAlt} - ${t.business.noImageAvailable}`}
+          >
+            🚗
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderTireCard = (tire: Tire) => {
+    const conditionLabel = localizeCondition(tire.condition);
+    const tireAlt = [tire.brand, tire.size, conditionLabel, t.business.altTextTire]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <div key={tire._id} className="business-card">
+        {tire.images && tire.images[0] ? (
+          <img
+            src={tire.images[0]}
+            alt={tireAlt}
+            className="business-card__image"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${tireAlt} - ${t.business.noImageAvailable}`}
           >
             🛞
           </div>
@@ -148,19 +156,23 @@ export default function Business() {
 
   const renderWheelDrumCard = (drum: WheelDrum) => {
     const conditionLabel = localizeCondition(drum.condition);
+    const drumAlt = [drum.brand, drum.size, conditionLabel, t.business.altTextWheelDrum]
+      .filter(Boolean)
+      .join(" ");
     return (
       <div key={drum._id} className="business-card">
         {drum.images && drum.images[0] ? (
           <img
             src={drum.images[0]}
-            alt={`${drum.brand} ${drum.size} ${conditionLabel} ${t.business.altTextWheelDrum}`}
+            alt={drumAlt}
             className="business-card__image"
+            loading="lazy"
           />
         ) : (
           <div
             className="business-card__placeholder"
             role="img"
-            aria-label={`${drum.brand} ${drum.size} ${conditionLabel} ${t.business.altTextWheelDrum} - ${t.business.noImageAvailable}`}
+            aria-label={`${drumAlt} - ${t.business.noImageAvailable}`}
           >
             ⚙️
           </div>
