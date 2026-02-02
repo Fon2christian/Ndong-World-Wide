@@ -94,6 +94,13 @@ export default function Business() {
     </div>
   );
 
+  const localizeCondition = (condition: string) => {
+    const conditionLower = condition.toLowerCase();
+    if (conditionLower === "new") return t.market.conditionNew;
+    if (conditionLower === "used") return t.market.conditionUsed;
+    return condition; // Return original for other conditions like "Excellent"
+  };
+
   const renderCarCard = (car: Car) => (
     <div key={car._id} className="business-card">
       {car.images && car.images[0] ? (
@@ -114,45 +121,51 @@ export default function Business() {
     </div>
   );
 
-  const renderTireCard = (tire: Tire) => (
-    <div key={tire._id} className="business-card">
-      {tire.images && tire.images[0] ? (
-        <img
-          src={tire.images[0]}
-          alt={`${tire.brand} ${tire.size} ${tire.condition} ${t.business.altTextTire}`}
-          className="business-card__image"
-        />
-      ) : (
-        <div
-          className="business-card__placeholder"
-          role="img"
-          aria-label={`${tire.brand} ${tire.size} ${tire.condition} ${t.business.altTextTire} - ${t.business.noImageAvailable}`}
-        >
-          🛞
-        </div>
-      )}
-    </div>
-  );
+  const renderTireCard = (tire: Tire) => {
+    const conditionLabel = localizeCondition(tire.condition);
+    return (
+      <div key={tire._id} className="business-card">
+        {tire.images && tire.images[0] ? (
+          <img
+            src={tire.images[0]}
+            alt={`${tire.brand} ${tire.size} ${conditionLabel} ${t.business.altTextTire}`}
+            className="business-card__image"
+          />
+        ) : (
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${tire.brand} ${tire.size} ${conditionLabel} ${t.business.altTextTire} - ${t.business.noImageAvailable}`}
+          >
+            🛞
+          </div>
+        )}
+      </div>
+    );
+  };
 
-  const renderWheelDrumCard = (drum: WheelDrum) => (
-    <div key={drum._id} className="business-card">
-      {drum.images && drum.images[0] ? (
-        <img
-          src={drum.images[0]}
-          alt={`${drum.brand} ${drum.size} ${drum.condition} ${t.business.altTextWheelDrum}`}
-          className="business-card__image"
-        />
-      ) : (
-        <div
-          className="business-card__placeholder"
-          role="img"
-          aria-label={`${drum.brand} ${drum.size} ${drum.condition} ${t.business.altTextWheelDrum} - ${t.business.noImageAvailable}`}
-        >
-          ⚙️
-        </div>
-      )}
-    </div>
-  );
+  const renderWheelDrumCard = (drum: WheelDrum) => {
+    const conditionLabel = localizeCondition(drum.condition);
+    return (
+      <div key={drum._id} className="business-card">
+        {drum.images && drum.images[0] ? (
+          <img
+            src={drum.images[0]}
+            alt={`${drum.brand} ${drum.size} ${conditionLabel} ${t.business.altTextWheelDrum}`}
+            className="business-card__image"
+          />
+        ) : (
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${drum.brand} ${drum.size} ${conditionLabel} ${t.business.altTextWheelDrum} - ${t.business.noImageAvailable}`}
+          >
+            ⚙️
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderContent = () => {
     switch (activeTab) {

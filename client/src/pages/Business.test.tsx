@@ -482,7 +482,7 @@ describe('Business', () => {
       await waitFor(() => {
         const images = document.querySelectorAll('.business-card__image')
         expect(images.length).toBeGreaterThan(0)
-        expect(images[0]).toHaveAttribute('alt', 'Goodyear 215/60R16 new tire')
+        expect(images[0]).toHaveAttribute('alt', 'Goodyear 215/60R16 New tire')
       })
     })
 
@@ -501,7 +501,7 @@ describe('Business', () => {
         const placeholders = document.querySelectorAll('.business-card__placeholder')
         expect(placeholders.length).toBeGreaterThan(0)
         expect(placeholders[0]).toHaveAttribute('role', 'img')
-        expect(placeholders[0]).toHaveAttribute('aria-label', 'Dunlop 195/65R15 used tire - No image available')
+        expect(placeholders[0]).toHaveAttribute('aria-label', 'Dunlop 195/65R15 Used tire - No image available')
       })
     })
   })
