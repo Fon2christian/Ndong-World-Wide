@@ -8,6 +8,11 @@ interface OptimizedImageProps {
   placeholderLabel?: string;
   placeholderClassName?: string;
   onClick?: () => void;
+  /**
+   * Optional wrapper className. When provided, wraps the image and skeleton in a container div.
+   * If not provided, image and skeleton are rendered as siblings - the parent element must have
+   * `position: relative` for the skeleton overlay to position correctly.
+   */
   wrapperClassName?: string;
 }
 

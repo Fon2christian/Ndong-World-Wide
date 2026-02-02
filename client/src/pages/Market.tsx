@@ -248,6 +248,7 @@ export default function Market() {
               onClick={() => openLightbox(car.images, currentIndex, `${car.brand} ${car.model}`)}
               placeholderIcon="🚗"
               placeholderLabel={`${car.brand} ${car.model}`}
+              placeholderClassName="car-card__gallery-placeholder"
             />
             {car.images.length > 1 && (
               <>
@@ -325,6 +326,7 @@ export default function Market() {
               onClick={() => openLightbox(tire.images, currentIndex, `${tire.brand} - ${tire.size}`)}
               placeholderIcon="🛞"
               placeholderLabel={`${tire.brand} ${tire.size}`}
+              placeholderClassName="product-card__gallery-placeholder"
             />
             {tire.images.length > 1 && (
               <>
@@ -389,6 +391,7 @@ export default function Market() {
               onClick={() => openLightbox(wheelDrum.images, currentIndex, `${wheelDrum.brand} - ${wheelDrum.size}`)}
               placeholderIcon="⚙️"
               placeholderLabel={`${wheelDrum.brand} ${wheelDrum.size}`}
+              placeholderClassName="product-card__gallery-placeholder"
             />
             {wheelDrum.images.length > 1 && (
               <>
