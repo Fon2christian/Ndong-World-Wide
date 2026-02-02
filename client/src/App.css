@@ -1382,6 +1382,29 @@
   animation: titlePulse 2.5s ease-in-out forwards;
 }
 
+/* Provision Section Mobile Responsive */
+@media (max-width: 768px) {
+  .provision-section {
+    padding: var(--space-xl) var(--space-md);
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .provision-section {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .provision-section__image img {
+    height: 250px;
+  }
+
+  .provision-section__title {
+    font-size: 1.75rem;
+  }
+}
+
 @keyframes underlineExpand {
   0% {
     width: 0;
