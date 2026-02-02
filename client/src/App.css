@@ -3818,10 +3818,9 @@
     font-size: 1rem;
   }
 
-  .flow-step-connector {
-    left: 19px;
-    top: 40px;
-    height: calc(100% - 40px);
+  /* Hide connector in 2-column grid layout */
+  .flow-steps--vertical .flow-step-connector {
+    display: none;
   }
 
   .flow-step-content {
@@ -4938,10 +4937,6 @@
 
 /* Contact Responsive */
 @media (max-width: 768px) {
-  .contact-hero__title {
-    font-size: 2.2rem;
-  }
-
   .contact-progress {
     padding: 30px var(--space-md);
     gap: var(--space-sm);
@@ -5356,6 +5351,7 @@
     padding: var(--space-xs) var(--space-sm);
     flex-direction: column;
     gap: 2px;
+    min-height: 44px;
   }
 
   .market__tab-icon {
@@ -6199,11 +6195,17 @@
   }
 
   .provision-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
   }
 
   .provision-grid--cars {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .provision-grid {
     grid-template-columns: 1fr;
   }
 }
