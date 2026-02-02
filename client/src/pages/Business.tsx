@@ -106,7 +106,7 @@ export default function Business() {
         <div
           className="business-card__placeholder"
           role="img"
-          aria-label={`${car.brand} ${car.model} ${car.year} - No image available`}
+          aria-label={`${car.brand} ${car.model} ${car.year} - ${t.business.noImageAvailable}`}
         >
           🚗
         </div>
@@ -119,14 +119,14 @@ export default function Business() {
       {tire.images && tire.images[0] ? (
         <img
           src={tire.images[0]}
-          alt={`${tire.brand} ${tire.size} ${tire.condition} tire`}
+          alt={`${tire.brand} ${tire.size} ${tire.condition} ${t.business.altTextTire}`}
           className="business-card__image"
         />
       ) : (
         <div
           className="business-card__placeholder"
           role="img"
-          aria-label={`${tire.brand} ${tire.size} ${tire.condition} tire - No image available`}
+          aria-label={`${tire.brand} ${tire.size} ${tire.condition} ${t.business.altTextTire} - ${t.business.noImageAvailable}`}
         >
           🛞
         </div>
@@ -139,14 +139,14 @@ export default function Business() {
       {drum.images && drum.images[0] ? (
         <img
           src={drum.images[0]}
-          alt={`${drum.brand} ${drum.size} ${drum.condition} wheel drum`}
+          alt={`${drum.brand} ${drum.size} ${drum.condition} ${t.business.altTextWheelDrum}`}
           className="business-card__image"
         />
       ) : (
         <div
           className="business-card__placeholder"
           role="img"
-          aria-label={`${drum.brand} ${drum.size} ${drum.condition} wheel drum - No image available`}
+          aria-label={`${drum.brand} ${drum.size} ${drum.condition} ${t.business.altTextWheelDrum} - ${t.business.noImageAvailable}`}
         >
           ⚙️
         </div>

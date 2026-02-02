@@ -46,6 +46,9 @@ export const translations = {
     business: {
       heroTitle: "Our Business",
       heroSubtitle: "Explore our complete inventory of quality vehicles, tires, and wheel drums from Japan",
+      altTextTire: "tire",
+      altTextWheelDrum: "wheel drum",
+      noImageAvailable: "No image available",
     },
     // Car Provision
     carProvision: {
@@ -310,6 +313,9 @@ export const translations = {
     business: {
       heroTitle: "Notre Entreprise",
       heroSubtitle: "Explorez notre inventaire complet de véhicules, pneus et tambours de roue de qualité en provenance du Japon",
+      altTextTire: "pneu",
+      altTextWheelDrum: "tambour de roue",
+      noImageAvailable: "Aucune image disponible",
     },
     // Car Provision
     carProvision: {
@@ -574,6 +580,9 @@ export const translations = {
     business: {
       heroTitle: "私たちのビジネス",
       heroSubtitle: "日本からの高品質な車両、タイヤ、ホイールドラムの完全な在庫をご覧ください",
+      altTextTire: "タイヤ",
+      altTextWheelDrum: "ホイールドラム",
+      noImageAvailable: "画像はありません",
     },
     // Car Provision
     carProvision: {
