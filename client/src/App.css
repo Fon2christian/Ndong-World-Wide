@@ -3069,17 +3069,9 @@
 }
 
 .footer__info {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md) var(--space-lg);
-  margin-top: var(--space-md);
-}
-
-@media (max-width: 768px) {
-  .footer__info {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm) var(--space-md);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .footer__address,
@@ -3187,7 +3179,10 @@
   }
 
   .footer__links {
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm) var(--space-md);
+    text-align: left;
   }
 
   .footer__link:hover {
