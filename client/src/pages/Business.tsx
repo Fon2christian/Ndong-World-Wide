@@ -97,9 +97,19 @@ export default function Business() {
   const renderCarCard = (car: Car) => (
     <div key={car._id} className="business-card">
       {car.images && car.images[0] ? (
-        <img src={car.images[0]} alt="Product" className="business-card__image" />
+        <img
+          src={car.images[0]}
+          alt={`${car.brand} ${car.model} ${car.year}`}
+          className="business-card__image"
+        />
       ) : (
-        <div className="business-card__placeholder">🚗</div>
+        <div
+          className="business-card__placeholder"
+          role="img"
+          aria-label={`${car.brand} ${car.model} ${car.year} - No image available`}
+        >
+          🚗
+        </div>
       )}
     </div>
   );
@@ -107,9 +117,19 @@ export default function Business() {
   const renderTireCard = (tire: Tire) => (
     <div key={tire._id} className="business-card">
       {tire.images && tire.images[0] ? (
-        <img src={tire.images[0]} alt="Product" className="business-card__image" />
+        <img
+          src={tire.images[0]}
+          alt={`${tire.brand} ${tire.size} ${tire.condition} tire`}
+          className="business-card__image"
+        />
       ) : (
-        <div className="business-card__placeholder">🛞</div>
+        <div
+          className="business-card__placeholder"
+          role="img"
+          aria-label={`${tire.brand} ${tire.size} ${tire.condition} tire - No image available`}
+        >
+          🛞
+        </div>
       )}
     </div>
   );
@@ -117,9 +137,19 @@ export default function Business() {
   const renderWheelDrumCard = (drum: WheelDrum) => (
     <div key={drum._id} className="business-card">
       {drum.images && drum.images[0] ? (
-        <img src={drum.images[0]} alt="Product" className="business-card__image" />
+        <img
+          src={drum.images[0]}
+          alt={`${drum.brand} ${drum.size} ${drum.condition} wheel drum`}
+          className="business-card__image"
+        />
       ) : (
-        <div className="business-card__placeholder">⚙️</div>
+        <div
+          className="business-card__placeholder"
+          role="img"
+          aria-label={`${drum.brand} ${drum.size} ${drum.condition} wheel drum - No image available`}
+        >
+          ⚙️
+        </div>
       )}
     </div>
   );

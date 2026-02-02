@@ -315,6 +315,27 @@ describe('Business', () => {
         expect(placeholders[0]).toHaveTextContent('🚗')
       })
     })
+
+    it('should have descriptive alt text for car images', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'Honda Accord 2023')
+      })
+    })
+
+    it('should have ARIA labels for car placeholders', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        const placeholders = document.querySelectorAll('.business-card__placeholder')
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveAttribute('role', 'img')
+        expect(placeholders[0]).toHaveAttribute('aria-label', 'Nissan Altima 2022 - No image available')
+      })
+    })
   })
 
   describe('tires content', () => {
@@ -446,6 +467,43 @@ describe('Business', () => {
         expect(placeholders[0]).toHaveTextContent('🛞')
       })
     })
+
+    it('should have descriptive alt text for tire images', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'Goodyear 215/60R16 new tire')
+      })
+    })
+
+    it('should have ARIA labels for tire placeholders', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const usedTiresTab = screen.getByRole('button', { name: /used tires/i })
+      await user.click(usedTiresTab)
+
+      await waitFor(() => {
+        const placeholders = document.querySelectorAll('.business-card__placeholder')
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveAttribute('role', 'img')
+        expect(placeholders[0]).toHaveAttribute('aria-label', 'Dunlop 195/65R15 used tire - No image available')
+      })
+    })
   })
 
   describe('wheel drums content', () => {
@@ -555,6 +613,24 @@ describe('Business', () => {
         const images = document.querySelectorAll('.business-card__image')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,drum789')
+      })
+    })
+
+    it('should have descriptive alt text for wheel drum images', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'SAF 8 hole Excellent wheel drum')
       })
     })
   })
