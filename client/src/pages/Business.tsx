@@ -94,8 +94,9 @@ export default function Business() {
     </div>
   );
 
-  const localizeCondition = (condition: string) => {
-    const conditionLower = condition.toLowerCase();
+  const localizeCondition = (condition?: string) => {
+    if (!condition) return "";
+    const conditionLower = condition.trim().toLowerCase();
     if (conditionLower === "new") return t.market.conditionNew;
     if (conditionLower === "used") return t.market.conditionUsed;
     return condition; // Return original for other conditions like "Excellent"
