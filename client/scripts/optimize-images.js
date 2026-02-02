@@ -68,9 +68,9 @@ async function optimizeImage(filePath) {
 
     // Optimize based on format
     if (ext === '.png') {
-      // Convert PNG to JPEG for photos, keep PNG for graphics
+      // Optimize PNG with compression while preserving transparency
       await pipeline
-        .jpeg({ quality: JPEG_QUALITY, progressive: true })
+        .png({ compressionLevel: 9 })
         .toFile(filePath + '.tmp');
     } else {
       // Optimize JPEG
