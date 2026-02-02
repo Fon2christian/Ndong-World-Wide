@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useLanguage } from "../context/LanguageContext";
+import OptimizedImage from "../components/OptimizedImage";
 
 type TabType = "cars" | "new-tires" | "used-tires" | "wheel-drums";
 
@@ -240,11 +241,14 @@ export default function Market() {
       <div className="car-card__gallery">
         {car.images.length > 0 ? (
           <>
-            <img
+            <OptimizedImage
               src={car.images[currentIndex]}
               alt={`${car.brand} ${car.model}`}
               className="car-card__image car-card__image--clickable"
               onClick={() => openLightbox(car.images, currentIndex, `${car.brand} ${car.model}`)}
+              placeholderIcon="🚗"
+              placeholderLabel={`${car.brand} ${car.model}`}
+              placeholderClassName="car-card__gallery-placeholder"
             />
             {car.images.length > 1 && (
               <>
@@ -315,11 +319,14 @@ export default function Market() {
       <div className="product-card__gallery">
         {tire.images.length > 0 ? (
           <>
-            <img
+            <OptimizedImage
               src={tire.images[currentIndex]}
               alt={`${tire.brand} ${tire.size}`}
               className="product-card__image product-card__image--clickable"
               onClick={() => openLightbox(tire.images, currentIndex, `${tire.brand} - ${tire.size}`)}
+              placeholderIcon="🛞"
+              placeholderLabel={`${tire.brand} ${tire.size}`}
+              placeholderClassName="product-card__gallery-placeholder"
             />
             {tire.images.length > 1 && (
               <>
@@ -377,11 +384,14 @@ export default function Market() {
       <div className="product-card__gallery">
         {wheelDrum.images.length > 0 ? (
           <>
-            <img
+            <OptimizedImage
               src={wheelDrum.images[currentIndex]}
               alt={`${wheelDrum.brand} ${wheelDrum.size}`}
               className="product-card__image product-card__image--clickable"
               onClick={() => openLightbox(wheelDrum.images, currentIndex, `${wheelDrum.brand} - ${wheelDrum.size}`)}
+              placeholderIcon="⚙️"
+              placeholderLabel={`${wheelDrum.brand} ${wheelDrum.size}`}
+              placeholderClassName="product-card__gallery-placeholder"
             />
             {wheelDrum.images.length > 1 && (
               <>

@@ -300,7 +300,7 @@ describe('Business', () => {
       render(<Business />)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,honda123')
       })
@@ -320,7 +320,7 @@ describe('Business', () => {
       render(<Business />)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('alt', 'Honda Accord 2023')
       })
@@ -444,7 +444,7 @@ describe('Business', () => {
       await user.click(newTiresTab)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,tire456')
       })
@@ -480,7 +480,7 @@ describe('Business', () => {
       await user.click(newTiresTab)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('alt', 'Goodyear 215/60R16 New tire')
       })
@@ -610,7 +610,7 @@ describe('Business', () => {
       await user.click(wheelDrumsTab)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,drum789')
       })
@@ -628,7 +628,7 @@ describe('Business', () => {
       await user.click(wheelDrumsTab)
 
       await waitFor(() => {
-        const images = document.querySelectorAll('.business-card__image')
+        const images = document.querySelectorAll('.business-card__image img')
         expect(images.length).toBeGreaterThan(0)
         expect(images[0]).toHaveAttribute('alt', 'SAF 8 hole Excellent wheel drum')
       })

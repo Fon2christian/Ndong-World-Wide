@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLanguage } from "../context/LanguageContext";
+import OptimizedImage from "../components/OptimizedImage";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -108,11 +109,12 @@ export default function Business() {
     return (
       <div key={car._id} className="business-card">
         {car.images && car.images[0] ? (
-          <img
+          <OptimizedImage
             src={car.images[0]}
             alt={carAlt}
-            className="business-card__image"
-            loading="lazy"
+            wrapperClassName="business-card__image"
+            placeholderIcon="🚗"
+            placeholderLabel={`${carAlt} - ${t.business.noImageAvailable}`}
           />
         ) : (
           <div
@@ -135,11 +137,12 @@ export default function Business() {
     return (
       <div key={tire._id} className="business-card">
         {tire.images && tire.images[0] ? (
-          <img
+          <OptimizedImage
             src={tire.images[0]}
             alt={tireAlt}
-            className="business-card__image"
-            loading="lazy"
+            wrapperClassName="business-card__image"
+            placeholderIcon="🛞"
+            placeholderLabel={`${tireAlt} - ${t.business.noImageAvailable}`}
           />
         ) : (
           <div
@@ -162,11 +165,12 @@ export default function Business() {
     return (
       <div key={drum._id} className="business-card">
         {drum.images && drum.images[0] ? (
-          <img
+          <OptimizedImage
             src={drum.images[0]}
             alt={drumAlt}
-            className="business-card__image"
-            loading="lazy"
+            wrapperClassName="business-card__image"
+            placeholderIcon="⚙️"
+            placeholderLabel={`${drumAlt} - ${t.business.noImageAvailable}`}
           />
         ) : (
           <div
