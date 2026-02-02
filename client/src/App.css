@@ -3832,6 +3832,7 @@
 
   .flow-step-content {
     width: 100%;
+    box-sizing: border-box;
     padding: var(--space-lg) var(--space-md);
     background: linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(254, 202, 87, 0.05) 100%);
     border: 2px solid rgba(255, 107, 107, 0.15);
