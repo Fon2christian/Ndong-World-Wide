@@ -36,8 +36,7 @@ export default function Contact() {
   const validateForm = () => {
     const newErrors: Partial<FormData> = {};
     if (!formData.name.trim()) newErrors.name = t.contact.errors.nameRequired;
-    if (!formData.furigana.trim())
-      newErrors.furigana = t.contact.errors.furiganaRequired;
+    // Furigana is optional for foreign customers
     if (!formData.email.trim()) {
       newErrors.email = t.contact.errors.emailRequired;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -197,7 +196,7 @@ export default function Contact() {
                 </div>
                 <div className="contact-field__content">
                   <label className="contact-field__label">
-                    {t.contact.furigana} <span className="contact-field__required">*</span>
+                    {t.contact.furigana}
                   </label>
                   <input
                     type="text"
@@ -311,7 +310,7 @@ export default function Contact() {
             </div>
             <div className="contact-confirm__item">
               <span className="contact-confirm__label">{t.contact.furigana}</span>
-              <span className="contact-confirm__value">{formData.furigana}</span>
+              <span className="contact-confirm__value">{formData.furigana || "-"}</span>
             </div>
             <div className="contact-confirm__item">
               <span className="contact-confirm__label">{t.contact.email}</span>
