@@ -96,10 +96,11 @@ export default function Business() {
 
   const localizeCondition = (condition?: string) => {
     if (!condition) return "";
-    const conditionLower = condition.trim().toLowerCase();
+    const conditionTrimmed = condition.trim();
+    const conditionLower = conditionTrimmed.toLowerCase();
     if (conditionLower === "new") return t.market.conditionNew;
     if (conditionLower === "used") return t.market.conditionUsed;
-    return condition; // Return original for other conditions like "Excellent"
+    return conditionTrimmed; // Return trimmed value for other conditions like "Excellent"
   };
 
   const renderCarCard = (car: Car) => (
