@@ -2741,13 +2741,13 @@
 
 .business-card__image {
   position: relative;
-  height: 180px;
+  height: 250px;
   background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   overflow: hidden;
 }
 
 .business-card--car .business-card__image {
-  height: 220px;
+  height: 300px;
 }
 
 .business-card__image img {
@@ -2997,7 +2997,7 @@
   }
 
   .business-card__image {
-    height: 140px;
+    height: 200px;
   }
 }
 
@@ -3021,7 +3021,7 @@
   }
 
   .business-card__image {
-    height: 180px;
+    height: 240px;
   }
 }
 
