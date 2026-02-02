@@ -38,7 +38,7 @@ describe('Footer', () => {
       expect(screen.getByText('(English)')).toBeInTheDocument()
       expect(screen.getByText('+81 90-8086-4799')).toBeInTheDocument()
       expect(screen.getByText('(Japanese)')).toBeInTheDocument()
-      expect(screen.getByText('info@ndongworldwide.com')).toBeInTheDocument()
+      expect(screen.getByText('fontebit72@gmail.com')).toBeInTheDocument()
     })
 
     it('should render phone numbers as clickable tel links', () => {

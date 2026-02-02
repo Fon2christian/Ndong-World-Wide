@@ -94,61 +94,92 @@ export default function Business() {
     </div>
   );
 
-  const renderCarCard = (car: Car) => (
-    <div key={car._id} className="business-card business-card--car">
-      <div className="business-card__image">
+  const localizeCondition = (condition?: string) => {
+    if (!condition) return "";
+    const conditionTrimmed = condition.trim();
+    const conditionLower = conditionTrimmed.toLowerCase();
+    if (conditionLower === "new") return t.market.conditionNew;
+    if (conditionLower === "used") return t.market.conditionUsed;
+    return conditionTrimmed; // Return trimmed value for other conditions like "Excellent"
+  };
+
+  const renderCarCard = (car: Car) => {
+    const carAlt = `${car.brand} ${car.model} ${car.year}`;
+    return (
+      <div key={car._id} className="business-card">
         {car.images && car.images[0] ? (
-          <img src={car.images[0]} alt={`${car.brand} ${car.model}`} />
+          <img
+            src={car.images[0]}
+            alt={carAlt}
+            className="business-card__image"
+            loading="lazy"
+          />
         ) : (
-          <div className="business-card__placeholder">🚗</div>
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${carAlt} - ${t.business.noImageAvailable}`}
+          >
+            🚗
+          </div>
         )}
-        <span className="business-card__year">{car.year}</span>
       </div>
-      <div className="business-card__info">
-        <h3>{car.brand} {car.model}</h3>
-        {car.mileage && <p>{car.mileage.toLocaleString()} km</p>}
-        {car.price && <p className="business-card__price">{t.market.currency}{car.price.toLocaleString()}</p>}
-      </div>
-    </div>
-  );
+    );
+  };
 
-  const renderTireCard = (tire: Tire) => (
-    <div key={tire._id} className="business-card">
-      <div className="business-card__image">
+  const renderTireCard = (tire: Tire) => {
+    const conditionLabel = localizeCondition(tire.condition);
+    const tireAlt = [tire.brand, tire.size, conditionLabel, t.business.altTextTire]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <div key={tire._id} className="business-card">
         {tire.images && tire.images[0] ? (
-          <img src={tire.images[0]} alt={`${tire.brand} ${tire.size}`} />
+          <img
+            src={tire.images[0]}
+            alt={tireAlt}
+            className="business-card__image"
+            loading="lazy"
+          />
         ) : (
-          <div className="business-card__placeholder">🛞</div>
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${tireAlt} - ${t.business.noImageAvailable}`}
+          >
+            🛞
+          </div>
         )}
-        <span className={`business-card__badge business-card__badge--${tire.condition.toLowerCase()}`}>
-          {tire.condition}
-        </span>
       </div>
-      <div className="business-card__info">
-        <h3>{tire.brand}</h3>
-        <p>{tire.size}</p>
-        {tire.price && <p className="business-card__price">{t.market.currency}{tire.price.toLocaleString()}</p>}
-      </div>
-    </div>
-  );
+    );
+  };
 
-  const renderWheelDrumCard = (drum: WheelDrum) => (
-    <div key={drum._id} className="business-card">
-      <div className="business-card__image">
+  const renderWheelDrumCard = (drum: WheelDrum) => {
+    const conditionLabel = localizeCondition(drum.condition);
+    const drumAlt = [drum.brand, drum.size, conditionLabel, t.business.altTextWheelDrum]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <div key={drum._id} className="business-card">
         {drum.images && drum.images[0] ? (
-          <img src={drum.images[0]} alt={`${drum.brand} ${drum.size}`} />
+          <img
+            src={drum.images[0]}
+            alt={drumAlt}
+            className="business-card__image"
+            loading="lazy"
+          />
         ) : (
-          <div className="business-card__placeholder">⚙️</div>
+          <div
+            className="business-card__placeholder"
+            role="img"
+            aria-label={`${drumAlt} - ${t.business.noImageAvailable}`}
+          >
+            ⚙️
+          </div>
         )}
-        <span className="business-card__badge">{drum.condition}</span>
       </div>
-      <div className="business-card__info">
-        <h3>{drum.brand}</h3>
-        <p>{drum.size}</p>
-        {drum.price && <p className="business-card__price">{t.market.currency}{drum.price.toLocaleString()}</p>}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderContent = () => {
     switch (activeTab) {

@@ -249,41 +249,60 @@ describe('Business', () => {
       })
     })
 
-    it('should display car cards', async () => {
+    it('should display car cards with images only', async () => {
       render(<Business />)
 
       await waitFor(() => {
-        expect(screen.getByText('Honda Accord')).toBeInTheDocument()
-        expect(screen.getByText('Nissan Altima')).toBeInTheDocument()
+        const cards = document.querySelectorAll('.business-card')
+        expect(cards.length).toBe(2)
       })
     })
 
-    it('should display car year badge', async () => {
+    it('should NOT display car brand or model names', async () => {
       render(<Business />)
 
       await waitFor(() => {
-        expect(screen.getByText('2023')).toBeInTheDocument()
-        expect(screen.getByText('2022')).toBeInTheDocument()
+        expect(screen.queryByText('Honda Accord')).not.toBeInTheDocument()
+        expect(screen.queryByText('Nissan Altima')).not.toBeInTheDocument()
+        expect(screen.queryByText('Honda')).not.toBeInTheDocument()
+        expect(screen.queryByText('Accord')).not.toBeInTheDocument()
       })
     })
 
-    it('should display car mileage', async () => {
+    it('should NOT display car year', async () => {
       render(<Business />)
 
       await waitFor(() => {
-        // Use locale-agnostic regex to match formatted mileage numbers
-        expect(screen.getByText(/10[,.\s]?000 km/)).toBeInTheDocument()
-        expect(screen.getByText(/25[,.\s]?000 km/)).toBeInTheDocument()
+        expect(screen.queryByText('2023')).not.toBeInTheDocument()
+        expect(screen.queryByText('2022')).not.toBeInTheDocument()
       })
     })
 
-    it('should display car prices', async () => {
+    it('should NOT display car mileage', async () => {
       render(<Business />)
 
       await waitFor(() => {
-        // Use locale-agnostic regex to match formatted price numbers
-        expect(screen.getByText(/28[,.\s]?000/)).toBeInTheDocument()
-        expect(screen.getByText(/22[,.\s]?000/)).toBeInTheDocument()
+        expect(screen.queryByText(/10[,.\s]?000 km/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/25[,.\s]?000 km/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display car prices', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/28[,.\s]?000/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/22[,.\s]?000/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should display car image when available', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,honda123')
       })
     })
 
@@ -293,6 +312,28 @@ describe('Business', () => {
       await waitFor(() => {
         const placeholders = document.querySelectorAll('.business-card__placeholder')
         expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveTextContent('🚗')
+      })
+    })
+
+    it('should have descriptive alt text for car images', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'Honda Accord 2023')
+      })
+    })
+
+    it('should have ARIA labels for car placeholders', async () => {
+      render(<Business />)
+
+      await waitFor(() => {
+        const placeholders = document.querySelectorAll('.business-card__placeholder')
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveAttribute('role', 'img')
+        expect(placeholders[0]).toHaveAttribute('aria-label', 'Nissan Altima 2022 - No image available')
       })
     })
   })
@@ -308,7 +349,7 @@ describe('Business', () => {
       })
     })
 
-    it('should display new tires when tab is selected', async () => {
+    it('should display new tire cards with images only', async () => {
       const user = userEvent.setup()
       render(<Business />)
 
@@ -320,32 +361,12 @@ describe('Business', () => {
       await user.click(newTiresTab)
 
       await waitFor(() => {
-        expect(screen.getByText('Goodyear')).toBeInTheDocument()
-        expect(screen.getByText('215/60R16')).toBeInTheDocument()
-        expect(screen.getByText(/180/)).toBeInTheDocument()
+        const cards = document.querySelectorAll('.business-card')
+        expect(cards.length).toBe(1)
       })
     })
 
-    it('should display used tires when tab is selected', async () => {
-      const user = userEvent.setup()
-      render(<Business />)
-
-      await waitFor(() => {
-        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
-      })
-
-      const usedTiresTab = screen.getByRole('button', { name: /used tires/i })
-      await user.click(usedTiresTab)
-
-      await waitFor(() => {
-        expect(screen.getByText('Dunlop')).toBeInTheDocument()
-        expect(screen.getByText('195/65R15')).toBeInTheDocument()
-        // Check that the price is displayed (using unique price value that doesn't overlap with size)
-        expect(screen.getByText(/99/)).toBeInTheDocument()
-      })
-    })
-
-    it('should display condition badge for new tires', async () => {
+    it('should NOT display tire brand names', async () => {
       const user = userEvent.setup()
       render(<Business />)
 
@@ -357,11 +378,79 @@ describe('Business', () => {
       await user.click(newTiresTab)
 
       await waitFor(() => {
-        expect(screen.getByText('new')).toBeInTheDocument()
+        expect(screen.queryByText('Goodyear')).not.toBeInTheDocument()
       })
     })
 
-    it('should display condition badge for used tires', async () => {
+    it('should NOT display tire sizes', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText('215/60R16')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display tire prices', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/180/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display condition badges', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        const cards = document.querySelectorAll('.business-card')
+        expect(cards.length).toBeGreaterThan(0)
+        expect(screen.queryByText('new')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should display tire image when available', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,tire456')
+      })
+    })
+
+    it('should display placeholder for used tires without image', async () => {
       const user = userEvent.setup()
       render(<Business />)
 
@@ -373,7 +462,46 @@ describe('Business', () => {
       await user.click(usedTiresTab)
 
       await waitFor(() => {
-        expect(screen.getByText('used')).toBeInTheDocument()
+        const placeholders = document.querySelectorAll('.business-card__placeholder')
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveTextContent('🛞')
+      })
+    })
+
+    it('should have descriptive alt text for tire images', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const newTiresTab = screen.getByRole('button', { name: /new tires/i })
+      await user.click(newTiresTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'Goodyear 215/60R16 New tire')
+      })
+    })
+
+    it('should have ARIA labels for tire placeholders', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const usedTiresTab = screen.getByRole('button', { name: /used tires/i })
+      await user.click(usedTiresTab)
+
+      await waitFor(() => {
+        const placeholders = document.querySelectorAll('.business-card__placeholder')
+        expect(placeholders.length).toBeGreaterThan(0)
+        expect(placeholders[0]).toHaveAttribute('role', 'img')
+        expect(placeholders[0]).toHaveAttribute('aria-label', 'Dunlop 195/65R15 Used tire - No image available')
       })
     })
   })
@@ -389,7 +517,7 @@ describe('Business', () => {
       })
     })
 
-    it('should display wheel drums when tab is selected', async () => {
+    it('should display wheel drum cards with images only', async () => {
       const user = userEvent.setup()
       render(<Business />)
 
@@ -401,10 +529,108 @@ describe('Business', () => {
       await user.click(wheelDrumsTab)
 
       await waitFor(() => {
-        expect(screen.getByText('SAF')).toBeInTheDocument()
-        expect(screen.getByText('8 hole')).toBeInTheDocument()
-        expect(screen.getByText(/180/)).toBeInTheDocument()
-        expect(screen.getByText('Excellent')).toBeInTheDocument()
+        const cards = document.querySelectorAll('.business-card')
+        expect(cards.length).toBe(1)
+      })
+    })
+
+    it('should NOT display wheel drum brand names', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText('SAF')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display wheel drum sizes', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText('8 hole')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display wheel drum prices', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/180/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should NOT display wheel drum condition', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        expect(screen.queryByText('Excellent')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should display wheel drum image when available', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('src', 'data:image/jpeg;base64,drum789')
+      })
+    })
+
+    it('should have descriptive alt text for wheel drum images', async () => {
+      const user = userEvent.setup()
+      render(<Business />)
+
+      await waitFor(() => {
+        expect(document.querySelector('.loading__spinner')).not.toBeInTheDocument()
+      })
+
+      const wheelDrumsTab = screen.getByRole('button', { name: /wheel drums/i })
+      await user.click(wheelDrumsTab)
+
+      await waitFor(() => {
+        const images = document.querySelectorAll('.business-card__image')
+        expect(images.length).toBeGreaterThan(0)
+        expect(images[0]).toHaveAttribute('alt', 'SAF 8 hole Excellent wheel drum')
       })
     })
   })
