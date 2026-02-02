@@ -60,7 +60,7 @@ export default function Footer() {
             <p className="footer__phone">
               <a href="tel:+817077746436" className="footer__contact-link">
                 +81 70-7774-6436
-              </a> (English)
+              </a> (English/French)
             </p>
             <p className="footer__phone">
               <a href="tel:+819080864799" className="footer__contact-link">
