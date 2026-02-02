@@ -95,58 +95,32 @@ export default function Business() {
   );
 
   const renderCarCard = (car: Car) => (
-    <div key={car._id} className="business-card business-card--car">
-      <div className="business-card__image">
-        {car.images && car.images[0] ? (
-          <img src={car.images[0]} alt={`${car.brand} ${car.model}`} />
-        ) : (
-          <div className="business-card__placeholder">🚗</div>
-        )}
-        <span className="business-card__year">{car.year}</span>
-      </div>
-      <div className="business-card__info">
-        <h3>{car.brand} {car.model}</h3>
-        {car.mileage && <p>{car.mileage.toLocaleString()} km</p>}
-        {car.price && <p className="business-card__price">{t.market.currency}{car.price.toLocaleString()}</p>}
-      </div>
+    <div key={car._id} className="business-card">
+      {car.images && car.images[0] ? (
+        <img src={car.images[0]} alt="Product" className="business-card__image" />
+      ) : (
+        <div className="business-card__placeholder">🚗</div>
+      )}
     </div>
   );
 
   const renderTireCard = (tire: Tire) => (
     <div key={tire._id} className="business-card">
-      <div className="business-card__image">
-        {tire.images && tire.images[0] ? (
-          <img src={tire.images[0]} alt={`${tire.brand} ${tire.size}`} />
-        ) : (
-          <div className="business-card__placeholder">🛞</div>
-        )}
-        <span className={`business-card__badge business-card__badge--${tire.condition.toLowerCase()}`}>
-          {tire.condition}
-        </span>
-      </div>
-      <div className="business-card__info">
-        <h3>{tire.brand}</h3>
-        <p>{tire.size}</p>
-        {tire.price && <p className="business-card__price">{t.market.currency}{tire.price.toLocaleString()}</p>}
-      </div>
+      {tire.images && tire.images[0] ? (
+        <img src={tire.images[0]} alt="Product" className="business-card__image" />
+      ) : (
+        <div className="business-card__placeholder">🛞</div>
+      )}
     </div>
   );
 
   const renderWheelDrumCard = (drum: WheelDrum) => (
     <div key={drum._id} className="business-card">
-      <div className="business-card__image">
-        {drum.images && drum.images[0] ? (
-          <img src={drum.images[0]} alt={`${drum.brand} ${drum.size}`} />
-        ) : (
-          <div className="business-card__placeholder">⚙️</div>
-        )}
-        <span className="business-card__badge">{drum.condition}</span>
-      </div>
-      <div className="business-card__info">
-        <h3>{drum.brand}</h3>
-        <p>{drum.size}</p>
-        {drum.price && <p className="business-card__price">{t.market.currency}{drum.price.toLocaleString()}</p>}
-      </div>
+      {drum.images && drum.images[0] ? (
+        <img src={drum.images[0]} alt="Product" className="business-card__image" />
+      ) : (
+        <div className="business-card__placeholder">⚙️</div>
+      )}
     </div>
   );
 
