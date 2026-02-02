@@ -81,7 +81,7 @@ function ProvisionSection({
   return (
     <div id={id} ref={sectionRef} className={`provision-section ${isVisible ? "provision-section--visible" : ""}`}>
       <div className="provision-section__image">
-        <img src={image} alt={altText} />
+        <img src={image} alt={altText} loading="lazy" />
       </div>
       <div className="provision-section__content">
         <h2 className="provision-section__title">{title}</h2>
@@ -246,6 +246,7 @@ function CEOSection() {
                   src={leader.image}
                   alt={leader.name}
                   className="ceo-section__image"
+                  loading="lazy"
                 />
               </div>
               <div className="ceo-section__text-content">
@@ -328,7 +329,12 @@ export default function ImageSlideshow() {
             key={index}
             className={`slideshow__slide ${index === currentIndex ? "slideshow__slide--active" : ""}`}
           >
-            <img src={image} alt={`Slide ${index + 1}`} />
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchPriority={index === 0 ? "high" : "auto"}
+            />
           </div>
         ))}
 
