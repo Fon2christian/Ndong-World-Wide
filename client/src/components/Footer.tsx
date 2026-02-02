@@ -60,12 +60,12 @@ export default function Footer() {
             <p className="footer__phone">
               <a href="tel:+817077746436" className="footer__contact-link">
                 +81 70-7774-6436
-              </a> (English/French)
+              </a> {t.footer.phoneEnglishFrench}
             </p>
             <p className="footer__phone">
               <a href="tel:+819080864799" className="footer__contact-link">
                 +81 90-8086-4799
-              </a> (Japanese)
+              </a> {t.footer.phoneJapanese}
             </p>
             <p className="footer__email">
               <a href="mailto:fontebit72@gmail.com" className="footer__contact-link">
