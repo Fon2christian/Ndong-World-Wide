@@ -3797,42 +3797,59 @@
     font-size: 0.9rem;
   }
 
-  /* Layout steps in 2-column grid where space allows */
+  /* Layout steps in full-width horizontal cards on mobile */
   .flow-steps--vertical {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
   }
 
   .flow-step--horizontal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
     margin-bottom: 0;
+    padding: 0;
   }
 
   .flow-step-number {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    margin-bottom: var(--space-xs);
   }
 
   .flow-step-number span {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
   }
 
-  /* Hide connector in 2-column grid layout */
-  .flow-steps--vertical .flow-step-connector {
-    display: none;
+  /* Hide connector lines on mobile */
+  .flow-step-connector {
+    display: none !important;
   }
 
   .flow-step-content {
-    padding: 18px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--space-lg) var(--space-md);
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(254, 202, 87, 0.05) 100%);
+    border: 2px solid rgba(255, 107, 107, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
   }
 
   .flow-step-title {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
   }
 
   .flow-step-description {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
   }
 
   .flow-cta-title {
@@ -3854,10 +3871,31 @@
     font-size: 1.25rem;
   }
 
-  /* Revert to single column for steps */
+  /* Adjust spacing and sizing for very small screens */
   .flow-steps--vertical {
-    grid-template-columns: 1fr;
     gap: var(--space-lg);
+  }
+
+  .flow-step-number {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+  }
+
+  .flow-step-number span {
+    font-size: 1rem;
+  }
+
+  .flow-step-content {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .flow-step-title {
+    font-size: 0.95rem;
+  }
+
+  .flow-step-description {
+    font-size: 0.85rem;
   }
 
   .flow-cta-title {
