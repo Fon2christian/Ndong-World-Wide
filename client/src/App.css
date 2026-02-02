@@ -997,6 +997,31 @@
   transform: translateX(0) rotate(0deg);
 }
 
+/* Mission Section Mobile Responsive */
+@media (max-width: 768px) {
+  .mission-section {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .mission-section__title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mission-section {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .mission-section__title {
+    font-size: 1.75rem;
+  }
+
+  .mission-section__text {
+    font-size: 1rem;
+  }
+}
+
 /* CEO Section */
 .ceo-section {
   padding: var(--space-2xl) var(--space-xl);
@@ -1248,6 +1273,10 @@
 
 /* CEO Section Mobile Responsive */
 @media (max-width: 768px) {
+  .ceo-section {
+    padding: var(--space-xl) var(--space-md);
+  }
+
   .ceo-section__content {
     flex-direction: column;
     text-align: center;
@@ -1279,6 +1308,16 @@
 
   .ceo-section__signature {
     align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .ceo-section {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .ceo-section__main-title {
+    font-size: 1.5rem;
   }
 }
 
