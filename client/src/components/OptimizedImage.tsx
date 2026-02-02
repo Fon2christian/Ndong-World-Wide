@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 
 interface OptimizedImageProps {
   src: string;
@@ -6,6 +6,7 @@ interface OptimizedImageProps {
   className?: string;
   placeholderIcon?: string;
   placeholderLabel?: string;
+  placeholderClassName?: string;
   onClick?: () => void;
   wrapperClassName?: string;
 }
@@ -16,6 +17,7 @@ export default function OptimizedImage({
   className = "",
   placeholderIcon,
   placeholderLabel,
+  placeholderClassName = "business-card__placeholder",
   onClick,
   wrapperClassName,
 }: OptimizedImageProps) {
@@ -31,14 +33,22 @@ export default function OptimizedImage({
     setHasError(true);
   };
 
-  if (hasError && placeholderIcon) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLImageElement>) => {
+    if (onClick && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
+  // Show placeholder when image fails to load
+  if (hasError) {
     return (
       <div
-        className="business-card__placeholder"
+        className={placeholderClassName}
         role="img"
         aria-label={placeholderLabel || alt}
       >
-        {placeholderIcon}
+        {placeholderIcon || "⚠️"}
       </div>
     );
   }
@@ -61,6 +71,9 @@ export default function OptimizedImage({
           onLoad={handleLoad}
           onError={handleError}
           onClick={onClick}
+          onKeyDown={handleKeyDown}
+          tabIndex={onClick ? 0 : undefined}
+          role={onClick ? "button" : undefined}
         />
       </div>
     );
@@ -83,6 +96,9 @@ export default function OptimizedImage({
         onLoad={handleLoad}
         onError={handleError}
         onClick={onClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={onClick ? 0 : undefined}
+        role={onClick ? "button" : undefined}
       />
     </>
   );

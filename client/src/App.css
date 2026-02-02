@@ -2784,34 +2784,15 @@
     rgba(255, 255, 255, 0.4) 50%,
     transparent 100%
   );
-  animation: shimmer 1.5s infinite;
+  animation: skeletonShimmer 1.5s infinite;
 }
 
-@keyframes shimmer {
+@keyframes skeletonShimmer {
   0% {
     left: -100%;
   }
   100% {
     left: 100%;
-  }
-}
-
-.image-loading {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.image-loaded {
-  opacity: 1;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
