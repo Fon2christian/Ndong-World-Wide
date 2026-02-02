@@ -58,28 +58,36 @@ export default function OptimizedImage({
     );
   }
 
+  // Common image element used in both wrapped and unwrapped modes
+  const imageElement = (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading="lazy"
+      decoding="async"
+      onLoad={handleLoad}
+      onError={handleError}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? "button" : undefined}
+    />
+  );
+
+  // Common skeleton element
+  const skeletonElement = isLoading && (
+    <div className="image-skeleton" aria-hidden="true">
+      <div className="image-skeleton__shimmer"></div>
+    </div>
+  );
+
   // If wrapper className is provided, wrap everything
   if (wrapperClassName) {
     return (
       <div className={wrapperClassName}>
-        {isLoading && (
-          <div className="image-skeleton" aria-hidden="true">
-            <div className="image-skeleton__shimmer"></div>
-          </div>
-        )}
-        <img
-          src={src}
-          alt={alt}
-          className={className}
-          loading="lazy"
-          decoding="async"
-          onLoad={handleLoad}
-          onError={handleError}
-          onClick={onClick}
-          onKeyDown={handleKeyDown}
-          tabIndex={onClick ? 0 : undefined}
-          role={onClick ? "button" : undefined}
-        />
+        {skeletonElement}
+        {imageElement}
       </div>
     );
   }
@@ -87,24 +95,8 @@ export default function OptimizedImage({
   // Otherwise, just return the img with skeleton sibling
   return (
     <>
-      {isLoading && (
-        <div className="image-skeleton" aria-hidden="true">
-          <div className="image-skeleton__shimmer"></div>
-        </div>
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={className}
-        loading="lazy"
-        decoding="async"
-        onLoad={handleLoad}
-        onError={handleError}
-        onClick={onClick}
-        onKeyDown={handleKeyDown}
-        tabIndex={onClick ? 0 : undefined}
-        role={onClick ? "button" : undefined}
-      />
+      {skeletonElement}
+      {imageElement}
     </>
   );
 }
