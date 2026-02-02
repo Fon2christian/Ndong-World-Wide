@@ -117,7 +117,7 @@ export const translations = {
       contactModal: {
         title: "Contact Seller",
         subtitle: "Choose your preferred language",
-        callEnglish: "Call in English/French",
+        callEnglishFrench: "Call in English/French",
         callJapanese: "Call in Japanese",
       },
     },
@@ -386,7 +386,7 @@ export const translations = {
       contactModal: {
         title: "Contacter le Vendeur",
         subtitle: "Choisissez votre langue préférée",
-        callEnglish: "Appeler en Anglais/Français",
+        callEnglishFrench: "Appeler en Anglais/Français",
         callJapanese: "Appeler en Japonais",
       },
     },
@@ -655,7 +655,7 @@ export const translations = {
       contactModal: {
         title: "販売者に連絡",
         subtitle: "ご希望の言語をお選びください",
-        callEnglish: "英語/フランス語で電話",
+        callEnglishFrench: "英語/フランス語で電話",
         callJapanese: "日本語で電話",
       },
     },
