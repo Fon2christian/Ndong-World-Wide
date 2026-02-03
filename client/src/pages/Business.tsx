@@ -70,10 +70,10 @@ export default function Business() {
   }, []);
 
   const tabs = [
-    { id: "cars" as TabType, label: "Cars", icon: "🚗", count: cars.length },
-    { id: "new-tires" as TabType, label: "New Tires", icon: "🛞", count: newTires.length },
-    { id: "used-tires" as TabType, label: "Used Tires", icon: "🛞", count: usedTires.length },
-    { id: "wheel-drums" as TabType, label: "Wheel Drums", icon: "⚙️", count: wheelDrums.length },
+    { id: "cars" as TabType, label: t.business.cars, icon: "🚗", count: cars.length },
+    { id: "new-tires" as TabType, label: t.business.newTires, icon: "🛞", count: newTires.length },
+    { id: "used-tires" as TabType, label: t.business.usedTires, icon: "🛞", count: usedTires.length },
+    { id: "wheel-drums" as TabType, label: t.business.wheelDrums, icon: "⚙️", count: wheelDrums.length },
   ];
 
   if (loading) {
