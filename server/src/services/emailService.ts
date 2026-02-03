@@ -1,5 +1,6 @@
 import * as nodemailer from "nodemailer";
 import type { ContactAttrs } from "../models/Contact.js";
+import type { IAdmin } from "../models/Admin.js";
 
 /**
  * Escape HTML special characters to prevent HTML injection
@@ -178,6 +179,107 @@ Phone: ${sanitizePlainText(contact.phone)}
 ${contact.inquiryDetails ? `\nInquiry Details:\n${sanitizePlainText(contact.inquiryDetails)}` : ''}
 
 Submitted: ${contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }) : 'Just now'}
+    `.trim(),
+  };
+
+  await emailTransporter.sendMail(mailOptions);
+}
+
+/**
+ * Send password reset email to admin
+ */
+export async function sendPasswordResetEmail(admin: IAdmin, resetToken: string): Promise<void> {
+  const emailTransporter = getTransporter();
+
+  if (!emailTransporter) {
+    throw new Error("Email service not configured");
+  }
+
+  // Get admin client URL from environment
+  const adminClientUrl = process.env.ADMIN_CLIENT_URL || "http://localhost:5175/admin";
+  const resetUrl = `${adminClientUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
+
+  // Escape admin name to prevent HTML injection
+  const escapedName = escapeHtml(admin.name);
+
+  // Sanitize header values
+  const safeSubjectName = sanitizeHeader(admin.name);
+  const fromName = sanitizeFromName(process.env.EMAIL_FROM_NAME, "Ndong World Wide");
+
+  const mailOptions = {
+    from: `"${fromName}" <${process.env.EMAIL_USER}>`,
+    to: admin.email,
+    subject: `Password Reset Request - ${safeSubjectName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #2563eb; margin-bottom: 20px;">Password Reset Request</h2>
+
+        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+          Hello ${escapedName},
+        </p>
+
+        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+          We received a request to reset your password for the Ndong World Wide admin dashboard.
+        </p>
+
+        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+          Click the button below to reset your password:
+        </p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}"
+             style="background-color: #2563eb; color: white; padding: 14px 32px;
+                    text-decoration: none; border-radius: 8px; display: inline-block;
+                    font-size: 16px; font-weight: 600;">
+            Reset Password
+          </a>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+          Or copy and paste this link into your browser:<br>
+          <a href="${resetUrl}" style="color: #2563eb; word-break: break-all;">${escapeHtml(resetUrl)}</a>
+        </p>
+
+        <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 30px 0;">
+          <p style="color: #991b1b; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">
+            ⚠️ This link will expire in 1 hour.
+          </p>
+          <p style="color: #991b1b; font-size: 14px; margin: 0;">
+            For security reasons, the reset link can only be used once.
+          </p>
+        </div>
+
+        <p style="color: #6b7280; font-size: 13px; line-height: 1.6; margin-top: 30px;">
+          If you didn't request this password reset, please ignore this email.
+          Your password will remain unchanged.
+        </p>
+
+        <p style="color: #9ca3af; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+          This is an automated email from Ndong World Wide Admin Portal.<br>
+          Please do not reply to this email.
+        </p>
+      </div>
+    `,
+    text: `
+Password Reset Request
+
+Hello ${sanitizePlainText(admin.name)},
+
+We received a request to reset your password for the Ndong World Wide admin dashboard.
+
+To reset your password, please visit the following link:
+${resetUrl}
+
+⚠️ IMPORTANT:
+- This link will expire in 1 hour
+- The link can only be used once
+- For security, the link cannot be accessed after a successful password reset
+
+If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
+
+---
+This is an automated email from Ndong World Wide Admin Portal.
+Please do not reply to this email.
     `.trim(),
   };
 
