@@ -197,7 +197,7 @@ export async function sendPasswordResetEmail(admin: IAdmin, resetToken: string):
 
   // Get admin client URL from environment
   const adminClientUrl = process.env.ADMIN_CLIENT_URL || "http://localhost:5175/admin";
-  const resetUrl = `${adminClientUrl}/reset-password?token=${resetToken}`;
+  const resetUrl = `${adminClientUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
 
   // Escape admin name to prevent HTML injection
   const escapedName = escapeHtml(admin.name);

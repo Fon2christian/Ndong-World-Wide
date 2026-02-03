@@ -4,11 +4,25 @@ import mongoose from 'mongoose';
 import app from '../app.js';
 import Admin from '../models/Admin.js';
 import crypto from 'crypto';
+import { vi } from 'vitest';
+
+// Mock the email service
+vi.mock('../services/emailService.js', () => ({
+  sendPasswordResetEmail: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe('Admin Password Reset', () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
+    // Set required environment variables
+    process.env.JWT_SECRET = 'test-secret-key';
+
+    // Disconnect if already connected
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     await mongoose.connect(mongoUri);
@@ -80,7 +94,7 @@ describe('Admin Password Reset', () => {
         .send({ email: 'admin@test.com' })
         .expect(429);
 
-      expect(response.body.message).toContain('Too many requests');
+      expect(response.body.message).toContain('Too many password reset requests');
     });
 
     it('should allow request after rate limit window passes', async () => {
@@ -318,7 +332,7 @@ describe('Admin Password Reset', () => {
         name: 'Test Admin',
       });
 
-      const token = await admin.createPasswordResetToken();
+      const token = admin.createPasswordResetToken();
 
       expect(token).toHaveLength(64); // 32 bytes = 64 hex chars
       expect(admin.resetPasswordToken).toBeDefined();
@@ -338,10 +352,10 @@ describe('Admin Password Reset', () => {
         name: 'Test Admin',
       });
 
-      const token = await admin.createPasswordResetToken();
+      const token = admin.createPasswordResetToken();
       await admin.save();
 
-      const isValid = await admin.validateResetToken(token);
+      const isValid = admin.validateResetToken(token);
       expect(isValid).toBe(true);
     });
 
@@ -352,10 +366,10 @@ describe('Admin Password Reset', () => {
         name: 'Test Admin',
       });
 
-      await admin.createPasswordResetToken();
+      admin.createPasswordResetToken();
       await admin.save();
 
-      const isValid = await admin.validateResetToken('invalidtoken123');
+      const isValid = admin.validateResetToken('invalidtoken123');
       expect(isValid).toBe(false);
     });
 
@@ -366,7 +380,7 @@ describe('Admin Password Reset', () => {
         name: 'Test Admin',
       });
 
-      await admin.createPasswordResetToken();
+      admin.createPasswordResetToken();
       admin.clearResetToken();
       await admin.save();
 

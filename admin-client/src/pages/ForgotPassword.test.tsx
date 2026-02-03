@@ -1,12 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import { vi } from 'vitest';
+import { vi, type Mocked } from 'vitest';
 import ForgotPassword from './ForgotPassword';
 import axios from 'axios';
 
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 describe('ForgotPassword', () => {
   beforeEach(() => {

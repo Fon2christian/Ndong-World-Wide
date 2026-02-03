@@ -14,8 +14,8 @@ export interface IAdmin extends Document {
   resetPasswordAttempts?: number;
   lastPasswordResetRequest?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  createPasswordResetToken(): Promise<string>;
-  validateResetToken(token: string): Promise<boolean>;
+  createPasswordResetToken(): string;
+  validateResetToken(token: string): boolean;
   clearResetToken(): void;
 }
 
@@ -77,7 +77,7 @@ AdminSchema.methods.comparePassword = function (
 };
 
 // Method to create password reset token
-AdminSchema.methods.createPasswordResetToken = async function (): Promise<string> {
+AdminSchema.methods.createPasswordResetToken = function (): string {
   // Generate random token
   const resetToken = crypto.randomBytes(32).toString("hex");
 
@@ -101,9 +101,9 @@ AdminSchema.methods.createPasswordResetToken = async function (): Promise<string
 };
 
 // Method to validate reset token
-AdminSchema.methods.validateResetToken = async function (
+AdminSchema.methods.validateResetToken = function (
   token: string
-): Promise<boolean> {
+): boolean {
   // Hash the provided token
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 

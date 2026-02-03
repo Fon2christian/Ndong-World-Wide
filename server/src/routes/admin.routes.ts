@@ -207,7 +207,7 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
     }
 
     // Generate reset token
-    const resetToken = await admin.createPasswordResetToken();
+    const resetToken = admin.createPasswordResetToken();
     await admin.save();
 
     // Send reset email
@@ -236,7 +236,7 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
  */
 router.get("/reset-password/:token", async (req: Request, res: Response) => {
   try {
-    const { token } = req.params;
+    const token = req.params.token as string;
 
     // Hash the token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -255,19 +255,22 @@ router.get("/reset-password/:token", async (req: Request, res: Response) => {
     }
 
     // Validate using admin method (checks expiration and attempts)
-    const isValid = await admin.validateResetToken(token);
+    const isValid = admin.validateResetToken(token);
 
     if (!isValid) {
-      // Clear expired token
-      if (admin.resetPasswordExpires && admin.resetPasswordExpires < new Date()) {
+      // Check reason for failure before clearing
+      const isExpired = admin.resetPasswordExpires && admin.resetPasswordExpires < new Date();
+      const isMaxAttempts = admin.resetPasswordAttempts && admin.resetPasswordAttempts >= 5;
+
+      // Clear token if expired or max attempts exceeded
+      if (isExpired || isMaxAttempts) {
         admin.clearResetToken();
         await admin.save();
       }
 
       return res.status(400).json({
         valid: false,
-        message:
-          admin.resetPasswordAttempts && admin.resetPasswordAttempts >= 5
+        message: isMaxAttempts
             ? "Maximum validation attempts exceeded"
             : "Invalid or expired reset token",
       });
@@ -319,10 +322,28 @@ router.post("/reset-password", async (req: Request, res: Response) => {
       resetPasswordToken: hashedToken,
     }).select("+resetPasswordToken +resetPasswordExpires +resetPasswordAttempts");
 
-    // Validate admin and token
-    if (!admin || !(await admin.validateResetToken(token))) {
+    // Validate admin exists
+    if (!admin) {
       return res.status(400).json({
         message: "Invalid or expired reset token",
+      });
+    }
+
+    // Validate token expiration
+    if (!admin.resetPasswordExpires || admin.resetPasswordExpires < new Date()) {
+      admin.clearResetToken();
+      await admin.save();
+      return res.status(400).json({
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // Check attempt limit (this check prevents the final POST if attempts exceeded during GET validations)
+    if (admin.resetPasswordAttempts && admin.resetPasswordAttempts >= 5) {
+      admin.clearResetToken();
+      await admin.save();
+      return res.status(400).json({
+        message: "Maximum validation attempts exceeded",
       });
     }
 
