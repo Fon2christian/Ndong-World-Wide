@@ -49,6 +49,10 @@ export const translations = {
       altTextTire: "tire",
       altTextWheelDrum: "wheel drum",
       noImageAvailable: "No image available",
+      cars: "Cars",
+      newTires: "New Tires",
+      usedTires: "Used Tires",
+      wheelDrums: "Wheel Drums",
     },
     // Car Provision
     carProvision: {
@@ -318,6 +322,10 @@ export const translations = {
       altTextTire: "pneu",
       altTextWheelDrum: "tambour de roue",
       noImageAvailable: "Aucune image disponible",
+      cars: "Voitures",
+      newTires: "Pneus Neufs",
+      usedTires: "Pneus Usagés",
+      wheelDrums: "Tambours de Roue",
     },
     // Car Provision
     carProvision: {
@@ -587,6 +595,10 @@ export const translations = {
       altTextTire: "タイヤ",
       altTextWheelDrum: "ホイールドラム",
       noImageAvailable: "画像はありません",
+      cars: "車",
+      newTires: "新品タイヤ",
+      usedTires: "中古タイヤ",
+      wheelDrums: "ホイールドラム",
     },
     // Car Provision
     carProvision: {
