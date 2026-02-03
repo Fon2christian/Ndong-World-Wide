@@ -92,9 +92,12 @@ describe('Admin Password Reset', () => {
       const response = await request(app)
         .post('/api/admin/forgot-password')
         .send({ email: 'admin@test.com' })
-        .expect(429);
+        .expect(200);
 
-      expect(response.body.message).toContain('Too many password reset requests');
+      // Returns generic success message to prevent enumeration
+      expect(response.body.message).toBe(
+        'If an account exists with this email, a password reset link has been sent.'
+      );
     });
 
     it('should allow request after rate limit window passes', async () => {

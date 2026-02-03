@@ -200,9 +200,9 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       const twentyMinutes = 20 * 60 * 1000;
 
       if (timeSinceLastRequest < twentyMinutes) {
-        return res.status(429).json({
-          message: "Too many password reset requests. Please try again later.",
-        });
+        // Log rate limit but return generic success to prevent enumeration
+        console.warn(`Rate limit exceeded for password reset: ${email}`);
+        return res.json({ message: successMessage });
       }
     }
 
@@ -218,9 +218,8 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       // Clear token if email fails
       admin.clearResetToken();
       await admin.save();
-      return res.status(500).json({
-        message: "Failed to send reset email. Please try again later.",
-      });
+      // Return generic success to prevent enumeration, but log failure internally
+      return res.json({ message: successMessage });
     }
 
     res.json({ message: successMessage });

@@ -20,7 +20,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('ResetPassword', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   const renderComponent = () => {

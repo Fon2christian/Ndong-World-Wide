@@ -10,7 +10,7 @@ const mockedAxios = axios as Mocked<typeof axios>;
 
 describe('ForgotPassword', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   const renderComponent = () => {
