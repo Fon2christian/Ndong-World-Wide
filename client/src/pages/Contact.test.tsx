@@ -179,13 +179,13 @@ describe('Contact Page', () => {
     })
 
     // Verify API was called with empty furigana
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/contacts'),
-      expect.objectContaining({
-        method: 'POST',
-        body: expect.stringContaining('"furigana":""'),
-      })
-    )
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls
+    expect(fetchCalls.length).toBeGreaterThan(0)
+    const [url, requestInit] = fetchCalls[0]
+    expect(url).toContain('/api/contacts')
+    expect(requestInit?.method).toBe('POST')
+    const parsedBody = JSON.parse(String(requestInit?.body ?? '{}'))
+    expect(parsedBody.furigana).toBe('')
   })
 
   it('displays "-" for empty furigana in confirmation screen', async () => {
@@ -210,6 +210,8 @@ describe('Contact Page', () => {
       const furiganaLabel = screen.getByText('Furigana')
       const furiganaItem = furiganaLabel.closest('.contact-confirm__item')
       const furiganaValue = furiganaItem?.querySelector('.contact-confirm__value')
+      expect(furiganaItem).toBeInTheDocument()
+      expect(furiganaValue).toBeInTheDocument()
       expect(furiganaValue).toHaveTextContent('-')
     })
   })
