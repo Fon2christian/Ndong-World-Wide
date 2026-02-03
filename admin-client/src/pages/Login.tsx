@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { LoginCredentials } from '../types';
 
@@ -69,6 +70,15 @@ export default function Login() {
               autoComplete="current-password"
               disabled={isLoading}
             />
+          </div>
+
+          <div style={{ textAlign: 'right', marginTop: '-0.5rem', marginBottom: '1rem' }}>
+            <Link
+              to="/forgot-password"
+              style={{ fontSize: '0.875rem', color: 'var(--color-primary)', textDecoration: 'none' }}
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <button
