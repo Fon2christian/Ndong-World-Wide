@@ -6,8 +6,10 @@
    Navbar - Warm & Modern Design
    ======================================== */
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
   background: linear-gradient(
     135deg,
@@ -583,6 +585,14 @@
     height: 45px;
     font-size: 1.1rem;
   }
+
+  .main-content {
+    padding-top: 85px; /* Adjust for smaller navbar on tablets */
+  }
+
+  .main-content:has(.home-page) {
+    padding-top: 85px;
+  }
 }
 
 /* Extra small devices */
@@ -620,6 +630,14 @@
   .navbar__actions {
     gap: var(--space-xs);
   }
+
+  .main-content {
+    padding-top: 70px; /* Adjust for smaller navbar on mobile */
+  }
+
+  .main-content:has(.home-page) {
+    padding-top: 70px;
+  }
 }
 
 @media (min-width: 769px) {
@@ -638,12 +656,14 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: var(--space-xl);
+  padding-top: 90px; /* Account for fixed navbar */
 }
 
 /* Home page full width */
 .main-content:has(.home-page) {
   max-width: 100%;
   padding: 0;
+  padding-top: 90px; /* Account for fixed navbar */
 }
 
 /* Full-width hero sections - break out of container */
