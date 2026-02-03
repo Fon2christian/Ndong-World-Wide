@@ -378,7 +378,7 @@ describe('Market', () => {
       })
     })
 
-    it('should display English and Japanese phone options in modal', async () => {
+    it('should display English/French and Japanese phone options in modal', async () => {
       const user = userEvent.setup()
       render(<Market />)
 
@@ -390,7 +390,7 @@ describe('Market', () => {
       await user.click(contactButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/call in english/i)).toBeInTheDocument()
+        expect(screen.getByText(/call in english\/french/i)).toBeInTheDocument()
         expect(screen.getByText('+81 70-7774-6436')).toBeInTheDocument()
         expect(screen.getByText(/call in japanese/i)).toBeInTheDocument()
         expect(screen.getByText('+81 90-8086-4799')).toBeInTheDocument()
@@ -409,7 +409,7 @@ describe('Market', () => {
       await user.click(contactButton)
 
       await waitFor(() => {
-        const englishLink = screen.getByRole('link', { name: /call in english/i })
+        const englishLink = screen.getByRole('link', { name: /call in english\/french/i })
         const japaneseLink = screen.getByRole('link', { name: /call in japanese/i })
 
         expect(englishLink).toHaveAttribute('href', 'tel:+817077746436')
@@ -481,11 +481,47 @@ describe('Market', () => {
         expect(screen.getByRole('heading', { name: /contact seller/i })).toBeInTheDocument()
       })
 
-      const englishLink = screen.getByRole('link', { name: /call in english/i })
+      const englishLink = screen.getByRole('link', { name: /call in english\/french/i })
       await user.click(englishLink)
 
       await waitFor(() => {
         expect(screen.queryByRole('heading', { name: /contact seller/i })).not.toBeInTheDocument()
+      })
+    })
+
+    it('should display French language labels in contact modal', async () => {
+      localStorage.setItem('language', 'fr')
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /contacter le vendeur/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/appeler en anglais\/français/i)).toBeInTheDocument()
+        expect(screen.getByText(/appeler en japonais/i)).toBeInTheDocument()
+      })
+    })
+
+    it('should display Japanese language labels in contact modal', async () => {
+      localStorage.setItem('language', 'ja')
+      const user = userEvent.setup()
+      render(<Market />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Toyota Camry')).toBeInTheDocument()
+      })
+
+      const contactButton = screen.getByRole('button', { name: /販売者に連絡/i })
+      await user.click(contactButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/英語\/フランス語で電話/i)).toBeInTheDocument()
+        expect(screen.getByText(/日本語で電話/i)).toBeInTheDocument()
       })
     })
   })

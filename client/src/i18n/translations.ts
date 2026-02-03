@@ -89,6 +89,8 @@ export const translations = {
       ourServices: "Our Services",
       address: "123 Business Street, Tokyo, Japan",
       copyright: "Ndong World Wide Trading. All rights reserved.",
+      phoneEnglishFrench: "(English/French)",
+      phoneJapanese: "(Japanese)",
     },
     // Market/Dashboard
     market: {
@@ -115,7 +117,7 @@ export const translations = {
       contactModal: {
         title: "Contact Seller",
         subtitle: "Choose your preferred language",
-        callEnglish: "Call in English",
+        callEnglishFrench: "Call in English/French",
         callJapanese: "Call in Japanese",
       },
     },
@@ -356,6 +358,8 @@ export const translations = {
       ourServices: "Nos Services",
       address: "123 Rue des Affaires, Tokyo, Japon",
       copyright: "Ndong World Wide Trading. Tous droits réservés.",
+      phoneEnglishFrench: "(Anglais/Français)",
+      phoneJapanese: "(Japonais)",
     },
     // Market/Dashboard
     market: {
@@ -382,7 +386,7 @@ export const translations = {
       contactModal: {
         title: "Contacter le Vendeur",
         subtitle: "Choisissez votre langue préférée",
-        callEnglish: "Appeler en Anglais",
+        callEnglishFrench: "Appeler en Anglais/Français",
         callJapanese: "Appeler en Japonais",
       },
     },
@@ -623,6 +627,8 @@ export const translations = {
       ourServices: "サービス",
       address: "〒123-4567 東京都ビジネス通り123",
       copyright: "Ndong World Wide Trading. 全著作権所有。",
+      phoneEnglishFrench: "(英語/フランス語)",
+      phoneJapanese: "(日本語)",
     },
     // Market/Dashboard
     market: {
@@ -649,7 +655,7 @@ export const translations = {
       contactModal: {
         title: "販売者に連絡",
         subtitle: "ご希望の言語をお選びください",
-        callEnglish: "英語で電話",
+        callEnglishFrench: "英語/フランス語で電話",
         callJapanese: "日本語で電話",
       },
     },

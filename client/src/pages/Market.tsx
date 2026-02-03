@@ -583,7 +583,7 @@ export default function Market() {
               >
                 <div className="contact-modal__option-icon">📞</div>
                 <div className="contact-modal__option-content">
-                  <h4 className="contact-modal__option-title">{t.market.contactModal.callEnglish}</h4>
+                  <h4 className="contact-modal__option-title">{t.market.contactModal.callEnglishFrench}</h4>
                   <p className="contact-modal__option-number">+81 70-7774-6436</p>
                 </div>
               </a>

@@ -138,4 +138,81 @@ describe('Contact Page', () => {
       expect(screen.getByText(/failed|error/i)).toBeInTheDocument()
     })
   })
+
+  it('allows form submission without furigana (optional field)', async () => {
+    const user = userEvent.setup()
+
+    // Mock successful API response
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ _id: '123', emailSent: true }),
+    } as Response)
+
+    render(<Contact />)
+
+    // Fill form WITHOUT furigana
+    const nameInput = screen.getByPlaceholderText(/enter your full name/i)
+    const emailInput = screen.getByPlaceholderText(/enter your email/i)
+    const phoneInput = screen.getByPlaceholderText(/enter your phone/i)
+
+    await user.type(nameInput, 'John Smith')
+    await user.type(emailInput, 'john.smith@example.com')
+    await user.type(phoneInput, '+81-70-1234-5678')
+
+    // Click proceed button without filling furigana
+    const proceedButton = getButtonByText('Proceed')
+    await user.click(proceedButton)
+
+    // Should successfully move to confirmation screen
+    await waitFor(() => {
+      expect(screen.getByText('John Smith')).toBeInTheDocument()
+      expect(screen.getByText('john.smith@example.com')).toBeInTheDocument()
+    })
+
+    // Find and click submit button on confirmation screen
+    const submitButton = getButtonByText('Submit')
+    await user.click(submitButton)
+
+    // Wait for success/completion message
+    await waitFor(() => {
+      expect(screen.getByText('Submission Complete')).toBeInTheDocument()
+    })
+
+    // Verify API was called with empty furigana
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls
+    expect(fetchCalls.length).toBeGreaterThan(0)
+    const [url, requestInit] = fetchCalls[0]
+    expect(url).toContain('/api/contacts')
+    expect(requestInit?.method).toBe('POST')
+    const parsedBody = JSON.parse(String(requestInit?.body ?? '{}'))
+    expect(parsedBody.furigana).toBe('')
+  })
+
+  it('displays "-" for empty furigana in confirmation screen', async () => {
+    const user = userEvent.setup()
+
+    render(<Contact />)
+
+    // Fill form WITHOUT furigana
+    await user.type(screen.getByPlaceholderText(/enter your full name/i), 'Jane Doe')
+    await user.type(screen.getByPlaceholderText(/enter your email/i), 'jane@example.com')
+    await user.type(screen.getByPlaceholderText(/enter your phone/i), '+81-80-9876-5432')
+
+    // Click proceed button
+    const proceedButton = getButtonByText('Proceed')
+    await user.click(proceedButton)
+
+    // Wait for confirmation screen and check that furigana shows "-"
+    await waitFor(() => {
+      expect(screen.getByText('Jane Doe')).toBeInTheDocument()
+
+      // Find the furigana label and verify its value is "-"
+      const furiganaLabel = screen.getByText('Furigana')
+      const furiganaItem = furiganaLabel.closest('.contact-confirm__item')
+      const furiganaValue = furiganaItem?.querySelector('.contact-confirm__value')
+      expect(furiganaItem).toBeInTheDocument()
+      expect(furiganaValue).toBeInTheDocument()
+      expect(furiganaValue).toHaveTextContent('-')
+    })
+  })
 })

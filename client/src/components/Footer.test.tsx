@@ -35,7 +35,7 @@ describe('Footer', () => {
     it('should render contact information', () => {
       render(<Footer />)
       expect(screen.getByText('+81 70-7774-6436')).toBeInTheDocument()
-      expect(screen.getByText('(English)')).toBeInTheDocument()
+      expect(screen.getByText('(English/French)')).toBeInTheDocument()
       expect(screen.getByText('+81 90-8086-4799')).toBeInTheDocument()
       expect(screen.getByText('(Japanese)')).toBeInTheDocument()
       expect(screen.getByText('fontebit72@gmail.com')).toBeInTheDocument()
@@ -268,6 +268,26 @@ describe('Footer', () => {
       render(<Footer />)
       expect(screen.getByText('クイックリンク')).toBeInTheDocument()
       expect(screen.getByText('サービス')).toBeInTheDocument()
+    })
+
+    it('should display phone language labels in English', () => {
+      render(<Footer />)
+      expect(screen.getByText('(English/French)')).toBeInTheDocument()
+      expect(screen.getByText('(Japanese)')).toBeInTheDocument()
+    })
+
+    it('should display phone language labels in French', () => {
+      localStorage.setItem('language', 'fr')
+      render(<Footer />)
+      expect(screen.getByText('(Anglais/Français)')).toBeInTheDocument()
+      expect(screen.getByText('(Japonais)')).toBeInTheDocument()
+    })
+
+    it('should display phone language labels in Japanese', () => {
+      localStorage.setItem('language', 'ja')
+      render(<Footer />)
+      expect(screen.getByText('(英語/フランス語)')).toBeInTheDocument()
+      expect(screen.getByText('(日本語)')).toBeInTheDocument()
     })
   })
 })
