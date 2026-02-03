@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import type { Language } from "../i18n/translations";
 
@@ -17,6 +17,7 @@ const languageNames: Record<Language, string> = {
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const languages: Language[] = ["en", "fr", "ja"];
 
@@ -25,8 +26,25 @@ export default function LanguageSwitcher() {
     setIsOpen(false);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <div className="language-switcher">
+    <div ref={dropdownRef} className="language-switcher">
       <button
         className="language-switcher__toggle"
         onClick={() => setIsOpen(!isOpen)}
