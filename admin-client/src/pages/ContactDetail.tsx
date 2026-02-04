@@ -123,12 +123,12 @@ export default function ContactDetail() {
     }
 
     if (replyForm.subject.length > 200) {
-      setReplyError('Subject must be less than 200 characters');
+      setReplyError('Subject must be 200 characters or fewer');
       return;
     }
 
     if (replyForm.message.length > 5000) {
-      setReplyError('Message must be less than 5000 characters');
+      setReplyError('Message must be 5000 characters or fewer');
       return;
     }
 
