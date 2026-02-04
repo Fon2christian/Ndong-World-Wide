@@ -40,9 +40,7 @@ export default function ContactDetail() {
         message: ''
       });
     }
-    // Only re-run when contact ID changes, not on every contact property update
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contact?._id]);
+  }, [contact?._id, contact?.name]);
 
   // Update sessionStorage with current pathname for navigation tracking
   useEffect(() => {
@@ -463,6 +461,13 @@ export default function ContactDetail() {
                 </button>
               </div>
 
+              {/* Reply Error - shown outside form so it's visible even when form is hidden */}
+              {replyError && (
+                <div className="error-message" style={{ marginBottom: '1rem' }}>
+                  {replyError}
+                </div>
+              )}
+
               {/* Reply Form */}
               {showReplyForm && (
                 <div style={{
@@ -473,11 +478,6 @@ export default function ContactDetail() {
                   marginBottom: '1.5rem'
                 }}>
                   <form onSubmit={handleSendReply}>
-                    {replyError && (
-                      <div className="error-message" style={{ marginBottom: '1rem' }}>
-                        {replyError}
-                      </div>
-                    )}
 
                     <div className="form-group" style={{ marginBottom: '1rem' }}>
                       <label htmlFor="reply-subject">Subject</label>
