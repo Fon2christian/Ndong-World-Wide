@@ -22,7 +22,6 @@ const ReplySchema = new Schema<IReply>(
       type: Schema.Types.ObjectId,
       ref: "Contact",
       required: true,
-      index: true,
     },
     adminId: {
       type: Schema.Types.ObjectId,

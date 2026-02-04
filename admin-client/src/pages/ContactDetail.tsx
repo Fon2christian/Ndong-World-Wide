@@ -605,7 +605,7 @@ export default function ContactDetail() {
                         </div>
                         <div style={{
                           padding: '1rem',
-                          backgroundColor: 'white',
+                          backgroundColor: 'var(--card-bg)',
                           borderRadius: '0.375rem',
                           border: '1px solid var(--border-color)'
                         }}>
