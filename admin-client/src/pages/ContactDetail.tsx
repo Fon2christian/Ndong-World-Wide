@@ -112,7 +112,12 @@ export default function ContactDetail() {
         const localOnly = prev.filter(r => !fetchedIds.has(r._id));
 
         // Merge fetched data (server source of truth) with local-only replies
-        return [...data, ...localOnly];
+        const merged = [...data, ...localOnly];
+
+        // Sort by sentAt descending (newest first) to maintain consistent ordering
+        return merged.sort(
+          (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
+        );
       });
     } catch (err: any) {
       setReplyError(err.response?.data?.message || 'Failed to load replies');
