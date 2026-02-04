@@ -102,7 +102,18 @@ export default function ContactDetail() {
       setIsLoadingReplies(true);
       setReplyError('');
       const data = await repliesApi.getByContactId(id);
-      setReplies(data);
+
+      // Merge fetched replies with existing state to avoid dropping optimistic updates
+      setReplies(prev => {
+        // Create a Set of IDs from fetched data for quick lookup
+        const fetchedIds = new Set(data.map(r => r._id));
+
+        // Keep any local-only replies that aren't in the fetched data
+        const localOnly = prev.filter(r => !fetchedIds.has(r._id));
+
+        // Merge fetched data (server source of truth) with local-only replies
+        return [...data, ...localOnly];
+      });
     } catch (err: any) {
       setReplyError(err.response?.data?.message || 'Failed to load replies');
     } finally {
