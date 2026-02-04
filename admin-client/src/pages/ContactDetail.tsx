@@ -140,16 +140,22 @@ export default function ContactDetail() {
       // Add new reply to the list (at the beginning since sorted by newest first)
       setReplies(prev => [newReply, ...prev]);
 
-      // Update contact to reflect new reply count and status
-      const updatedContact = await contactsApi.getById(id);
-      setContact(updatedContact);
-
       // Clear form and hide it
       setReplyForm({
         subject: `Re: Inquiry from ${contact.name}`,
         message: ''
       });
       setShowReplyForm(false);
+
+      // Update contact to reflect new reply count and status
+      // This is done separately to avoid showing error if contact fetch fails after successful reply
+      try {
+        const updatedContact = await contactsApi.getById(id);
+        setContact(updatedContact);
+      } catch (updateErr) {
+        // Silent fail - reply was sent successfully, just couldn't refresh contact data
+        console.error('Failed to refresh contact data after reply:', updateErr);
+      }
     } catch (err: any) {
       setReplyError(err.response?.data?.message || 'Failed to send reply');
     } finally {
