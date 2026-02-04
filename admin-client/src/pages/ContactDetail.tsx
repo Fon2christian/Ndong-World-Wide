@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, useRef, type FormEvent } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
@@ -21,8 +21,12 @@ export default function ContactDetail() {
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
   const [replyForm, setReplyForm] = useState<ReplyFormData>({ subject: '', message: '' });
   const [isSendingReply, setIsSendingReply] = useState(false);
-  const [replyError, setReplyError] = useState('');
+  const [replyError, setReplyError] = useState(''); // Form validation/send errors
+  const [loadError, setLoadError] = useState(''); // Fetch/load errors
   const [showReplyForm, setShowReplyForm] = useState(false);
+
+  // Request guard to prevent stale fetches from updating state
+  const fetchRequestIdRef = useRef(0);
 
   useEffect(() => {
     if (id) {
@@ -98,10 +102,18 @@ export default function ContactDetail() {
   const fetchReplies = async () => {
     if (!id) return;
 
+    // Increment request ID to track this specific fetch
+    const currentRequestId = ++fetchRequestIdRef.current;
+
     try {
       setIsLoadingReplies(true);
-      setReplyError('');
+      setLoadError('');
       const data = await repliesApi.getByContactId(id);
+
+      // Only update state if this is still the latest request
+      if (currentRequestId !== fetchRequestIdRef.current) {
+        return; // Stale response, ignore it
+      }
 
       // Merge fetched replies with existing state to avoid dropping optimistic updates
       setReplies(prev => {
@@ -120,9 +132,15 @@ export default function ContactDetail() {
         );
       });
     } catch (err: any) {
-      setReplyError(err.response?.data?.message || 'Failed to load replies');
+      // Only set error if this is still the latest request
+      if (currentRequestId === fetchRequestIdRef.current) {
+        setLoadError(err.response?.data?.message || 'Failed to load replies');
+      }
     } finally {
-      setIsLoadingReplies(false);
+      // Only clear loading if this is still the latest request
+      if (currentRequestId === fetchRequestIdRef.current) {
+        setIsLoadingReplies(false);
+      }
     }
   };
 
@@ -214,7 +232,7 @@ export default function ContactDetail() {
     }
   };
 
-  const getEmailStatusBadge = (status: string) => {
+  const getEmailStatusBadge = (status: Reply['emailStatus']) => {
     switch (status) {
       case 'sent':
         return { color: '#10b981', label: 'Sent' };
@@ -222,8 +240,6 @@ export default function ContactDetail() {
         return { color: '#f59e0b', label: 'Sending...' };
       case 'failed':
         return { color: '#ef4444', label: 'Failed' };
-      default:
-        return { color: '#6b7280', label: status };
     }
   };
 
@@ -477,10 +493,10 @@ export default function ContactDetail() {
                 </button>
               </div>
 
-              {/* Reply Error - shown outside form so it's visible even when form is hidden */}
-              {replyError && (
+              {/* Load Error - shown outside form for fetch failures */}
+              {loadError && (
                 <div className="error-message" style={{ marginBottom: '1rem' }}>
-                  {replyError}
+                  {loadError}
                 </div>
               )}
 
@@ -494,6 +510,13 @@ export default function ContactDetail() {
                   marginBottom: '1.5rem'
                 }}>
                   <form onSubmit={handleSendReply}>
+
+                    {/* Form/Validation Error - shown inside form */}
+                    {replyError && (
+                      <div className="error-message" style={{ marginBottom: '1rem' }}>
+                        {replyError}
+                      </div>
+                    )}
 
                     <div className="form-group" style={{ marginBottom: '1rem' }}>
                       <label htmlFor="reply-subject">Subject</label>
