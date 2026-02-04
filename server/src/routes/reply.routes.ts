@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import Reply from "../models/Reply.js";
 import Contact from "../models/Contact.js";
 import Admin from "../models/Admin.js";
@@ -16,14 +17,20 @@ function validateReplyInput(body: any): { valid: boolean; error?: string } {
     return { valid: false, error: 'Invalid request body' };
   }
 
-  const { subject, message } = body;
+  let { subject, message } = body;
 
   // Check required fields exist and are strings
   if (!subject || typeof subject !== 'string' || !message || typeof message !== 'string') {
     return { valid: false, error: "Subject and message are required" };
   }
 
-  // Validate field lengths
+  // Trim fields and reassign to body
+  subject = subject.trim();
+  message = message.trim();
+  body.subject = subject;
+  body.message = message;
+
+  // Validate trimmed field lengths
   if (subject.length > 200) {
     return { valid: false, error: "Subject must be less than 200 characters" };
   }
@@ -107,20 +114,36 @@ router.post("/:contactId/replies", requireAuth, async (req: AuthRequest, res: Re
       emailStatus: "sending" as const,
     };
 
-    // Create reply
-    const reply = await Reply.create(replyData);
+    // Use transaction to ensure atomicity of reply creation and contact update
+    const session = await mongoose.startSession();
+    let reply;
 
-    // Update contact fields: lastReplyAt and replyCount
-    await Contact.findByIdAndUpdate(
-      contactId,
-      {
-        lastReplyAt: new Date(),
-        $inc: { replyCount: 1 },
-        // Auto-change status to in_progress as per user preference
-        status: "in_progress",
-      },
-      { new: true }
-    );
+    try {
+      await session.startTransaction();
+
+      // Create reply within transaction
+      const [createdReply] = await Reply.create([replyData], { session });
+      reply = createdReply;
+
+      // Update contact fields: lastReplyAt and replyCount
+      await Contact.findByIdAndUpdate(
+        contactId,
+        {
+          lastReplyAt: new Date(),
+          $inc: { replyCount: 1 },
+          // Auto-change status to in_progress as per user preference
+          status: "in_progress",
+        },
+        { new: true, session }
+      );
+
+      await session.commitTransaction();
+    } catch (transactionError) {
+      await session.abortTransaction();
+      throw transactionError;
+    } finally {
+      session.endSession();
+    }
 
     // Send email asynchronously (don't block response)
     sendReplyEmail({
@@ -132,17 +155,25 @@ router.post("/:contactId/replies", requireAuth, async (req: AuthRequest, res: Re
       replyId: reply._id.toString(),
     })
       .then(async () => {
-        // Update email status to sent
-        await Reply.findByIdAndUpdate(reply._id, { emailStatus: "sent" });
-        console.log(`Reply email sent successfully (Reply ID: ${reply._id})`);
+        try {
+          // Update email status to sent
+          await Reply.findByIdAndUpdate(reply._id, { emailStatus: "sent" });
+          console.log(`Reply email sent successfully (Reply ID: ${reply._id})`);
+        } catch (updateError) {
+          console.error(`Failed to update reply status to 'sent' (Reply ID: ${reply._id}):`, updateError);
+        }
       })
       .catch(async (error) => {
-        // Update email status to failed
-        await Reply.findByIdAndUpdate(reply._id, {
-          emailStatus: "failed",
-          errorMessage: error.message || "Failed to send email",
-        });
-        console.error(`Failed to send reply email (Reply ID: ${reply._id}):`, error);
+        try {
+          // Update email status to failed
+          await Reply.findByIdAndUpdate(reply._id, {
+            emailStatus: "failed",
+            errorMessage: error.message || "Failed to send email",
+          });
+          console.error(`Failed to send reply email (Reply ID: ${reply._id}):`, error);
+        } catch (updateError) {
+          console.error(`Failed to update reply status to 'failed' (Reply ID: ${reply._id}):`, updateError);
+        }
       });
 
     // Return created reply immediately

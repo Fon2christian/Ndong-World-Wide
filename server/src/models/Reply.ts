@@ -69,5 +69,8 @@ const ReplySchema = new Schema<IReply>(
   { timestamps: true }
 );
 
+// Add compound index for efficient queries (fetch replies for a contact, sorted by date)
+ReplySchema.index({ contactId: 1, sentAt: -1 });
+
 // Export model
 export default mongoose.model<IReply>("Reply", ReplySchema);

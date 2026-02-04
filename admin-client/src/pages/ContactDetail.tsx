@@ -136,7 +136,7 @@ export default function ContactDetail() {
       const newReply = await repliesApi.create(id, replyForm);
 
       // Add new reply to the list (at the beginning since sorted by newest first)
-      setReplies([newReply, ...replies]);
+      setReplies(prev => [newReply, ...prev]);
 
       // Update contact to reflect new reply count and status
       const updatedContact = await contactsApi.getById(id);
