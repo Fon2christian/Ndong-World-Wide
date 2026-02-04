@@ -40,6 +40,8 @@ export default function ContactDetail() {
         message: ''
       });
     }
+    // Only re-run when contact ID changes, not on every contact property update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contact?._id]);
 
   // Update sessionStorage with current pathname for navigation tracking
@@ -620,15 +622,7 @@ export default function ContactDetail() {
                           </p>
                         </div>
                         {reply.errorMessage && (
-                          <div style={{
-                            marginTop: '0.75rem',
-                            padding: '0.75rem',
-                            backgroundColor: '#fef2f2',
-                            border: '1px solid #fecaca',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.875rem',
-                            color: '#991b1b'
-                          }}>
+                          <div className="error-message" style={{ marginTop: '0.75rem' }}>
                             <strong>Error:</strong> {reply.errorMessage}
                           </div>
                         )}
