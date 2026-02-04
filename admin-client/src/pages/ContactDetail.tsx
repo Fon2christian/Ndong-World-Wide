@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { contactsApi } from '../api/contacts';
-import type { Contact } from '../types';
+import { repliesApi } from '../api/replies';
+import type { Contact, Reply, ReplyFormData } from '../types';
 
 const PREV_PATH_KEY = 'contacts_prev_path';
 
@@ -15,11 +16,31 @@ export default function ContactDetail() {
   const [error, setError] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Reply state
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [isLoadingReplies, setIsLoadingReplies] = useState(false);
+  const [replyForm, setReplyForm] = useState<ReplyFormData>({ subject: '', message: '' });
+  const [isSendingReply, setIsSendingReply] = useState(false);
+  const [replyError, setReplyError] = useState('');
+  const [showReplyForm, setShowReplyForm] = useState(false);
+
   useEffect(() => {
     if (id) {
       fetchContact();
     }
   }, [id]);
+
+  // Fetch replies when contact is loaded
+  useEffect(() => {
+    if (contact) {
+      fetchReplies();
+      // Set default subject
+      setReplyForm({
+        subject: `Re: Inquiry from ${contact.name}`,
+        message: ''
+      });
+    }
+  }, [contact?._id]);
 
   // Update sessionStorage with current pathname for navigation tracking
   useEffect(() => {
@@ -74,6 +95,66 @@ export default function ContactDetail() {
     }
   };
 
+  const fetchReplies = async () => {
+    if (!id) return;
+
+    try {
+      setIsLoadingReplies(true);
+      setReplyError('');
+      const data = await repliesApi.getByContactId(id);
+      setReplies(data);
+    } catch (err: any) {
+      setReplyError(err.response?.data?.message || 'Failed to load replies');
+    } finally {
+      setIsLoadingReplies(false);
+    }
+  };
+
+  const handleSendReply = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!id || !contact) return;
+
+    // Validation
+    if (!replyForm.subject.trim() || !replyForm.message.trim()) {
+      setReplyError('Subject and message are required');
+      return;
+    }
+
+    if (replyForm.subject.length > 200) {
+      setReplyError('Subject must be less than 200 characters');
+      return;
+    }
+
+    if (replyForm.message.length > 5000) {
+      setReplyError('Message must be less than 5000 characters');
+      return;
+    }
+
+    try {
+      setIsSendingReply(true);
+      setReplyError('');
+      const newReply = await repliesApi.create(id, replyForm);
+
+      // Add new reply to the list (at the beginning since sorted by newest first)
+      setReplies([newReply, ...replies]);
+
+      // Update contact to reflect new reply count and status
+      const updatedContact = await contactsApi.getById(id);
+      setContact(updatedContact);
+
+      // Clear form and hide it
+      setReplyForm({
+        subject: `Re: Inquiry from ${contact.name}`,
+        message: ''
+      });
+      setShowReplyForm(false);
+    } catch (err: any) {
+      setReplyError(err.response?.data?.message || 'Failed to send reply');
+    } finally {
+      setIsSendingReply(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
@@ -108,6 +189,19 @@ export default function ContactDetail() {
         return 'Resolved';
       default:
         return status;
+    }
+  };
+
+  const getEmailStatusBadge = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return { color: '#10b981', label: 'Sent' };
+      case 'sending':
+        return { color: '#f59e0b', label: 'Sending...' };
+      case 'failed':
+        return { color: '#ef4444', label: 'Failed' };
+      default:
+        return { color: '#6b7280', label: status };
     }
   };
 
@@ -317,6 +411,232 @@ export default function ContactDetail() {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Reply Section */}
+            <div style={{
+              paddingTop: '1.5rem',
+              borderTop: '1px solid var(--border-color)'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <h2 style={{
+                    fontSize: '1.25rem',
+                    margin: 0,
+                    color: 'var(--text-primary)'
+                  }}>
+                    Reply History
+                  </h2>
+                  {contact.replyCount ? (
+                    <span style={{
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '9999px',
+                      backgroundColor: '#2563eb',
+                      color: 'white',
+                      fontSize: '0.75rem',
+                      fontWeight: '600'
+                    }}>
+                      {contact.replyCount} {contact.replyCount === 1 ? 'reply' : 'replies'}
+                    </span>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowReplyForm(!showReplyForm)}
+                  className="btn btn-primary"
+                  style={{ padding: '0.5rem 1rem' }}
+                >
+                  {showReplyForm ? 'Cancel' : 'Send Reply'}
+                </button>
+              </div>
+
+              {/* Reply Form */}
+              {showReplyForm && (
+                <div style={{
+                  padding: '1.5rem',
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderRadius: '0.5rem',
+                  border: '1px solid var(--border-color)',
+                  marginBottom: '1.5rem'
+                }}>
+                  <form onSubmit={handleSendReply}>
+                    {replyError && (
+                      <div className="error-message" style={{ marginBottom: '1rem' }}>
+                        {replyError}
+                      </div>
+                    )}
+
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                      <label htmlFor="reply-subject">Subject</label>
+                      <input
+                        id="reply-subject"
+                        type="text"
+                        className="form-input"
+                        value={replyForm.subject}
+                        onChange={(e) => setReplyForm({ ...replyForm, subject: e.target.value })}
+                        maxLength={200}
+                        required
+                        disabled={isSendingReply}
+                      />
+                      <div style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--text-secondary)',
+                        marginTop: '0.25rem'
+                      }}>
+                        {replyForm.subject.length}/200 characters
+                      </div>
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                      <label htmlFor="reply-message">Message</label>
+                      <textarea
+                        id="reply-message"
+                        className="form-input"
+                        value={replyForm.message}
+                        onChange={(e) => setReplyForm({ ...replyForm, message: e.target.value })}
+                        maxLength={5000}
+                        rows={8}
+                        required
+                        disabled={isSendingReply}
+                        style={{ resize: 'vertical' }}
+                      />
+                      <div style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--text-secondary)',
+                        marginTop: '0.25rem'
+                      }}>
+                        {replyForm.message.length}/5000 characters
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={isSendingReply}
+                    >
+                      {isSendingReply ? 'Sending...' : 'Send Email Reply'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Reply History List */}
+              {isLoadingReplies ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                  <div className="spinner"></div>
+                  <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>
+                    Loading replies...
+                  </p>
+                </div>
+              ) : replies.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '3rem 1rem',
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderRadius: '0.5rem',
+                  border: '1px dashed var(--border-color)'
+                }}>
+                  <p style={{
+                    margin: 0,
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.875rem'
+                  }}>
+                    No replies sent yet. Click "Send Reply" to compose a message to the customer.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  {replies.map((reply) => {
+                    const emailStatus = getEmailStatusBadge(reply.emailStatus);
+                    return (
+                      <div
+                        key={reply._id}
+                        style={{
+                          padding: '1.5rem',
+                          backgroundColor: 'var(--bg-secondary)',
+                          borderRadius: '0.5rem',
+                          border: '1px solid var(--border-color)'
+                        }}
+                      >
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'start',
+                          marginBottom: '1rem'
+                        }}>
+                          <div>
+                            <h3 style={{
+                              fontSize: '1rem',
+                              fontWeight: '600',
+                              margin: '0 0 0.5rem 0',
+                              color: 'var(--text-primary)'
+                            }}>
+                              {reply.subject}
+                            </h3>
+                            <div style={{
+                              fontSize: '0.875rem',
+                              color: 'var(--text-secondary)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              flexWrap: 'wrap'
+                            }}>
+                              <span>From: <strong>{reply.adminName}</strong></span>
+                              <span>•</span>
+                              <span>{formatDate(reply.sentAt)}</span>
+                            </div>
+                          </div>
+                          <span style={{
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: '0.25rem',
+                            backgroundColor: emailStatus.color,
+                            color: 'white',
+                            fontSize: '0.75rem',
+                            fontWeight: '600',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {emailStatus.label}
+                          </span>
+                        </div>
+                        <div style={{
+                          padding: '1rem',
+                          backgroundColor: 'white',
+                          borderRadius: '0.375rem',
+                          border: '1px solid var(--border-color)'
+                        }}>
+                          <p style={{
+                            margin: 0,
+                            lineHeight: '1.6',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            color: 'var(--text-primary)'
+                          }}>
+                            {reply.message}
+                          </p>
+                        </div>
+                        {reply.errorMessage && (
+                          <div style={{
+                            marginTop: '0.75rem',
+                            padding: '0.75rem',
+                            backgroundColor: '#fef2f2',
+                            border: '1px solid #fecaca',
+                            borderRadius: '0.375rem',
+                            fontSize: '0.875rem',
+                            color: '#991b1b'
+                          }}>
+                            <strong>Error:</strong> {reply.errorMessage}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Metadata */}

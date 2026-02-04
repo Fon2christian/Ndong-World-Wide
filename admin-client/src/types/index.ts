@@ -101,8 +101,31 @@ export interface Contact {
   status: 'new' | 'in_progress' | 'resolved';
   emailSent: boolean;
   isRead: boolean;
+  lastReplyAt?: string;
+  replyCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+// Reply to Contact
+export interface Reply {
+  _id: string;
+  contactId: string;
+  adminId: string;
+  adminName: string;
+  adminEmail: string;
+  subject: string;
+  message: string;
+  sentAt: string;
+  emailStatus: 'sending' | 'sent' | 'failed';
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReplyFormData {
+  subject: string;
+  message: string;
 }
 
 export interface PaginationParams {

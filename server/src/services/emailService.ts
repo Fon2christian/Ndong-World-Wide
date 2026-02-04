@@ -285,3 +285,86 @@ Please do not reply to this email.
 
   await emailTransporter.sendMail(mailOptions);
 }
+
+/**
+ * Send reply email to customer from admin
+ */
+export async function sendReplyEmail(params: {
+  customerEmail: string;
+  customerName: string;
+  subject: string;
+  message: string;
+  adminName: string;
+  replyId: string;
+}): Promise<void> {
+  const emailTransporter = getTransporter();
+
+  if (!emailTransporter) {
+    throw new Error("Email service not configured");
+  }
+
+  const { customerEmail, customerName, subject, message, adminName, replyId } = params;
+
+  // Escape all user-provided data to prevent HTML injection
+  const escapedCustomerName = escapeHtml(customerName);
+  const escapedMessage = escapeHtml(message);
+  const escapedAdminName = escapeHtml(adminName);
+
+  // Sanitize header values to prevent CRLF injection
+  const safeSubject = sanitizeHeader(subject);
+  const fromName = sanitizeFromName(process.env.EMAIL_FROM_NAME, "Ndong World Wide");
+
+  const mailOptions = {
+    from: `"${fromName}" <${process.env.EMAIL_USER}>`,
+    to: customerEmail,
+    subject: safeSubject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px;">
+          <h2 style="color: #2563eb; margin: 0;">Ndong World Wide</h2>
+        </div>
+
+        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+          Dear ${escapedCustomerName},
+        </p>
+
+        <div style="color: #374151; font-size: 16px; line-height: 1.6; white-space: pre-wrap; margin: 20px 0;">
+${escapedMessage}
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+          <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0;">
+            Best regards,<br>
+            <strong>${escapedAdminName}</strong><br>
+            Ndong World Wide
+          </p>
+        </div>
+
+        <p style="color: #9ca3af; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+          This email was sent in response to your inquiry.<br>
+          If you have any questions, please reply to this email.
+        </p>
+      </div>
+    `,
+    text: `
+Dear ${sanitizePlainText(customerName)},
+
+${sanitizePlainText(message)}
+
+Best regards,
+${sanitizePlainText(adminName)}
+Ndong World Wide
+
+---
+This email was sent in response to your inquiry.
+If you have any questions, please reply to this email.
+    `.trim(),
+  };
+
+  try {
+    await emailTransporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error(`Failed to send reply email (Reply ID: ${replyId}):`, error);
+    throw error;
+  }
+}

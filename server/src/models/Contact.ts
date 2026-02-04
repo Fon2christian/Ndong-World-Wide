@@ -11,6 +11,8 @@ export interface ContactAttrs {
   status?: "new" | "in_progress" | "resolved";
   emailSent?: boolean;
   isRead?: boolean;
+  lastReplyAt?: Date;
+  replyCount?: number;
 }
 
 // Document interface with Mongoose methods
@@ -47,6 +49,8 @@ const ContactSchema = new Schema<ContactDocument>(
     },
     emailSent: { type: Boolean, default: false },
     isRead: { type: Boolean, default: false },
+    lastReplyAt: { type: Date },
+    replyCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
@@ -55,6 +59,7 @@ const ContactSchema = new Schema<ContactDocument>(
 ContactSchema.index({ createdAt: -1 }); // For sorting all contacts by creation date
 ContactSchema.index({ status: 1, createdAt: -1 }); // For filtering by status and sorting
 ContactSchema.index({ isRead: 1, createdAt: -1 }); // For filtering by read status and sorting
+ContactSchema.index({ lastReplyAt: -1 }); // For sorting by most recent reply
 
 // Export model
 export default mongoose.model<ContactDocument>("Contact", ContactSchema);
