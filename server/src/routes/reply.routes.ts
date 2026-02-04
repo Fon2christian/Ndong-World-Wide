@@ -37,7 +37,7 @@ function validateReplyInput(body: any): { valid: boolean; error?: string } {
 // GET replies for a contact
 router.get("/:contactId/replies", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const { contactId } = req.params;
+    const contactId = req.params.contactId as string;
 
     // Validate contactId
     if (!isValidObjectId(contactId)) {
@@ -66,7 +66,7 @@ router.get("/:contactId/replies", requireAuth, async (req: AuthRequest, res: Res
 // CREATE reply to a contact
 router.post("/:contactId/replies", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const { contactId } = req.params;
+    const contactId = req.params.contactId as string;
 
     // Validate contactId
     if (!isValidObjectId(contactId)) {
