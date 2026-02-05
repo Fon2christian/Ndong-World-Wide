@@ -118,11 +118,14 @@ export default function ContactDetail() {
 
       // Merge fetched replies with existing state to avoid dropping optimistic updates
       setReplies(prev => {
+        // Keep only replies that belong to the current contact to prevent cross-contact leakage
+        const sameContactPrev = prev.filter(r => r.contactId === id);
+
         // Create a Set of IDs from fetched data for quick lookup
         const fetchedIds = new Set(data.map(r => r._id));
 
         // Keep any local-only replies that aren't in the fetched data
-        const localOnly = prev.filter(r => !fetchedIds.has(r._id));
+        const localOnly = sameContactPrev.filter(r => !fetchedIds.has(r._id));
 
         // Merge fetched data (server source of truth) with local-only replies
         const merged = [...data, ...localOnly];
