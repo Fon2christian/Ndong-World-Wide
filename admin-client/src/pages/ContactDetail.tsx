@@ -106,6 +106,9 @@ export default function ContactDetail() {
     // Increment request ID to track this specific fetch
     const currentRequestId = ++fetchRequestIdRef.current;
 
+    // Clear stale replies for previous contact before fetching to prevent cross-contact leakage on fetch failure
+    setReplies(prev => prev.filter(r => r.contactId === id));
+
     try {
       setIsLoadingReplies(true);
       setLoadError('');
