@@ -44,6 +44,7 @@ export default function ContactDetail() {
         message: ''
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contact?._id, contact?.name]);
 
   // Update sessionStorage with current pathname for navigation tracking
