@@ -678,7 +678,7 @@ export default function ContactDetail() {
                     );
                   })}
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Metadata */}
