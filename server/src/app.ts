@@ -6,6 +6,7 @@ import carRoutes from "./routes/car.routes.js";
 import tireRoutes from "./routes/tire.routes.js";
 import wheelDrumRoutes from "./routes/wheelDrum.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
+import replyRoutes from "./routes/reply.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
@@ -48,6 +49,7 @@ app.use("/api/cars", carRoutes);
 app.use("/api/tires", tireRoutes);
 app.use("/api/wheel-drums", wheelDrumRoutes);
 app.use("/api/contacts", contactRoutes);
+app.use("/api/contacts", replyRoutes);
 app.use("/api/admin", adminRoutes);
 
 export default app;
