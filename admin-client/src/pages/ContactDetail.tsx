@@ -240,6 +240,9 @@ export default function ContactDetail() {
         return { color: '#f59e0b', label: 'Sending...' };
       case 'failed':
         return { color: '#ef4444', label: 'Failed' };
+      default:
+        // Defensive fallback for unexpected statuses
+        return { color: '#6b7280', label: String(status) };
     }
   };
 
@@ -580,7 +583,7 @@ export default function ContactDetail() {
                     Loading replies...
                   </p>
                 </div>
-              ) : replies.length === 0 ? (
+              ) : replies.length === 0 && !loadError ? (
                 <div style={{
                   textAlign: 'center',
                   padding: '3rem 1rem',
@@ -596,7 +599,7 @@ export default function ContactDetail() {
                     No replies sent yet. Click "Send Reply" to compose a message to the customer.
                   </p>
                 </div>
-              ) : (
+              ) : replies.length > 0 ? (
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   {replies.map((reply) => {
                     const emailStatus = getEmailStatusBadge(reply.emailStatus);
