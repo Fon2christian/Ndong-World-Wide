@@ -488,7 +488,10 @@ export default function ContactDetail() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowReplyForm(!showReplyForm)}
+                  onClick={() => {
+                    setShowReplyForm(!showReplyForm);
+                    setReplyError(''); // Clear any validation errors when toggling form
+                  }}
                   className="btn btn-primary"
                   style={{ padding: '0.5rem 1rem' }}
                 >
