@@ -52,10 +52,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <div className="sidebar-footer">
           <div className="admin-info">
-            <p className="admin-name">{admin?.name}</p>
-            <p className="admin-email">{admin?.email}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                width: '2.5rem',
+                height: '2.5rem',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#ffffff',
+                border: '2px solid rgba(255, 255, 255, 0.3)'
+              }}>
+                {admin?.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p className="admin-name">{admin?.name}</p>
+                <p className="admin-email">{admin?.email}</p>
+              </div>
+            </div>
           </div>
           <button onClick={logout} className="btn btn-secondary btn-block">
+            <span style={{ fontSize: '1.125rem' }}>🚪</span>
             Logout
           </button>
         </div>
