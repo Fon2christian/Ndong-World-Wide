@@ -73,7 +73,7 @@ cd server
 # Option 1: Promote the first admin account
 npx tsx src/scripts/promote-super-admin.ts
 
-# Option 2: Promote a specific account you know the password for
+# Option 2: Promote a specific admin account by email
 npx tsx src/scripts/promote-super-admin.ts your-email@example.com
 ```
 
@@ -110,10 +110,10 @@ If all admins are locked out:
 ```bash
 cd server
 
-# Reset password for any admin account
-npx tsx src/scripts/reset-admin-password.ts any-admin@example.com EmergencyPass123
+# Reset password for any admin account with a secure password
+npx tsx src/scripts/reset-admin-password.ts any-admin@example.com YourSecurePassword123!
 
-# Then login and use the forgot password feature to set a permanent password
+# The password is now permanently set - login with the new credentials
 ```
 
 ---
