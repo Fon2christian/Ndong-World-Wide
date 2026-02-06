@@ -38,6 +38,7 @@ async function promoteSuperAdmin() {
       admin = await Admin.findOne({ email: targetEmail });
       if (!admin) {
         console.error(`❌ No admin found with email: ${targetEmail}`);
+        await mongoose.connection.close();
         process.exit(1);
       }
     } else {
@@ -45,6 +46,7 @@ async function promoteSuperAdmin() {
       admin = await Admin.findOne().sort({ createdAt: 1 });
       if (!admin) {
         console.error("❌ No admin accounts found in database");
+        await mongoose.connection.close();
         process.exit(1);
       }
     }
@@ -52,6 +54,7 @@ async function promoteSuperAdmin() {
     // Check if already super admin
     if (admin.role === "super_admin") {
       console.log(`ℹ️  Admin ${admin.email} is already a super admin`);
+      await mongoose.connection.close();
       process.exit(0);
     }
 
@@ -71,9 +74,11 @@ async function promoteSuperAdmin() {
       console.log(`   - ${a.email} (${a.name}) - Role: ${a.role}`);
     });
 
+    await mongoose.connection.close();
     process.exit(0);
   } catch (error) {
     console.error("❌ Error promoting admin:", error);
+    await mongoose.connection.close();
     process.exit(1);
   }
 }

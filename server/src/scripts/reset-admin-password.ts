@@ -44,6 +44,7 @@ async function resetPassword() {
     const admin = await Admin.findOne({ email: email.toLowerCase() });
     if (!admin) {
       console.error(`❌ No admin found with email: ${email}`);
+      await mongoose.connection.close();
       process.exit(1);
     }
 
@@ -57,9 +58,11 @@ async function resetPassword() {
     console.log(`   Role: ${admin.role}`);
     console.log("\n✓ You can now login with the new password");
 
+    await mongoose.connection.close();
     process.exit(0);
   } catch (error) {
     console.error("❌ Error resetting password:", error);
+    await mongoose.connection.close();
     process.exit(1);
   }
 }

@@ -33,10 +33,7 @@ export default function AdminManagement() {
   const fetchAdmins = async () => {
     try {
       setIsLoadingAdmins(true);
-      console.log('Fetching admin list...');
       const response = await api.get('/api/admin/list');
-      console.log('Admin list response:', response.data);
-      console.log('Number of admins:', response.data.admins?.length || 0);
       setAdmins(response.data.admins || []);
     } catch (err: any) {
       console.error('Failed to fetch admins:', err);
@@ -346,6 +343,7 @@ export default function AdminManagement() {
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={() => handleDelete(admin.id, admin.name)}
                       disabled={isCurrentUser}
                       className="btn btn-secondary"

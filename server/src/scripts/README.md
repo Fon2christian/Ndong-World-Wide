@@ -20,7 +20,7 @@ npx tsx src/scripts/promote-super-admin.ts [email]
 npx tsx src/scripts/promote-super-admin.ts
 
 # Promote a specific admin by email
-npx tsx src/scripts/promote-super-admin.ts fon2christian@gmail.com
+npx tsx src/scripts/promote-super-admin.ts admin@example.com
 ```
 
 **What it does:**
@@ -44,10 +44,10 @@ npx tsx src/scripts/reset-admin-password.ts <email> <new-password>
 **Examples:**
 ```bash
 # Reset password for super admin
-npx tsx src/scripts/reset-admin-password.ts admin@ndongworldwide.com NewSecurePass123
+npx tsx src/scripts/reset-admin-password.ts superadmin@example.com NewSecurePass123
 
 # Reset password for any admin
-npx tsx src/scripts/reset-admin-password.ts fon2christian@gmail.com MyNewPassword456
+npx tsx src/scripts/reset-admin-password.ts admin@example.com MyNewPassword456
 ```
 
 **Requirements:**
@@ -81,7 +81,7 @@ If you've lost access to the super admin account:
 cd server
 
 # Reset the password directly
-npx tsx src/scripts/reset-admin-password.ts admin@ndongworldwide.com YourNewPassword123
+npx tsx src/scripts/reset-admin-password.ts superadmin@example.com YourNewPassword123
 
 # Then login with the new password
 ```

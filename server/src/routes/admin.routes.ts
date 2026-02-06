@@ -116,15 +116,19 @@ router.post("/login", async (req: Request, res: Response) => {
     const admin = await Admin.findOne({ email });
     if (!admin) {
       // Log failed login attempt with unknown email
-      await LoginEvent.create({
-        email: email,
-        adminName: 'Unknown',
-        timestamp: new Date(),
-        ipAddress: req.ip,
-        userAgent: req.headers['user-agent'],
-        status: 'failed',
-        failureReason: 'Email not found'
-      });
+      try {
+        await LoginEvent.create({
+          email: email,
+          adminName: 'Unknown',
+          timestamp: new Date(),
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          status: 'failed',
+          failureReason: 'Email not found'
+        });
+      } catch (logError) {
+        console.error('Failed to log login event:', logError);
+      }
 
       return res.status(401).json({
         message: "Invalid credentials",
@@ -135,16 +139,20 @@ router.post("/login", async (req: Request, res: Response) => {
     const isPasswordValid = await admin.comparePassword(password);
     if (!isPasswordValid) {
       // Log failed login attempt
-      await LoginEvent.create({
-        adminId: admin._id,
-        email: admin.email,
-        adminName: admin.name,
-        timestamp: new Date(),
-        ipAddress: req.ip,
-        userAgent: req.headers['user-agent'],
-        status: 'failed',
-        failureReason: 'Invalid password'
-      });
+      try {
+        await LoginEvent.create({
+          adminId: admin._id,
+          email: admin.email,
+          adminName: admin.name,
+          timestamp: new Date(),
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          status: 'failed',
+          failureReason: 'Invalid password'
+        });
+      } catch (logError) {
+        console.error('Failed to log login event:', logError);
+      }
 
       return res.status(401).json({
         message: "Invalid credentials",
@@ -152,15 +160,19 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     // Log successful login
-    await LoginEvent.create({
-      adminId: admin._id,
-      email: admin.email,
-      adminName: admin.name,
-      timestamp: new Date(),
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent'],
-      status: 'success'
-    });
+    try {
+      await LoginEvent.create({
+        adminId: admin._id,
+        email: admin.email,
+        adminName: admin.name,
+        timestamp: new Date(),
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        status: 'success'
+      });
+    } catch (logError) {
+      console.error('Failed to log login event:', logError);
+    }
 
     // Generate token
     const token = generateToken(admin._id.toString(), admin.email);
@@ -224,7 +236,6 @@ router.get("/list", requireAuth, requireSuperAdmin, async (req: AuthRequest, res
     }
 
     const admins = await Admin.find().select("-password").sort({ createdAt: -1 });
-    console.log(`Found ${admins.length} admins in database`);
 
     const adminList = admins.map((admin) => ({
       id: admin._id,
@@ -234,8 +245,6 @@ router.get("/list", requireAuth, requireSuperAdmin, async (req: AuthRequest, res
       createdAt: admin.createdAt,
       updatedAt: admin.updatedAt,
     }));
-
-    console.log("Returning admin list:", JSON.stringify(adminList, null, 2));
 
     res.json({
       admins: adminList,
@@ -263,7 +272,25 @@ router.delete("/:id", requireAuth, requireSuperAdmin, async (req: AuthRequest, r
       return res.status(400).json({ message: "You cannot delete your own account" });
     }
 
-    // Find and delete the admin
+    // Check if the admin to delete exists and get their role
+    const adminToDelete = await Admin.findById(adminIdToDelete).select("role email name");
+
+    if (!adminToDelete) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // If deleting a super admin, ensure it's not the last one
+    if (adminToDelete.role === "super_admin") {
+      const superAdminCount = await Admin.countDocuments({ role: "super_admin" });
+
+      if (superAdminCount <= 1) {
+        return res.status(400).json({
+          message: "Cannot delete the last super admin. At least one super admin must remain.",
+        });
+      }
+    }
+
+    // Delete the admin
     const deletedAdmin = await Admin.findByIdAndDelete(adminIdToDelete);
 
     if (!deletedAdmin) {
