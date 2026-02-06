@@ -35,9 +35,9 @@ function generateToken(adminId: string, email: string): string {
 
 /**
  * POST /api/admin/register
- * Register a new admin user (requires super admin privileges)
+ * Register a new admin user
  */
-router.post("/register", requireAuth, requireSuperAdmin, registerLimiter, async (req: AuthRequest, res: Response) => {
+router.post("/register", registerLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
 

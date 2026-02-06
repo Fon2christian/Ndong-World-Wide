@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -49,6 +50,10 @@ function AppRoutes() {
           <Route
             path="/login"
             element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={isAuthenticated ? <Navigate to="/" replace /> : <Register />}
           />
           <Route
             path="/forgot-password"
