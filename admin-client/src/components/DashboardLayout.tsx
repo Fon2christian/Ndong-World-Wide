@@ -10,13 +10,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { admin, logout } = useAuth();
   const location = useLocation();
 
-  const navItems = [
+  const allNavItems = [
     { path: '/', label: 'Dashboard', icon: '📊' },
     { path: '/cars', label: 'Cars', icon: '🚗' },
     { path: '/tires', label: 'Tires', icon: '⚙️' },
     { path: '/wheel-drums', label: 'Wheel Drums', icon: '🔧' },
     { path: '/contacts', label: 'Customer Inquiries', icon: '📧' },
+    { path: '/admin-management', label: 'Admin Management', icon: '👥', requireSuperAdmin: true },
   ];
+
+  // Filter nav items based on admin role
+  const navItems = allNavItems.filter(item => {
+    if (item.requireSuperAdmin) {
+      return admin?.role === 'super_admin';
+    }
+    return true;
+  });
 
   const isNavItemActive = (itemPath: string) => {
     if (itemPath === '/') {

@@ -13,6 +13,7 @@ const Tires = lazy(() => import('./pages/Tires'));
 const WheelDrums = lazy(() => import('./pages/WheelDrums'));
 const Contacts = lazy(() => import('./pages/Contacts'));
 const ContactDetail = lazy(() => import('./pages/ContactDetail'));
+const AdminManagement = lazy(() => import('./pages/AdminManagement'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -102,6 +103,14 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <Contacts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-management"
+            element={
+              <ProtectedRoute>
+                <AdminManagement />
               </ProtectedRoute>
             }
           />
