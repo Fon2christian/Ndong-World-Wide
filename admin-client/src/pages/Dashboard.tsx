@@ -4,7 +4,6 @@ import { api } from '../api/client';
 
 interface Stats {
   totalCars: number;
-  availableCars: number;
   totalTires: number;
   totalWheelDrums: number;
   pendingContacts: number;
@@ -56,7 +55,6 @@ export default function Dashboard() {
             <div className="stat-content">
               <h3>Total Cars</h3>
               <p className="stat-value">{stats?.totalCars || 0}</p>
-              <p className="stat-subtitle">{stats?.availableCars || 0} available</p>
             </div>
           </div>
 

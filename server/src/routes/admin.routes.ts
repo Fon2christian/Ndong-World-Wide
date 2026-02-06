@@ -277,13 +277,9 @@ router.get("/stats", requireAuth, async (req: AuthRequest, res: Response) => {
       Contact.countDocuments({ status: 'new' }),
     ]);
 
-    // Get available cars count separately (requires filtering)
-    const availableCars = await Car.countDocuments({ status: 'available' });
-
     res.json({
       stats: {
         totalCars,
-        availableCars,
         totalTires,
         totalWheelDrums,
         pendingContacts,
