@@ -652,7 +652,7 @@ export default function ContactDetail() {
                                 gap: '0.25rem',
                                 padding: '0.25rem 0.625rem',
                                 backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                                color: 'var(--color-primary)',
+                                color: 'var(--primary-color)',
                                 borderRadius: '6px',
                                 fontSize: '0.75rem',
                                 fontWeight: '700',

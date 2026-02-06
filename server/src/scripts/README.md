@@ -9,12 +9,14 @@ This directory contains utility scripts for managing admin accounts. These scrip
 Promotes an existing admin account to super_admin role, granting them access to Admin Management features.
 
 **Usage:**
+
 ```bash
 cd server
 npx tsx src/scripts/promote-super-admin.ts [email]
 ```
 
 **Examples:**
+
 ```bash
 # Promote the oldest admin account to super admin
 npx tsx src/scripts/promote-super-admin.ts
@@ -36,12 +38,14 @@ npx tsx src/scripts/promote-super-admin.ts admin@example.com
 Resets the password for any admin account without requiring email verification.
 
 **Usage:**
+
 ```bash
 cd server
 npx tsx src/scripts/reset-admin-password.ts <email> <new-password>
 ```
 
 **Examples:**
+
 ```bash
 # Reset password for super admin
 npx tsx src/scripts/reset-admin-password.ts superadmin@example.com NewSecurePass123
@@ -117,6 +121,7 @@ npx tsx src/scripts/reset-admin-password.ts any-admin@example.com EmergencyPass1
 ## Admin Roles
 
 ### Super Admin (`super_admin`)
+
 - Full access to all features
 - Can access Admin Management page
 - Can create new admin accounts
@@ -124,6 +129,7 @@ npx tsx src/scripts/reset-admin-password.ts any-admin@example.com EmergencyPass1
 - Can view all admin accounts and their roles
 
 ### Regular Admin (`admin`)
+
 - Access to all features except Admin Management
 - Can manage inventory (Cars, Tires, Wheel Drums)
 - Can view and reply to customer inquiries
@@ -151,6 +157,7 @@ npx tsx src/scripts/reset-admin-password.ts any-admin@example.com EmergencyPass1
 ## Troubleshooting
 
 ### "MONGO_URI is not defined"
+
 Make sure you're running the script from the server directory and that your `.env` file contains the `MONGO_URI` variable.
 
 ```bash
@@ -159,12 +166,15 @@ cat .env | grep MONGO_URI
 ```
 
 ### "No admin found with email"
+
 Double-check the email address. Emails are stored in lowercase in the database.
 
 ### "Connection refused"
+
 Ensure MongoDB is running and accessible. Check your `MONGO_URI` connection string.
 
 ### Script hangs or doesn't exit
+
 Press `Ctrl+C` to force exit. The operation may have already completed.
 
 ---
