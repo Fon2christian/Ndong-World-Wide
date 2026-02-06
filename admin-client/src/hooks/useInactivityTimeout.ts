@@ -14,8 +14,16 @@ interface UseInactivityTimeoutOptions {
  */
 export function useInactivityTimeout({ timeout, onTimeout, enabled }: UseInactivityTimeoutOptions) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastResetRef = useRef<number>(0);
 
   const resetTimer = useCallback(() => {
+    // Throttle: only reset at most once per second to reduce overhead from high-frequency events
+    const now = Date.now();
+    if (now - lastResetRef.current < 1000) {
+      return;
+    }
+    lastResetRef.current = now;
+
     // Clear existing timer
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);

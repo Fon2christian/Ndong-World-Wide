@@ -54,16 +54,20 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="login-form">
           {showInactivityMessage && (
-            <div style={{
-              padding: '0.75rem 1rem',
-              marginBottom: '1rem',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              borderRadius: '8px',
-              color: '#3b82f6',
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}>
+            <div
+              role="status"
+              aria-live="polite"
+              style={{
+                padding: '0.75rem 1rem',
+                marginBottom: '1rem',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                borderRadius: '8px',
+                color: '#3b82f6',
+                fontSize: '0.875rem',
+                fontWeight: '500'
+              }}
+            >
               You've been logged out due to inactivity. Please login again.
             </div>
           )}
