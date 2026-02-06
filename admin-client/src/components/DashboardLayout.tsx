@@ -77,9 +77,40 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               }}>
                 {admin?.name?.charAt(0).toUpperCase()}
               </div>
-              <div>
-                <p className="admin-name">{admin?.name}</p>
-                <p className="admin-email">{admin?.email}</p>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className="admin-name" style={{
+                  fontWeight: '600',
+                  marginBottom: '0.25rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {admin?.name}
+                </p>
+                <p className="admin-email" style={{
+                  fontSize: '0.75rem',
+                  opacity: 0.8,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  marginBottom: '0.25rem'
+                }}>
+                  {admin?.email}
+                </p>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '0.125rem 0.5rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  borderRadius: '4px',
+                  backgroundColor: admin?.role === 'super_admin' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                  color: admin?.role === 'super_admin' ? '#10b981' : '#3b82f6',
+                  border: `1px solid ${admin?.role === 'super_admin' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
+                }}>
+                  {admin?.role === 'super_admin' ? '⭐ Super Admin' : '👤 Admin'}
+                </span>
               </div>
             </div>
           </div>
