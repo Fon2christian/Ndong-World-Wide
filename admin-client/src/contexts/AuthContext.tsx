@@ -31,13 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyToken = async (token: string) => {
     try {
-      const response = await axios.get<Admin>(`${API_URL}/api/admin/me`, {
+      const response = await axios.get<{ admin: Admin }>(`${API_URL}/api/admin/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Check if token is still current AFTER async call (detect changes during request)
       const currentToken = localStorage.getItem(TOKEN_KEY);
       if (currentToken === token) {
-        setAdmin(response.data);
+        setAdmin(response.data.admin);
       }
     } catch (error) {
       // Check if token is still current AFTER async call (detect changes during request)
