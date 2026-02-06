@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span style={{
                   display: 'inline-block',
                   padding: '0.125rem 0.5rem',
-                  fontSize: '0.625rem',
+                  fontSize: '0.75rem',
                   fontWeight: '700',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
