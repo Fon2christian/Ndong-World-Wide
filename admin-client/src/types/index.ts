@@ -3,11 +3,18 @@ export interface Admin {
   id: string;
   email: string;
   name: string;
+  role: 'super_admin' | 'admin';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterFormData {
+  name: string;
   email: string;
   password: string;
 }

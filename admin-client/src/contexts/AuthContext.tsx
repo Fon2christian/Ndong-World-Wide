@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import axios from 'axios';
-import type { Admin, LoginCredentials, AuthResponse } from '../types';
+import type { Admin, LoginCredentials, RegisterFormData, AuthResponse } from '../types';
 
 interface AuthContextType {
   admin: Admin | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterFormData) => Promise<void>;
   logout: () => void;
 }
 
@@ -58,6 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false); // Ensure loading state is cleared after successful login
   }, []);
 
+  const register = useCallback(async (data: RegisterFormData) => {
+    const response = await axios.post<AuthResponse>(`${API_URL}/api/admin/register`, data);
+    const { token, admin: adminData } = response.data;
+    localStorage.setItem(TOKEN_KEY, token);
+    setAdmin(adminData);
+    setIsLoading(false); // Ensure loading state is cleared after successful registration
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setAdmin(null);
@@ -68,8 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!admin,
     isLoading,
     login,
+    register,
     logout
-  }), [admin, isLoading, login, logout]);
+  }), [admin, isLoading, login, register, logout]);
 
   return (
     <AuthContext.Provider value={value}>

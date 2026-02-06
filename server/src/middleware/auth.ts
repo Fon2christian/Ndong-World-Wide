@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import Admin from "../models/Admin.js";
 
 // Extend Express Request to include admin user
 export interface AuthRequest extends Request {
@@ -83,5 +84,43 @@ export function requireAuth(
 
     console.error("Authentication error:", error);
     res.status(500).json({ message: "Authentication failed" });
+  }
+}
+
+/**
+ * Super Admin authorization middleware
+ * Must be used after requireAuth middleware
+ * Checks if authenticated admin has super_admin role
+ */
+export async function requireSuperAdmin(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    if (!req.admin) {
+      res.status(401).json({ message: "Not authenticated" });
+      return;
+    }
+
+    // Fetch admin from database to check role
+    const admin = await Admin.findById(req.admin.id).select("role");
+
+    if (!admin) {
+      res.status(404).json({ message: "Admin not found" });
+      return;
+    }
+
+    if (admin.role !== "super_admin") {
+      res.status(403).json({
+        message: "Access denied. Super admin privileges required.",
+      });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    console.error("Super admin authorization error:", error);
+    res.status(500).json({ message: "Authorization failed" });
   }
 }

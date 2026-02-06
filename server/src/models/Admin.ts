@@ -7,6 +7,7 @@ export interface IAdmin extends Document {
   email: string;
   password: string;
   name: string;
+  role: 'super_admin' | 'admin';
   createdAt: Date;
   updatedAt: Date;
   resetPasswordToken?: string;
@@ -38,6 +39,12 @@ const AdminSchema = new Schema<IAdmin>(
       type: String,
       required: true,
       trim: true,
+    },
+    role: {
+      type: String,
+      enum: ['super_admin', 'admin'],
+      default: 'admin',
+      required: true,
     },
     resetPasswordToken: {
       type: String,

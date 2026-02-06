@@ -1,7 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { requireAuth, type AuthRequest } from "./auth.js";
+import { requireAuth, requireSuperAdmin, type AuthRequest } from "./auth.js";
+import Admin from "../models/Admin.js";
+
+// Mock the Admin model
+vi.mock("../models/Admin.js", () => ({
+  default: {
+    findById: vi.fn(),
+  },
+}));
 
 describe("Auth Middleware", () => {
   let mockRequest: Partial<AuthRequest>;
@@ -355,6 +363,166 @@ describe("Auth Middleware", () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(nextFunction).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Super Admin Authorization Middleware", () => {
+  let mockRequest: Partial<AuthRequest>;
+  let mockResponse: Partial<Response>;
+  let nextFunction: NextFunction;
+
+  beforeEach(() => {
+    // Setup mock request with authenticated admin
+    mockRequest = {
+      admin: {
+        id: "test-admin-id",
+        email: "test@example.com",
+      },
+    };
+
+    // Setup mock response
+    mockResponse = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis(),
+    };
+
+    // Setup next function
+    nextFunction = vi.fn();
+
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
+  describe("Super Admin Access", () => {
+    it("should call next() when admin has super_admin role", async () => {
+      // Mock admin with super_admin role
+      (Admin.findById as any).mockReturnValue({
+        select: vi.fn().mockResolvedValue({
+          role: "super_admin",
+        }),
+      });
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(Admin.findById).toHaveBeenCalledWith("test-admin-id");
+      expect(nextFunction).toHaveBeenCalled();
+      expect(mockResponse.status).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Regular Admin Access Denied", () => {
+    it("should return 403 when admin has regular admin role", async () => {
+      // Mock admin with regular admin role
+      (Admin.findById as any).mockReturnValue({
+        select: vi.fn().mockResolvedValue({
+          role: "admin",
+        }),
+      });
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(403);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Access denied. Super admin privileges required.",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Unauthenticated Access", () => {
+    it("should return 401 when req.admin is undefined", async () => {
+      mockRequest.admin = undefined;
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Not authenticated",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+      expect(Admin.findById).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Admin Not Found", () => {
+    it("should return 404 when admin is not found in database", async () => {
+      // Mock admin not found
+      (Admin.findById as any).mockReturnValue({
+        select: vi.fn().mockResolvedValue(null),
+      });
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Admin not found",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Database Errors", () => {
+    it("should return 500 on database error", async () => {
+      // Mock database error
+      (Admin.findById as any).mockReturnValue({
+        select: vi.fn().mockRejectedValue(new Error("Database connection failed")),
+      });
+
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Authorization failed",
+      });
+      expect(nextFunction).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Super admin authorization error:",
+        expect.any(Error)
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe("Role Field Selection", () => {
+    it("should only select role field from database", async () => {
+      const mockSelect = vi.fn().mockResolvedValue({ role: "super_admin" });
+      (Admin.findById as any).mockReturnValue({
+        select: mockSelect,
+      });
+
+      await requireSuperAdmin(
+        mockRequest as AuthRequest,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      expect(mockSelect).toHaveBeenCalledWith("role");
     });
   });
 });

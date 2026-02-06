@@ -646,9 +646,22 @@ export default function ContactDetail() {
                               gap: '0.5rem',
                               flexWrap: 'wrap'
                             }}>
-                              <span>From: <strong>{reply.adminName}</strong></span>
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                padding: '0.25rem 0.625rem',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                color: 'var(--color-primary)',
+                                borderRadius: '6px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                letterSpacing: '0.02em'
+                              }}>
+                                👤 {reply.adminName}
+                              </span>
                               <span>•</span>
-                              <span>{formatDate(reply.sentAt)}</span>
+                              <span style={{ fontWeight: '500' }}>{formatDate(reply.sentAt)}</span>
                             </div>
                           </div>
                           <span style={{

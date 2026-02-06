@@ -2,11 +2,22 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import rateLimit from "express-rate-limit";
 import Admin from "../models/Admin.js";
-import { requireAuth, type AuthRequest } from "../middleware/auth.js";
+import LoginEvent from "../models/LoginEvent.js";
+import { requireAuth, requireSuperAdmin, type AuthRequest } from "../middleware/auth.js";
 import { sendPasswordResetEmail } from "../services/emailService.js";
 
 const router = Router();
+
+// Rate limiter for registration endpoint
+const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 registration attempts per IP
+  message: 'Too many accounts created from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * Generate JWT token
@@ -24,9 +35,9 @@ function generateToken(adminId: string, email: string): string {
 
 /**
  * POST /api/admin/register
- * Register a new admin user
+ * Register a new admin user (requires super admin privileges)
  */
-router.post("/register", async (req: Request, res: Response) => {
+router.post("/register", requireAuth, requireSuperAdmin, registerLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password, name } = req.body;
 
@@ -75,6 +86,7 @@ router.post("/register", async (req: Request, res: Response) => {
         id: admin._id,
         email: admin.email,
         name: admin.name,
+        role: admin.role,
       },
     });
   } catch (error) {
@@ -103,6 +115,17 @@ router.post("/login", async (req: Request, res: Response) => {
     // Find admin by email
     const admin = await Admin.findOne({ email });
     if (!admin) {
+      // Log failed login attempt with unknown email
+      await LoginEvent.create({
+        email: email,
+        adminName: 'Unknown',
+        timestamp: new Date(),
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        status: 'failed',
+        failureReason: 'Email not found'
+      });
+
       return res.status(401).json({
         message: "Invalid credentials",
       });
@@ -111,10 +134,33 @@ router.post("/login", async (req: Request, res: Response) => {
     // Verify password
     const isPasswordValid = await admin.comparePassword(password);
     if (!isPasswordValid) {
+      // Log failed login attempt
+      await LoginEvent.create({
+        adminId: admin._id,
+        email: admin.email,
+        adminName: admin.name,
+        timestamp: new Date(),
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        status: 'failed',
+        failureReason: 'Invalid password'
+      });
+
       return res.status(401).json({
         message: "Invalid credentials",
       });
     }
+
+    // Log successful login
+    await LoginEvent.create({
+      adminId: admin._id,
+      email: admin.email,
+      adminName: admin.name,
+      timestamp: new Date(),
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      status: 'success'
+    });
 
     // Generate token
     const token = generateToken(admin._id.toString(), admin.email);
@@ -126,6 +172,7 @@ router.post("/login", async (req: Request, res: Response) => {
         id: admin._id,
         email: admin.email,
         name: admin.name,
+        role: admin.role,
       },
     });
   } catch (error) {
@@ -155,6 +202,7 @@ router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
         id: admin._id,
         email: admin.email,
         name: admin.name,
+        role: admin.role,
         createdAt: admin.createdAt,
         updatedAt: admin.updatedAt,
       },
@@ -162,6 +210,77 @@ router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error("Get admin profile error:", error);
     res.status(500).json({ message: "Failed to fetch admin profile" });
+  }
+});
+
+/**
+ * GET /api/admin/list
+ * Get all admin accounts (requires super admin privileges)
+ */
+router.get("/list", requireAuth, requireSuperAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.admin) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const admins = await Admin.find().select("-password").sort({ createdAt: -1 });
+    console.log(`Found ${admins.length} admins in database`);
+
+    const adminList = admins.map((admin) => ({
+      id: admin._id,
+      email: admin.email,
+      name: admin.name,
+      role: admin.role,
+      createdAt: admin.createdAt,
+      updatedAt: admin.updatedAt,
+    }));
+
+    console.log("Returning admin list:", JSON.stringify(adminList, null, 2));
+
+    res.json({
+      admins: adminList,
+    });
+  } catch (error) {
+    console.error("Get admin list error:", error);
+    res.status(500).json({ message: "Failed to fetch admin list" });
+  }
+});
+
+/**
+ * DELETE /api/admin/:id
+ * Delete an admin account (requires super admin privileges)
+ */
+router.delete("/:id", requireAuth, requireSuperAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.admin) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const adminIdToDelete = req.params.id;
+
+    // Prevent admin from deleting themselves
+    if (req.admin.id === adminIdToDelete) {
+      return res.status(400).json({ message: "You cannot delete your own account" });
+    }
+
+    // Find and delete the admin
+    const deletedAdmin = await Admin.findByIdAndDelete(adminIdToDelete);
+
+    if (!deletedAdmin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.json({
+      message: "Admin deleted successfully",
+      admin: {
+        id: deletedAdmin._id,
+        email: deletedAdmin.email,
+        name: deletedAdmin.name,
+      },
+    });
+  } catch (error) {
+    console.error("Delete admin error:", error);
+    res.status(500).json({ message: "Failed to delete admin" });
   }
 });
 
