@@ -88,6 +88,23 @@ export default function Login() {
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
+
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              Don't have an account?{' '}
+            </span>
+            <Link
+              to="/register"
+              style={{
+                color: 'var(--color-primary)',
+                textDecoration: 'none',
+                fontSize: '0.875rem',
+                fontWeight: '600'
+              }}
+            >
+              Create Account
+            </Link>
+          </div>
         </form>
       </div>
     </div>
