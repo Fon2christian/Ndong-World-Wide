@@ -22,25 +22,8 @@ export default function Dashboard() {
   const fetchStats = async () => {
     try {
       setIsLoading(true);
-      const [carsRes, tiresRes, wheelDrumsRes, contactsRes] = await Promise.all([
-        api.get('/api/cars'),
-        api.get('/api/tires'),
-        api.get('/api/wheel-drums'),
-        api.get('/api/contacts', { params: { status: 'new' } }),
-      ]);
-
-      const cars = carsRes.data;
-      const availableCars = Array.isArray(cars)
-        ? cars.filter((car: any) => car.status === 'available').length
-        : 0;
-
-      setStats({
-        totalCars: Array.isArray(cars) ? cars.length : 0,
-        availableCars,
-        totalTires: Array.isArray(tiresRes.data) ? tiresRes.data.length : 0,
-        totalWheelDrums: Array.isArray(wheelDrumsRes.data) ? wheelDrumsRes.data.length : 0,
-        pendingContacts: contactsRes.data.pagination?.total || 0,
-      });
+      const response = await api.get('/api/admin/stats');
+      setStats(response.data.stats);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dashboard statistics');
     } finally {

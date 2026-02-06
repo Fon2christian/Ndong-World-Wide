@@ -5,6 +5,10 @@ import crypto from "crypto";
 import rateLimit from "express-rate-limit";
 import Admin from "../models/Admin.js";
 import LoginEvent from "../models/LoginEvent.js";
+import Car from "../models/Car.js";
+import Tire from "../models/Tire.js";
+import WheelDrum from "../models/WheelDrum.js";
+import Contact from "../models/Contact.js";
 import { requireAuth, requireSuperAdmin, type AuthRequest } from "../middleware/auth.js";
 import { sendPasswordResetEmail } from "../services/emailService.js";
 
@@ -252,6 +256,42 @@ router.get("/list", requireAuth, requireSuperAdmin, async (req: AuthRequest, res
   } catch (error) {
     console.error("Get admin list error:", error);
     res.status(500).json({ message: "Failed to fetch admin list" });
+  }
+});
+
+/**
+ * GET /api/admin/stats
+ * Get dashboard statistics (optimized - counts only)
+ */
+router.get("/stats", requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.admin) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    // Perform all counts in parallel for maximum performance
+    const [totalCars, totalTires, totalWheelDrums, pendingContacts] = await Promise.all([
+      Car.countDocuments(),
+      Tire.countDocuments(),
+      WheelDrum.countDocuments(),
+      Contact.countDocuments({ status: 'new' }),
+    ]);
+
+    // Get available cars count separately (requires filtering)
+    const availableCars = await Car.countDocuments({ status: 'available' });
+
+    res.json({
+      stats: {
+        totalCars,
+        availableCars,
+        totalTires,
+        totalWheelDrums,
+        pendingContacts,
+      },
+    });
+  } catch (error) {
+    console.error("Get dashboard stats error:", error);
+    res.status(500).json({ message: "Failed to fetch dashboard statistics" });
   }
 });
 
