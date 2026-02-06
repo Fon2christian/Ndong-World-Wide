@@ -44,6 +44,9 @@ export function useInactivityTimeout({ timeout, onTimeout, enabled }: UseInactiv
       return;
     }
 
+    // Reset throttle state to ensure timer setup on effect re-runs
+    lastResetRef.current = 0;
+
     // Activity events to track
     const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
 
