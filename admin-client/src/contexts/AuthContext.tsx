@@ -1,14 +1,17 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import axios from 'axios';
 import type { Admin, LoginCredentials, RegisterFormData, AuthResponse } from '../types';
+import { useInactivityTimeout } from '../hooks/useInactivityTimeout';
 
 interface AuthContextType {
   admin: Admin | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  inactivityLogout: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterFormData) => Promise<void>;
   logout: () => void;
+  clearInactivityFlag: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +22,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [inactivityLogout, setInactivityLogout] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -72,14 +76,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAdmin(null);
   }, []);
 
+  const handleInactivityLogout = useCallback(() => {
+    setInactivityLogout(true);
+    logout();
+  }, [logout]);
+
+  const clearInactivityFlag = useCallback(() => {
+    setInactivityLogout(false);
+  }, []);
+
+  // Auto-logout after 30 minutes of inactivity
+  useInactivityTimeout({
+    timeout: 30 * 60 * 1000, // 30 minutes in milliseconds
+    onTimeout: handleInactivityLogout,
+    enabled: !!admin, // Only track inactivity when user is logged in
+  });
+
   const value = useMemo(() => ({
     admin,
     isAuthenticated: !!admin,
     isLoading,
+    inactivityLogout,
     login,
     register,
-    logout
-  }), [admin, isLoading, login, register, logout]);
+    logout,
+    clearInactivityFlag
+  }), [admin, isLoading, inactivityLogout, login, register, logout, clearInactivityFlag]);
 
   return (
     <AuthContext.Provider value={value}>

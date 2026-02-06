@@ -1,16 +1,29 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { LoginCredentials } from '../types';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, inactivityLogout, clearInactivityFlag } = useAuth();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showInactivityMessage, setShowInactivityMessage] = useState(false);
+
+  useEffect(() => {
+    if (inactivityLogout) {
+      setShowInactivityMessage(true);
+      clearInactivityFlag();
+      // Auto-hide message after 5 seconds
+      const timer = setTimeout(() => {
+        setShowInactivityMessage(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [inactivityLogout, clearInactivityFlag]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,6 +53,21 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
+          {showInactivityMessage && (
+            <div style={{
+              padding: '0.75rem 1rem',
+              marginBottom: '1rem',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '8px',
+              color: '#3b82f6',
+              fontSize: '0.875rem',
+              fontWeight: '500'
+            }}>
+              You've been logged out due to inactivity. Please login again.
+            </div>
+          )}
+
           {error && (
             <div className="error-message">
               {error}
