@@ -16,10 +16,10 @@ export default function Login() {
   useEffect(() => {
     if (inactivityLogout) {
       setShowInactivityMessage(true);
-      clearInactivityFlag();
       // Auto-hide message after 5 seconds
       const timer = setTimeout(() => {
         setShowInactivityMessage(false);
+        clearInactivityFlag();
       }, 5000);
       return () => clearTimeout(timer);
     }

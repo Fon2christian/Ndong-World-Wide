@@ -13,7 +13,7 @@ interface UseInactivityTimeoutOptions {
  * @param enabled - Whether the inactivity tracking is enabled
  */
 export function useInactivityTimeout({ timeout, onTimeout, enabled }: UseInactivityTimeoutOptions) {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetTimer = useCallback(() => {
     // Clear existing timer
