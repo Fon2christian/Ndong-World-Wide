@@ -94,9 +94,19 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
     e.preventDefault();
     setError('');
 
+    // Preprocess data: convert empty/default values to undefined for optional fields
+    const isBusinessOnly = formData.displayLocation === 'business';
+    const dataToValidate = isBusinessOnly ? {
+      ...formData,
+      brand: formData.brand === '' ? undefined : formData.brand,
+      size: formData.size === '' ? undefined : formData.size,
+      price: formData.price === 0 ? undefined : formData.price,
+      condition: formData.condition === '' ? undefined : formData.condition,
+    } : formData;
+
     // Validate form using dynamic Zod schema
     const wheelDrumSchema = getWheelDrumSchema(formData.displayLocation);
-    const result = wheelDrumSchema.safeParse(formData);
+    const result = wheelDrumSchema.safeParse(dataToValidate);
     if (!result.success) {
       const firstError = result.error.issues[0];
       setError(`${firstError.path.join('.')}: ${firstError.message}`);

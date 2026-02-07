@@ -13,8 +13,8 @@ const getCarSchema = (displayLocation: 'market' | 'business' | 'both') => {
     year: isBusinessOnly ? z.number().min(1900).max(new Date().getFullYear() + 1).optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
     price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
     mileage: isBusinessOnly ? z.number().min(0, 'Mileage cannot be negative').optional() : z.number().min(0),
-    fuel: z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional(),
-    transmission: z.enum(['automatic', 'manual']).optional(),
+    fuel: isBusinessOnly ? z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional() : z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
+    transmission: isBusinessOnly ? z.enum(['automatic', 'manual']).optional() : z.enum(['automatic', 'manual']),
     images: z.array(z.string()).min(1, 'At least one image is required'),
     displayLocation: z.enum(['market', 'business', 'both']),
   });
@@ -105,9 +105,20 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     e.preventDefault();
     setError('');
 
+    // Preprocess data: convert empty/default values to undefined for optional fields
+    const isBusinessOnly = formData.displayLocation === 'business';
+    const dataToValidate = isBusinessOnly ? {
+      ...formData,
+      brand: formData.brand === '' ? undefined : formData.brand,
+      model: formData.model === '' ? undefined : formData.model,
+      year: formData.year === 0 ? undefined : formData.year,
+      price: formData.price === 0 ? undefined : formData.price,
+      mileage: formData.mileage === 0 ? undefined : formData.mileage,
+    } : formData;
+
     // Validate form using dynamic Zod schema
     const carSchema = getCarSchema(formData.displayLocation);
-    const result = carSchema.safeParse(formData);
+    const result = carSchema.safeParse(dataToValidate);
     if (!result.success) {
       const firstError = result.error.issues[0];
       setError(`${firstError.path.join('.')}: ${firstError.message}`);

@@ -11,7 +11,7 @@ const getTireSchema = (displayLocation: 'market' | 'business' | 'both') => {
     brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
     size: isBusinessOnly ? z.string().min(1, 'Size must not be empty').optional() : z.string().min(1, 'Size is required'),
     price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
-    condition: z.enum(['new', 'used']).optional(),
+    condition: isBusinessOnly ? z.enum(['new', 'used']).optional() : z.enum(['new', 'used']),
     images: z.array(z.string()).min(1, 'At least one image is required'),
     displayLocation: z.enum(['market', 'business', 'both']),
   });
@@ -93,9 +93,18 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
     e.preventDefault();
     setError('');
 
+    // Preprocess data: convert empty/default values to undefined for optional fields
+    const isBusinessOnly = formData.displayLocation === 'business';
+    const dataToValidate = isBusinessOnly ? {
+      ...formData,
+      brand: formData.brand === '' ? undefined : formData.brand,
+      size: formData.size === '' ? undefined : formData.size,
+      price: formData.price === 0 ? undefined : formData.price,
+    } : formData;
+
     // Validate form using dynamic Zod schema
     const tireSchema = getTireSchema(formData.displayLocation);
-    const result = tireSchema.safeParse(formData);
+    const result = tireSchema.safeParse(dataToValidate);
     if (!result.success) {
       const firstError = result.error.issues[0];
       setError(`${firstError.path.join('.')}: ${firstError.message}`);
