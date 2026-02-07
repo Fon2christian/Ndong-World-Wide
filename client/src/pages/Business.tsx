@@ -82,10 +82,10 @@ export default function Business() {
           wheelDrums: wheelDrumsRes.data,
         };
 
-        setCars(freshData.cars);
-        setNewTires(freshData.newTires);
-        setUsedTires(freshData.usedTires);
-        setWheelDrums(freshData.wheelDrums);
+        setCars(Array.isArray(freshData.cars) ? freshData.cars : []);
+        setNewTires(Array.isArray(freshData.newTires) ? freshData.newTires : []);
+        setUsedTires(Array.isArray(freshData.usedTires) ? freshData.usedTires : []);
+        setWheelDrums(Array.isArray(freshData.wheelDrums) ? freshData.wheelDrums : []);
 
         // Cache the fresh data
         sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
