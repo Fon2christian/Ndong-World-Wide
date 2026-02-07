@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
 /**
- * Preloads images in background to improve tab switching performance
- * Images are loaded with low priority to not compete with visible content
+ * Preloads images to improve tab switching performance
+ * Images are loaded immediately without delay for instant availability
  * @param imageUrls Array of image URLs to preload
  * @param enabled Whether preloading is enabled
  */

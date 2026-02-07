@@ -6474,14 +6474,12 @@
 }
 
 /* Ensure images are visible above skeleton */
-.business-card__image img,
-.market-card__image img {
+.business-card__image img {
   position: relative;
   z-index: 2;
 }
 
-.business-card__image .image-skeleton,
-.market-card__image .image-skeleton {
+.business-card__image .image-skeleton {
   z-index: 1;
 }
 

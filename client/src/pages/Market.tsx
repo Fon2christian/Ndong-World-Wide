@@ -70,56 +70,33 @@ interface LightboxState {
   title: string;
 }
 
+// Parse cached market data once to avoid redundant parsing
+function getCachedMarketData() {
+  try {
+    const cached = sessionStorage.getItem('market-data');
+    return cached ? JSON.parse(cached) : null;
+  } catch (e) {
+    console.error('Failed to parse cached market data:', e);
+    return null;
+  }
+}
+
 export default function Market() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
 
-  // Initialize state from cache - use lazy initializer to read cache only once
-  const [cars, setCars] = useState<Car[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('market-data');
-      return cached ? JSON.parse(cached).cars || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [newTires, setNewTires] = useState<Tire[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('market-data');
-      return cached ? JSON.parse(cached).newTires || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [usedTires, setUsedTires] = useState<Tire[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('market-data');
-      return cached ? JSON.parse(cached).usedTires || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('market-data');
-      return cached ? JSON.parse(cached).wheelDrums || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [loading, setLoading] = useState(() => {
-    try {
-      const cached = sessionStorage.getItem('market-data');
-      return !cached;
-    } catch (e) {
-      return true;
-    }
-  });
+  // Parse cache once and reuse for all state initializers
+  const cachedData = getCachedMarketData();
+
+  const [cars, setCars] = useState<Car[]>(cachedData?.cars || []);
+  const [newTires, setNewTires] = useState<Tire[]>(cachedData?.newTires || []);
+  const [usedTires, setUsedTires] = useState<Tire[]>(cachedData?.usedTires || []);
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(cachedData?.wheelDrums || []);
+  const [loading, setLoading] = useState(!cachedData);
   const { getCurrentIndex, nextImage, prevImage } = useImageGallery();
 
   // Contact modal state
   const [showContactModal, setShowContactModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string>("");
 
   // Lightbox state
   const [lightbox, setLightbox] = useState<LightboxState>({
@@ -139,14 +116,12 @@ export default function Market() {
     document.body.style.overflow = ""; // Restore scroll
   }, []);
 
-  const openContactModal = (itemId: string) => {
-    setSelectedItem(itemId);
+  const openContactModal = () => {
     setShowContactModal(true);
   };
 
   const closeContactModal = () => {
     setShowContactModal(false);
-    setSelectedItem("");
   };
 
   const lightboxNext = useCallback(() => {
@@ -261,13 +236,13 @@ export default function Market() {
     switch (icon) {
       case "car":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Car icon">
             <path d="M19 17H21V15L19 7H5L3 15V17H5M19 17H5M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17"/>
           </svg>
         );
       case "tire-new":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="New tire icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
@@ -275,7 +250,7 @@ export default function Market() {
         );
       case "tire-used":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Used tire icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="4"/>
             <path d="M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/>
@@ -283,7 +258,7 @@ export default function Market() {
         );
       case "wheel":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Wheel drum icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 5v2M12 17v2M5 12h2M17 12h2M7.05 7.05l1.41 1.41M15.54 15.54l1.41 1.41M7.05 16.95l1.41-1.41M15.54 8.46l1.41-1.41"/>
@@ -396,7 +371,7 @@ export default function Market() {
         <div className="car-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(car._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -461,7 +436,7 @@ export default function Market() {
         <div className="product-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(tire._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -524,7 +499,7 @@ export default function Market() {
         <div className="product-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(wheelDrum._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -563,7 +538,7 @@ export default function Market() {
       <header className="market__header">
         <div className="market__title">
           <div className="market__logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Shopping bag">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>

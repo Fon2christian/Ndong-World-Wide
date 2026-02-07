@@ -38,51 +38,29 @@ interface WheelDrum {
   images: string[];
 }
 
+// Parse cached business data once to avoid redundant parsing
+function getCachedBusinessData() {
+  try {
+    const cached = sessionStorage.getItem('business-data');
+    return cached ? JSON.parse(cached) : null;
+  } catch (e) {
+    console.error('Failed to parse cached business data:', e);
+    return null;
+  }
+}
+
 export default function Business() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
 
-  // Initialize state from cache - use lazy initializer to read cache only once
-  const [cars, setCars] = useState<Car[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('business-data');
-      return cached ? JSON.parse(cached).cars || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [newTires, setNewTires] = useState<Tire[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('business-data');
-      return cached ? JSON.parse(cached).newTires || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [usedTires, setUsedTires] = useState<Tire[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('business-data');
-      return cached ? JSON.parse(cached).usedTires || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(() => {
-    try {
-      const cached = sessionStorage.getItem('business-data');
-      return cached ? JSON.parse(cached).wheelDrums || [] : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [loading, setLoading] = useState(() => {
-    try {
-      const cached = sessionStorage.getItem('business-data');
-      return !cached;
-    } catch (e) {
-      return true;
-    }
-  });
+  // Parse cache once and reuse for all state initializers
+  const cachedData = getCachedBusinessData();
+
+  const [cars, setCars] = useState<Car[]>(cachedData?.cars || []);
+  const [newTires, setNewTires] = useState<Tire[]>(cachedData?.newTires || []);
+  const [usedTires, setUsedTires] = useState<Tire[]>(cachedData?.usedTires || []);
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(cachedData?.wheelDrums || []);
+  const [loading, setLoading] = useState(!cachedData);
 
   useEffect(() => {
     const fetchData = async () => {
