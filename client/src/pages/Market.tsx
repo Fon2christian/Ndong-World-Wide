@@ -1,7 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useLanguage } from "../context/LanguageContext";
 import OptimizedImage from "../components/OptimizedImage";
+import { useImagePreloader, extractFirstImages } from "../hooks/useImagePreloader";
 
 type TabType = "cars" | "new-tires" | "used-tires" | "wheel-drums";
 
@@ -171,6 +172,18 @@ export default function Market() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Preload first image from each item for faster tab switching
+  const imagesToPreload = useMemo(() => {
+    return [
+      ...extractFirstImages(cars),
+      ...extractFirstImages(newTires),
+      ...extractFirstImages(usedTires),
+      ...extractFirstImages(wheelDrums),
+    ];
+  }, [cars, newTires, usedTires, wheelDrums]);
+
+  useImagePreloader(imagesToPreload, !loading);
 
   const tabs = [
     { id: "cars" as TabType, label: t.market.tabs.cars, icon: "car", count: cars.length },
