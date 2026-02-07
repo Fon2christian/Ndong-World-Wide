@@ -71,10 +71,10 @@ export default function Business() {
       if (cached) {
         try {
           const cachedData = JSON.parse(cached);
-          setCars(cachedData.cars);
-          setNewTires(cachedData.newTires);
-          setUsedTires(cachedData.usedTires);
-          setWheelDrums(cachedData.wheelDrums);
+          setCars(cachedData?.cars || []);
+          setNewTires(cachedData?.newTires || []);
+          setUsedTires(cachedData?.usedTires || []);
+          setWheelDrums(cachedData?.wheelDrums || []);
           setLoading(false);
         } catch (e) {
           console.error('Cache parse error:', e);
