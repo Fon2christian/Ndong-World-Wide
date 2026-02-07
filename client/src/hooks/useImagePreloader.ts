@@ -11,7 +11,11 @@ export function useImagePreloader(imageUrls: string[], enabled = true) {
 
     // Create image preloader
     const preloadImages = () => {
-      imageUrls.forEach((url) => {
+      // Filter out empty/falsy values and deduplicate URLs
+      const validUrls = imageUrls.filter((url): url is string => Boolean(url) && typeof url === 'string');
+      const uniqueUrls = Array.from(new Set(validUrls));
+
+      uniqueUrls.forEach((url) => {
         const img = new Image();
         img.src = url;
       });
