@@ -21,8 +21,8 @@ export function useImagePreloader(imageUrls: string[], enabled = true) {
       });
     };
 
-    // Preload with a small delay to not block initial render
-    const timeoutId = setTimeout(preloadImages, 100);
+    // Preload with a delay to let visible images load first
+    const timeoutId = setTimeout(preloadImages, 2000);
 
     return () => clearTimeout(timeoutId);
   }, [imageUrls, enabled]);

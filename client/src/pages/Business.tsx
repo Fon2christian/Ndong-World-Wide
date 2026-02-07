@@ -71,14 +71,15 @@ export default function Business() {
   }, []);
 
   // Preload first image from each item for faster tab switching
+  // Only preload images from non-active tabs to avoid bandwidth competition
   const imagesToPreload = useMemo(() => {
-    return [
-      ...extractFirstImages(cars),
-      ...extractFirstImages(newTires),
-      ...extractFirstImages(usedTires),
-      ...extractFirstImages(wheelDrums),
-    ];
-  }, [cars, newTires, usedTires, wheelDrums]);
+    const images: string[] = [];
+    if (activeTab !== "cars") images.push(...extractFirstImages(cars));
+    if (activeTab !== "new-tires") images.push(...extractFirstImages(newTires));
+    if (activeTab !== "used-tires") images.push(...extractFirstImages(usedTires));
+    if (activeTab !== "wheel-drums") images.push(...extractFirstImages(wheelDrums));
+    return images;
+  }, [cars, newTires, usedTires, wheelDrums, activeTab]);
 
   useImagePreloader(imagesToPreload, !loading);
 
