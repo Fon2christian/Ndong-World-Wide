@@ -8,13 +8,13 @@ const getCarSchema = (displayLocation: 'market' | 'business' | 'both') => {
   const isBusinessOnly = displayLocation === 'business';
 
   return z.object({
-    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
-    model: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Model is required'),
-    year: isBusinessOnly ? z.number().optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
-    price: isBusinessOnly ? z.number().optional() : z.number().min(0),
-    mileage: isBusinessOnly ? z.number().optional() : z.number().min(0),
-    fuel: isBusinessOnly ? z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional() : z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
-    transmission: isBusinessOnly ? z.enum(['automatic', 'manual']).optional() : z.enum(['automatic', 'manual']),
+    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
+    model: isBusinessOnly ? z.string().min(1, 'Model must not be empty').optional() : z.string().min(1, 'Model is required'),
+    year: isBusinessOnly ? z.number().min(1900).max(new Date().getFullYear() + 1).optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
+    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
+    mileage: isBusinessOnly ? z.number().min(0, 'Mileage cannot be negative').optional() : z.number().min(0),
+    fuel: z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional(),
+    transmission: z.enum(['automatic', 'manual']).optional(),
     images: z.array(z.string()).min(1, 'At least one image is required'),
     displayLocation: z.enum(['market', 'business', 'both']),
   });

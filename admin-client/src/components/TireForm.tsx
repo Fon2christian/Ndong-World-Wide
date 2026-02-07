@@ -8,10 +8,10 @@ const getTireSchema = (displayLocation: 'market' | 'business' | 'both') => {
   const isBusinessOnly = displayLocation === 'business';
 
   return z.object({
-    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
-    size: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Size is required'),
-    price: isBusinessOnly ? z.number().optional() : z.number().min(0),
-    condition: isBusinessOnly ? z.enum(['new', 'used']).optional() : z.enum(['new', 'used']),
+    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
+    size: isBusinessOnly ? z.string().min(1, 'Size must not be empty').optional() : z.string().min(1, 'Size is required'),
+    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
+    condition: z.enum(['new', 'used']).optional(),
     images: z.array(z.string()).min(1, 'At least one image is required'),
     displayLocation: z.enum(['market', 'business', 'both']),
   });
