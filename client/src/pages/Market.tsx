@@ -88,10 +88,10 @@ export default function Market() {
   // Parse cache once and reuse for all state initializers
   const cachedData = useMemo(() => getCachedMarketData(), []);
 
-  const [cars, setCars] = useState<Car[]>(cachedData?.cars || []);
-  const [newTires, setNewTires] = useState<Tire[]>(cachedData?.newTires || []);
-  const [usedTires, setUsedTires] = useState<Tire[]>(cachedData?.usedTires || []);
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(cachedData?.wheelDrums || []);
+  const [cars, setCars] = useState<Car[]>(Array.isArray(cachedData?.cars) ? cachedData.cars : []);
+  const [newTires, setNewTires] = useState<Tire[]>(Array.isArray(cachedData?.newTires) ? cachedData.newTires : []);
+  const [usedTires, setUsedTires] = useState<Tire[]>(Array.isArray(cachedData?.usedTires) ? cachedData.usedTires : []);
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(Array.isArray(cachedData?.wheelDrums) ? cachedData.wheelDrums : []);
   const [loading, setLoading] = useState(!cachedData);
   const { getCurrentIndex, nextImage, prevImage } = useImageGallery();
 
