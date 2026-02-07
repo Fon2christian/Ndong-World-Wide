@@ -86,7 +86,7 @@ export default function Market() {
   const [activeTab, setActiveTab] = useState<TabType>("cars");
 
   // Parse cache once and reuse for all state initializers
-  const cachedData = getCachedMarketData();
+  const cachedData = useMemo(() => getCachedMarketData(), []);
 
   const [cars, setCars] = useState<Car[]>(cachedData?.cars || []);
   const [newTires, setNewTires] = useState<Tire[]>(cachedData?.newTires || []);
@@ -161,24 +161,9 @@ export default function Market() {
   }, [showContactModal]);
 
   const fetchData = async () => {
-    // Check for cached data first
     const cacheKey = 'market-data';
-    const cached = sessionStorage.getItem(cacheKey);
 
-    if (cached) {
-      try {
-        const cachedData = JSON.parse(cached);
-        setCars(cachedData?.cars || []);
-        setNewTires(cachedData?.newTires || []);
-        setUsedTires(cachedData?.usedTires || []);
-        setWheelDrums(cachedData?.wheelDrums || []);
-        setLoading(false);
-      } catch (e) {
-        console.error('Cache parse error:', e);
-      }
-    }
-
-    // Fetch fresh data in background
+    // Fetch fresh data (cache already applied at initialization)
     try {
       const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_API_URL}/api/cars?location=market`),
@@ -276,7 +261,7 @@ export default function Market() {
         <header className="market__header">
           <div className="market__title">
             <div className="market__logo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Shopping bag">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 0 1-8 0"/>
@@ -287,7 +272,7 @@ export default function Market() {
         </header>
         <div className="loading">
           <div className="loading-spinner"></div>
-          <p>Loading products...</p>
+          <p>{t.market.loading || 'Loading products...'}</p>
         </div>
       </div>
     );

@@ -54,7 +54,7 @@ export default function Business() {
   const [activeTab, setActiveTab] = useState<TabType>("cars");
 
   // Parse cache once and reuse for all state initializers
-  const cachedData = getCachedBusinessData();
+  const cachedData = useMemo(() => getCachedBusinessData(), []);
 
   const [cars, setCars] = useState<Car[]>(cachedData?.cars || []);
   const [newTires, setNewTires] = useState<Tire[]>(cachedData?.newTires || []);
@@ -64,24 +64,9 @@ export default function Business() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Check for cached data first
       const cacheKey = 'business-data';
-      const cached = sessionStorage.getItem(cacheKey);
 
-      if (cached) {
-        try {
-          const cachedData = JSON.parse(cached);
-          setCars(cachedData?.cars || []);
-          setNewTires(cachedData?.newTires || []);
-          setUsedTires(cachedData?.usedTires || []);
-          setWheelDrums(cachedData?.wheelDrums || []);
-          setLoading(false);
-        } catch (e) {
-          console.error('Cache parse error:', e);
-        }
-      }
-
-      // Fetch fresh data in background
+      // Fetch fresh data (cache already applied at initialization)
       try {
         const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/cars?location=business`),
@@ -147,7 +132,7 @@ export default function Business() {
         </section>
         <div className="loading">
           <div className="loading-spinner"></div>
-          <p>Loading products...</p>
+          <p>{t.business.loading || 'Loading products...'}</p>
         </div>
       </div>
     );
