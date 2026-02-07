@@ -1,23 +1,23 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface TireAttrs {
-  brand: string;
-  size: string;
-  price: number;
-  condition: "new" | "used";
+  brand?: string;
+  size?: string;
+  price?: number;
+  condition?: "new" | "used";
   images: string[];
   displayLocation: "market" | "business" | "both";
 }
 
 const TireSchema = new Schema<TireAttrs>(
   {
-    brand: { type: String, required: true },
-    size: { type: String, required: true },
-    price: { type: Number, required: true },
+    // Fields are optional for business-only items (validated by Zod based on displayLocation)
+    brand: { type: String },
+    size: { type: String },
+    price: { type: Number },
     condition: {
       type: String,
       enum: ["new", "used"],
-      required: true,
     },
     images: { type: [String], default: [] },
     displayLocation: {

@@ -28,13 +28,13 @@ export interface AuthResponse {
 // Car
 export interface Car {
   _id: string;
-  brand: string;
-  model: string;
-  year: number;
-  price: number;
-  mileage: number;
-  fuel: 'petrol' | 'diesel' | 'hybrid' | 'electric';
-  transmission: 'automatic' | 'manual';
+  brand?: string;
+  model?: string;
+  year?: number;
+  price?: number;
+  mileage?: number;
+  fuel?: 'petrol' | 'diesel' | 'hybrid' | 'electric';
+  transmission?: 'automatic' | 'manual';
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
@@ -42,13 +42,13 @@ export interface Car {
 }
 
 export interface CarFormData {
-  brand: string;
-  model: string;
-  year: number;
-  price: number;
-  mileage: number;
-  fuel: 'petrol' | 'diesel' | 'hybrid' | 'electric';
-  transmission: 'automatic' | 'manual';
+  brand?: string;
+  model?: string;
+  year?: number;
+  price?: number;
+  mileage?: number;
+  fuel?: 'petrol' | 'diesel' | 'hybrid' | 'electric';
+  transmission?: 'automatic' | 'manual';
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
 }
@@ -56,10 +56,10 @@ export interface CarFormData {
 // Tire
 export interface Tire {
   _id: string;
-  brand: string;
-  size: string;
-  price: number;
-  condition: 'new' | 'used';
+  brand?: string;
+  size?: string;
+  price?: number;
+  condition?: 'new' | 'used';
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
@@ -67,10 +67,10 @@ export interface Tire {
 }
 
 export interface TireFormData {
-  brand: string;
-  size: string;
-  price: number;
-  condition: 'new' | 'used';
+  brand?: string;
+  size?: string;
+  price?: number;
+  condition?: 'new' | 'used';
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
 }
@@ -78,10 +78,10 @@ export interface TireFormData {
 // Wheel Drum
 export interface WheelDrum {
   _id: string;
-  brand: string;
-  size: string;
-  price: number;
-  condition: string;
+  brand?: string;
+  size?: string;
+  price?: number;
+  condition?: string;
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
   createdAt: string;
@@ -89,10 +89,10 @@ export interface WheelDrum {
 }
 
 export interface WheelDrumFormData {
-  brand: string;
-  size: string;
-  price: number;
-  condition: string;
+  brand?: string;
+  size?: string;
+  price?: number;
+  condition?: string;
   images: string[];
   displayLocation: 'market' | 'business' | 'both';
 }

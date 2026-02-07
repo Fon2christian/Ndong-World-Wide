@@ -130,13 +130,13 @@ export default function Cars() {
               {cars.map((car) => (
                 <tr key={car._id}>
                   <td>
-                    <strong>{car.brand} {car.model}</strong>
+                    <strong>{car.brand || '-'} {car.model || ''}</strong>
                   </td>
-                  <td>{car.year}</td>
-                  <td>¥{car.price.toLocaleString()}</td>
-                  <td>{car.mileage.toLocaleString()} km</td>
-                  <td className="capitalize">{car.transmission}</td>
-                  <td className="capitalize">{car.fuel}</td>
+                  <td>{car.year ?? '-'}</td>
+                  <td>{car.price != null ? `¥${car.price.toLocaleString()}` : '-'}</td>
+                  <td>{car.mileage != null ? `${car.mileage.toLocaleString()} km` : '-'}</td>
+                  <td className="capitalize">{car.transmission || '-'}</td>
+                  <td className="capitalize">{car.fuel || '-'}</td>
                   <td className="capitalize">{car.displayLocation}</td>
                   <td>
                     <div className="action-buttons">

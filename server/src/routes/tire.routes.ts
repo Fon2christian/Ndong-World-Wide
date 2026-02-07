@@ -7,15 +7,23 @@ import { isValidObjectId, validDisplayLocations, validTireConditions } from "../
 
 const router = Router();
 
-// Validation schemas
-const tireSchema = z.object({
-  brand: z.string().min(1, "Brand is required"),
-  size: z.string().min(1, "Size is required"),
-  price: z.number().positive("Price must be positive"),
-  condition: z.enum(["new", "used"]),
-  images: z.array(z.string()).default([]),
-  displayLocation: z.enum(["market", "business", "both"]).default("market"),
-});
+// Dynamic Zod schema based on display location
+const getTireSchema = (displayLocation: 'market' | 'business' | 'both') => {
+  const isBusinessOnly = displayLocation === 'business';
+
+  return z.object({
+    // For business-only: accept any string (including empty) or undefined
+    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
+    size: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Size is required'),
+    price: isBusinessOnly ? z.number().optional() : z.number().positive("Price must be positive"),
+    condition: isBusinessOnly ? z.enum(["new", "used"]).optional() : z.enum(["new", "used"]),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
+    displayLocation: z.enum(["market", "business", "both"]),
+  });
+};
+
+// Static schema for backward compatibility (uses market validation)
+const tireSchema = getTireSchema('market');
 
 const updateTireSchema = tireSchema
   .omit({ images: true, displayLocation: true })
@@ -28,7 +36,10 @@ const updateTireSchema = tireSchema
 // CREATE tire (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
-    const validation = tireSchema.safeParse(req.body);
+    // Use dynamic schema based on displayLocation
+    const displayLocation = req.body.displayLocation || 'market';
+    const schema = getTireSchema(displayLocation);
+    const validation = schema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
         message: "Validation failed",

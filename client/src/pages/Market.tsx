@@ -184,8 +184,14 @@ export default function Market() {
       setUsedTires(Array.isArray(freshData.usedTires) ? freshData.usedTires : []);
       setWheelDrums(Array.isArray(freshData.wheelDrums) ? freshData.wheelDrums : []);
 
-      // Cache the fresh data
-      sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
+      // Cache the fresh data (skip if quota exceeded - images are too large)
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
+      } catch (storageError) {
+        // Quota exceeded - clear cache and skip caching
+        sessionStorage.removeItem(cacheKey);
+        console.warn("Cache quota exceeded, skipping cache");
+      }
     } catch (err) {
       console.error(err);
     } finally {

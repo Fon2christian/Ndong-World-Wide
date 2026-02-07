@@ -10,9 +10,9 @@ type TabType = "cars" | "new-tires" | "used-tires" | "wheel-drums";
 
 interface Car {
   _id: string;
-  brand: string;
-  model: string;
-  year: number;
+  brand?: string;
+  model?: string;
+  year?: number;
   price?: number;
   mileage?: number;
   fuel?: string;
@@ -22,18 +22,18 @@ interface Car {
 
 interface Tire {
   _id: string;
-  brand: string;
-  size: string;
-  condition: string;
+  brand?: string;
+  size?: string;
+  condition?: string;
   price?: number;
   images: string[];
 }
 
 interface WheelDrum {
   _id: string;
-  brand: string;
-  size: string;
-  condition: string;
+  brand?: string;
+  size?: string;
+  condition?: string;
   price?: number;
   images: string[];
 }
@@ -87,8 +87,14 @@ export default function Business() {
         setUsedTires(Array.isArray(freshData.usedTires) ? freshData.usedTires : []);
         setWheelDrums(Array.isArray(freshData.wheelDrums) ? freshData.wheelDrums : []);
 
-        // Cache the fresh data
-        sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
+        // Cache the fresh data (skip if quota exceeded - images are too large)
+        try {
+          sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
+        } catch (storageError) {
+          // Quota exceeded - clear cache and skip caching
+          sessionStorage.removeItem(cacheKey);
+          console.warn("Cache quota exceeded, skipping cache");
+        }
       } catch (error) {
         console.error("Error fetching business data:", error);
       } finally {
@@ -112,10 +118,10 @@ export default function Business() {
   useImagePreloader(imagesToPreload, !loading);
 
   const tabs = [
-    { id: "cars" as TabType, label: t.business.cars, icon: "🚗", count: cars.length },
-    { id: "new-tires" as TabType, label: t.business.newTires, icon: "🛞", count: newTires.length },
-    { id: "used-tires" as TabType, label: t.business.usedTires, icon: "🛞", count: usedTires.length },
-    { id: "wheel-drums" as TabType, label: t.business.wheelDrums, icon: "⚙️", count: wheelDrums.length },
+    { id: "cars" as TabType, label: t.business.cars, icon: "🚗" },
+    { id: "new-tires" as TabType, label: t.business.newTires, icon: "🛞" },
+    { id: "used-tires" as TabType, label: t.business.usedTires, icon: "🛞" },
+    { id: "wheel-drums" as TabType, label: t.business.wheelDrums, icon: "⚙️" },
   ];
 
   // Show loading spinner while fetching data
@@ -156,18 +162,12 @@ export default function Business() {
   };
 
   const renderCarCard = (car: Car) => {
-    const carAlt = `${car.brand} ${car.model} ${car.year}`;
-    return (
-      <div key={car._id} className="business-card">
-        {car.images && car.images[0] ? (
-          <OptimizedImage
-            src={car.images[0]}
-            alt={carAlt}
-            wrapperClassName="business-card__image"
-            placeholderIcon="🚗"
-            placeholderLabel={`${carAlt} - ${t.business.noImageAvailable}`}
-          />
-        ) : (
+    const carAlt = `${car.brand || ''} ${car.model || ''} ${car.year || ''}`.trim() || 'Car';
+
+    // Show all images for this item
+    if (!car.images || car.images.length === 0) {
+      return (
+        <div key={car._id} className="business-card">
           <div
             className="business-card__placeholder"
             role="img"
@@ -175,9 +175,21 @@ export default function Business() {
           >
             🚗
           </div>
-        )}
+        </div>
+      );
+    }
+
+    return car.images.map((img, index) => (
+      <div key={`${car._id}-${index}`} className="business-card">
+        <OptimizedImage
+          src={img}
+          alt={`${carAlt} - ${index + 1}`}
+          wrapperClassName="business-card__image"
+          placeholderIcon="🚗"
+          placeholderLabel={`${carAlt} - ${t.business.noImageAvailable}`}
+        />
       </div>
-    );
+    ));
   };
 
   const renderTireCard = (tire: Tire) => {
@@ -185,17 +197,11 @@ export default function Business() {
     const tireAlt = [tire.brand, tire.size, conditionLabel, t.business.altTextTire]
       .filter(Boolean)
       .join(" ");
-    return (
-      <div key={tire._id} className="business-card">
-        {tire.images && tire.images[0] ? (
-          <OptimizedImage
-            src={tire.images[0]}
-            alt={tireAlt}
-            wrapperClassName="business-card__image"
-            placeholderIcon="🛞"
-            placeholderLabel={`${tireAlt} - ${t.business.noImageAvailable}`}
-          />
-        ) : (
+
+    // Show all images for this item
+    if (!tire.images || tire.images.length === 0) {
+      return (
+        <div key={tire._id} className="business-card">
           <div
             className="business-card__placeholder"
             role="img"
@@ -203,27 +209,33 @@ export default function Business() {
           >
             🛞
           </div>
-        )}
+        </div>
+      );
+    }
+
+    return tire.images.map((img, index) => (
+      <div key={`${tire._id}-${index}`} className="business-card">
+        <OptimizedImage
+          src={img}
+          alt={`${tireAlt} - ${index + 1}`}
+          wrapperClassName="business-card__image"
+          placeholderIcon="🛞"
+          placeholderLabel={`${tireAlt} - ${t.business.noImageAvailable}`}
+        />
       </div>
-    );
+    ));
   };
 
   const renderWheelDrumCard = (drum: WheelDrum) => {
     const conditionLabel = localizeCondition(drum.condition);
     const drumAlt = [drum.brand, drum.size, conditionLabel, t.business.altTextWheelDrum]
       .filter(Boolean)
-      .join(" ");
-    return (
-      <div key={drum._id} className="business-card">
-        {drum.images && drum.images[0] ? (
-          <OptimizedImage
-            src={drum.images[0]}
-            alt={drumAlt}
-            wrapperClassName="business-card__image"
-            placeholderIcon="⚙️"
-            placeholderLabel={`${drumAlt} - ${t.business.noImageAvailable}`}
-          />
-        ) : (
+      .join(" ") || 'Wheel Drum';
+
+    // Show all images for this item
+    if (!drum.images || drum.images.length === 0) {
+      return (
+        <div key={drum._id} className="business-card">
           <div
             className="business-card__placeholder"
             role="img"
@@ -231,28 +243,40 @@ export default function Business() {
           >
             ⚙️
           </div>
-        )}
+        </div>
+      );
+    }
+
+    return drum.images.map((img, index) => (
+      <div key={`${drum._id}-${index}`} className="business-card">
+        <OptimizedImage
+          src={img}
+          alt={`${drumAlt} - ${index + 1}`}
+          wrapperClassName="business-card__image"
+          placeholderIcon="⚙️"
+          placeholderLabel={`${drumAlt} - ${t.business.noImageAvailable}`}
+        />
       </div>
-    );
+    ));
   };
 
   const renderContent = () => {
     switch (activeTab) {
       case "cars":
         return cars.length === 0 ? renderEmptyState("🚗", "Check back soon for new vehicles") : (
-          <div className="business-gallery business-gallery--cars">{cars.map(renderCarCard)}</div>
+          <div className="business-gallery business-gallery--cars">{cars.flatMap(renderCarCard)}</div>
         );
       case "new-tires":
         return newTires.length === 0 ? renderEmptyState("🛞", "Check back soon for new tires") : (
-          <div className="business-gallery">{newTires.map(renderTireCard)}</div>
+          <div className="business-gallery">{newTires.flatMap(renderTireCard)}</div>
         );
       case "used-tires":
         return usedTires.length === 0 ? renderEmptyState("🛞", "Check back soon for used tires") : (
-          <div className="business-gallery">{usedTires.map(renderTireCard)}</div>
+          <div className="business-gallery">{usedTires.flatMap(renderTireCard)}</div>
         );
       case "wheel-drums":
         return wheelDrums.length === 0 ? renderEmptyState("⚙️", "Check back soon for wheel drums") : (
-          <div className="business-gallery">{wheelDrums.map(renderWheelDrumCard)}</div>
+          <div className="business-gallery">{wheelDrums.flatMap(renderWheelDrumCard)}</div>
         );
       default:
         return null;
@@ -281,7 +305,6 @@ export default function Business() {
           >
             <span className="business-tab__icon">{tab.icon}</span>
             <span className="business-tab__label">{tab.label}</span>
-            <span className="business-tab__count">{tab.count}</span>
           </button>
         ))}
       </nav>

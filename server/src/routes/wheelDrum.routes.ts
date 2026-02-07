@@ -7,22 +7,32 @@ import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
 
 const router = Router();
 
-// Validation schemas
-const wheelDrumSchema = z.object({
-  brand: z.string().min(1, "Brand is required"),
-  size: z.string().min(1, "Size is required"),
-  price: z.number().positive("Price must be positive"),
-  condition: z.string().min(1, "Condition is required"),
-  images: z.array(z.string()).default([]),
-  displayLocation: z.enum(["market", "business", "both"]).default("market"),
-});
+// Dynamic Zod schema based on display location
+const getWheelDrumSchema = (displayLocation: 'market' | 'business' | 'both') => {
+  const isBusinessOnly = displayLocation === 'business';
+
+  return z.object({
+    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
+    size: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Size is required'),
+    price: isBusinessOnly ? z.number().optional() : z.number().positive("Price must be positive"),
+    condition: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Condition is required'),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
+    displayLocation: z.enum(["market", "business", "both"]),
+  });
+};
+
+// Static schema for backward compatibility (uses market validation)
+const wheelDrumSchema = getWheelDrumSchema('market');
 
 const updateWheelDrumSchema = wheelDrumSchema.partial();
 
 // CREATE wheel drum
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
-    const validation = wheelDrumSchema.safeParse(req.body);
+    // Use dynamic schema based on displayLocation
+    const displayLocation = req.body.displayLocation || 'market';
+    const schema = getWheelDrumSchema(displayLocation);
+    const validation = schema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
         message: "Validation failed",

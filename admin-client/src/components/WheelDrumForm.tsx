@@ -8,10 +8,11 @@ const getWheelDrumSchema = (displayLocation: 'market' | 'business' | 'both') => 
   const isBusinessOnly = displayLocation === 'business';
 
   return z.object({
-    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
-    size: isBusinessOnly ? z.string().min(1, 'Size must not be empty').optional() : z.string().min(1, 'Size is required'),
-    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
-    condition: isBusinessOnly ? z.string().min(1, 'Condition must not be empty').optional() : z.string().min(1, 'Condition is required'),
+    // For business-only: accept any value (including empty/default) or undefined
+    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
+    size: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Size is required'),
+    price: isBusinessOnly ? z.number().optional() : z.number().min(0),
+    condition: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Condition is required'),
     images: z.array(z.string()).min(1, 'At least one image is required'),
     displayLocation: z.enum(['market', 'business', 'both']),
   });
@@ -69,11 +70,20 @@ export default function WheelDrumForm({ wheelDrum, onSubmit, onCancel }: WheelDr
 
   // Handle image file upload - compresses and adds to existing images
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    // Capture files immediately before any async operations
     const files = Array.from(e.target.files);
+    const fileCount = files.length;
+
+    // Reset the input to allow selecting the same files again
+    e.target.value = '';
 
     try {
       const compressedImages = await compressImages(files);
+      if (compressedImages.length < fileCount) {
+        console.warn(`Only ${compressedImages.length} of ${fileCount} images were processed successfully`);
+      }
       setFormData((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
       setError(''); // Clear any previous image-processing errors
     } catch (error) {

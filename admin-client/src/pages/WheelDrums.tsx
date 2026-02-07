@@ -129,11 +129,11 @@ export default function WheelDrums() {
               {wheelDrums.map((wheelDrum) => (
                 <tr key={wheelDrum._id}>
                   <td>
-                    <strong>{wheelDrum.brand}</strong>
+                    <strong>{wheelDrum.brand || '-'}</strong>
                   </td>
-                  <td>{wheelDrum.size}</td>
-                  <td className="capitalize">{wheelDrum.condition}</td>
-                  <td>¥{wheelDrum.price.toLocaleString()}</td>
+                  <td>{wheelDrum.size || '-'}</td>
+                  <td className="capitalize">{wheelDrum.condition || '-'}</td>
+                  <td>{wheelDrum.price != null ? `¥${wheelDrum.price.toLocaleString()}` : '-'}</td>
                   <td className="capitalize">{wheelDrum.displayLocation}</td>
                   <td>
                     <div className="action-buttons">
