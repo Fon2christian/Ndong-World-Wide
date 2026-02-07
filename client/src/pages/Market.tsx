@@ -70,19 +70,33 @@ interface LightboxState {
   title: string;
 }
 
+// Parse cached market data once to avoid redundant parsing
+function getCachedMarketData() {
+  try {
+    const cached = sessionStorage.getItem('market-data');
+    return cached ? JSON.parse(cached) : null;
+  } catch (e) {
+    console.error('Failed to parse cached market data:', e);
+    return null;
+  }
+}
+
 export default function Market() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
-  const [cars, setCars] = useState<Car[]>([]);
-  const [newTires, setNewTires] = useState<Tire[]>([]);
-  const [usedTires, setUsedTires] = useState<Tire[]>([]);
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Parse cache once and reuse for all state initializers
+  const cachedData = useMemo(() => getCachedMarketData(), []);
+
+  const [cars, setCars] = useState<Car[]>(Array.isArray(cachedData?.cars) ? cachedData.cars : []);
+  const [newTires, setNewTires] = useState<Tire[]>(Array.isArray(cachedData?.newTires) ? cachedData.newTires : []);
+  const [usedTires, setUsedTires] = useState<Tire[]>(Array.isArray(cachedData?.usedTires) ? cachedData.usedTires : []);
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(Array.isArray(cachedData?.wheelDrums) ? cachedData.wheelDrums : []);
+  const [loading, setLoading] = useState(!cachedData);
   const { getCurrentIndex, nextImage, prevImage } = useImageGallery();
 
   // Contact modal state
   const [showContactModal, setShowContactModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string>("");
 
   // Lightbox state
   const [lightbox, setLightbox] = useState<LightboxState>({
@@ -102,14 +116,12 @@ export default function Market() {
     document.body.style.overflow = ""; // Restore scroll
   }, []);
 
-  const openContactModal = (itemId: string) => {
-    setSelectedItem(itemId);
+  const openContactModal = () => {
     setShowContactModal(true);
   };
 
   const closeContactModal = () => {
     setShowContactModal(false);
-    setSelectedItem("");
   };
 
   const lightboxNext = useCallback(() => {
@@ -149,19 +161,31 @@ export default function Market() {
   }, [showContactModal]);
 
   const fetchData = async () => {
-    setLoading(true);
+    const cacheKey = 'market-data';
+
+    // Fetch fresh data (cache already applied at initialization)
     try {
-      // Fetch only items that should be displayed on Market (location=market or both)
       const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_API_URL}/api/cars?location=market`),
         axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=new&location=market`),
         axios.get(`${import.meta.env.VITE_API_URL}/api/tires?condition=used&location=market`),
         axios.get(`${import.meta.env.VITE_API_URL}/api/wheel-drums?location=market`),
       ]);
-      setCars(carsRes.data);
-      setNewTires(newTiresRes.data);
-      setUsedTires(usedTiresRes.data);
-      setWheelDrums(wheelDrumsRes.data);
+
+      const freshData = {
+        cars: carsRes.data,
+        newTires: newTiresRes.data,
+        usedTires: usedTiresRes.data,
+        wheelDrums: wheelDrumsRes.data,
+      };
+
+      setCars(Array.isArray(freshData.cars) ? freshData.cars : []);
+      setNewTires(Array.isArray(freshData.newTires) ? freshData.newTires : []);
+      setUsedTires(Array.isArray(freshData.usedTires) ? freshData.usedTires : []);
+      setWheelDrums(Array.isArray(freshData.wheelDrums) ? freshData.wheelDrums : []);
+
+      // Cache the fresh data
+      sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
     } catch (err) {
       console.error(err);
     } finally {
@@ -173,7 +197,8 @@ export default function Market() {
     fetchData();
   }, []);
 
-  // Preload first image from each item for faster tab switching
+  // Preload first image from ALL items for instant tab switching
+  // Preload everything upfront to ensure images are cached before user clicks
   const imagesToPreload = useMemo(() => {
     return [
       ...extractFirstImages(cars),
@@ -196,13 +221,13 @@ export default function Market() {
     switch (icon) {
       case "car":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Car icon">
             <path d="M19 17H21V15L19 7H5L3 15V17H5M19 17H5M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17"/>
           </svg>
         );
       case "tire-new":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="New tire icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
@@ -210,7 +235,7 @@ export default function Market() {
         );
       case "tire-used":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Used tire icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="4"/>
             <path d="M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/>
@@ -218,7 +243,7 @@ export default function Market() {
         );
       case "wheel":
         return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Wheel drum icon">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 5v2M12 17v2M5 12h2M17 12h2M7.05 7.05l1.41 1.41M15.54 15.54l1.41 1.41M7.05 16.95l1.41-1.41M15.54 8.46l1.41-1.41"/>
@@ -229,10 +254,26 @@ export default function Market() {
     }
   };
 
+  // Show loading spinner while fetching data
   if (loading) {
     return (
-      <div className="loading">
-        <div className="loading__spinner"></div>
+      <div className="market">
+        <header className="market__header">
+          <div className="market__title">
+            <div className="market__logo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Shopping bag">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <h1>{t.market.title}</h1>
+          </div>
+        </header>
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>{t.market.loading || 'Loading products...'}</p>
+        </div>
       </div>
     );
   }
@@ -315,7 +356,7 @@ export default function Market() {
         <div className="car-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(car._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -380,7 +421,7 @@ export default function Market() {
         <div className="product-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(tire._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -443,7 +484,7 @@ export default function Market() {
         <div className="product-card__actions">
           <button
             className="btn btn--primary btn--small"
-            onClick={() => openContactModal(wheelDrum._id)}
+            onClick={openContactModal}
           >
             {t.market.contactSeller}
           </button>
@@ -482,7 +523,7 @@ export default function Market() {
       <header className="market__header">
         <div className="market__title">
           <div className="market__logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Shopping bag">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>

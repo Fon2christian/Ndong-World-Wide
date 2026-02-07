@@ -38,29 +38,57 @@ interface WheelDrum {
   images: string[];
 }
 
+// Parse cached business data once to avoid redundant parsing
+function getCachedBusinessData() {
+  try {
+    const cached = sessionStorage.getItem('business-data');
+    return cached ? JSON.parse(cached) : null;
+  } catch (e) {
+    console.error('Failed to parse cached business data:', e);
+    return null;
+  }
+}
+
 export default function Business() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
-  const [cars, setCars] = useState<Car[]>([]);
-  const [newTires, setNewTires] = useState<Tire[]>([]);
-  const [usedTires, setUsedTires] = useState<Tire[]>([]);
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Parse cache once and reuse for all state initializers
+  const cachedData = useMemo(() => getCachedBusinessData(), []);
+
+  const [cars, setCars] = useState<Car[]>(Array.isArray(cachedData?.cars) ? cachedData.cars : []);
+  const [newTires, setNewTires] = useState<Tire[]>(Array.isArray(cachedData?.newTires) ? cachedData.newTires : []);
+  const [usedTires, setUsedTires] = useState<Tire[]>(Array.isArray(cachedData?.usedTires) ? cachedData.usedTires : []);
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(Array.isArray(cachedData?.wheelDrums) ? cachedData.wheelDrums : []);
+  const [loading, setLoading] = useState(!cachedData);
 
   useEffect(() => {
     const fetchData = async () => {
+      const cacheKey = 'business-data';
+
+      // Fetch fresh data (cache already applied at initialization)
       try {
-        // Fetch only items that should be displayed on Business page (location=business or both)
         const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/cars?location=business`),
           axios.get(`${API_BASE_URL}/api/tires?condition=new&location=business`),
           axios.get(`${API_BASE_URL}/api/tires?condition=used&location=business`),
           axios.get(`${API_BASE_URL}/api/wheel-drums?location=business`),
         ]);
-        setCars(carsRes.data);
-        setNewTires(newTiresRes.data);
-        setUsedTires(usedTiresRes.data);
-        setWheelDrums(wheelDrumsRes.data);
+
+        const freshData = {
+          cars: carsRes.data,
+          newTires: newTiresRes.data,
+          usedTires: usedTiresRes.data,
+          wheelDrums: wheelDrumsRes.data,
+        };
+
+        setCars(Array.isArray(freshData.cars) ? freshData.cars : []);
+        setNewTires(Array.isArray(freshData.newTires) ? freshData.newTires : []);
+        setUsedTires(Array.isArray(freshData.usedTires) ? freshData.usedTires : []);
+        setWheelDrums(Array.isArray(freshData.wheelDrums) ? freshData.wheelDrums : []);
+
+        // Cache the fresh data
+        sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
       } catch (error) {
         console.error("Error fetching business data:", error);
       } finally {
@@ -70,7 +98,8 @@ export default function Business() {
     fetchData();
   }, []);
 
-  // Preload first image from each item for faster tab switching
+  // Preload first image from ALL items for instant tab switching
+  // Preload everything upfront to ensure images are cached before user clicks
   const imagesToPreload = useMemo(() => {
     return [
       ...extractFirstImages(cars),
@@ -89,12 +118,21 @@ export default function Business() {
     { id: "wheel-drums" as TabType, label: t.business.wheelDrums, icon: "⚙️", count: wheelDrums.length },
   ];
 
+  // Show loading spinner while fetching data
   if (loading) {
     return (
       <div className="business-page">
-        <div className="business-loading">
-          <div className="loading__spinner"></div>
-          <p>{t.market.loading}</p>
+        <section className="business-hero">
+          <div className="business-hero__content">
+            <h1 className="business-hero__title">{t.business.heroTitle}</h1>
+            <p className="business-hero__subtitle">
+              {t.business.heroSubtitle}
+            </p>
+          </div>
+        </section>
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>{t.business.loading || 'Loading products...'}</p>
         </div>
       </div>
     );

@@ -6472,3 +6472,23 @@
     transform: translateY(-10px);
   }
 }
+
+/* Ensure images are visible above skeleton */
+.business-card__image img {
+  position: relative;
+  z-index: 2;
+}
+
+.business-card__image .image-skeleton {
+  z-index: 1;
+}
+
+/* Market page image visibility fix */
+.car-card__image {
+  position: relative;
+  z-index: 2;
+}
+
+.car-card__gallery .image-skeleton {
+  z-index: 1;
+}
