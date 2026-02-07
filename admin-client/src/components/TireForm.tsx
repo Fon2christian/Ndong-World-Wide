@@ -3,15 +3,19 @@ import { z } from 'zod';
 import { compressImages } from '../utils/imageCompression';
 import type { Tire, TireFormData } from '../types';
 
-// Zod schema for validation
-const tireSchema = z.object({
-  brand: z.string().min(1, 'Brand is required'),
-  size: z.string().min(1, 'Size is required'),
-  price: z.number().min(0),
-  condition: z.enum(['new', 'used']),
-  images: z.array(z.string()),
-  displayLocation: z.enum(['market', 'business', 'both']),
-});
+// Dynamic Zod schema based on display location
+const getTireSchema = (displayLocation: 'market' | 'business' | 'both') => {
+  const isBusinessOnly = displayLocation === 'business';
+
+  return z.object({
+    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
+    size: isBusinessOnly ? z.string().min(1, 'Size must not be empty').optional() : z.string().min(1, 'Size is required'),
+    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
+    condition: isBusinessOnly ? z.enum(['new', 'used']).optional() : z.enum(['new', 'used']),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
+    displayLocation: z.enum(['market', 'business', 'both']),
+  });
+};
 
 interface TireFormProps {
   tire?: Tire;
@@ -89,8 +93,18 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
     e.preventDefault();
     setError('');
 
-    // Validate form using Zod
-    const result = tireSchema.safeParse(formData);
+    // Preprocess data: convert empty/default values to undefined for optional fields
+    const isBusinessOnly = formData.displayLocation === 'business';
+    const dataToValidate = isBusinessOnly ? {
+      ...formData,
+      brand: formData.brand === '' ? undefined : formData.brand,
+      size: formData.size === '' ? undefined : formData.size,
+      price: formData.price === 0 ? undefined : formData.price,
+    } : formData;
+
+    // Validate form using dynamic Zod schema
+    const tireSchema = getTireSchema(formData.displayLocation);
+    const result = tireSchema.safeParse(dataToValidate);
     if (!result.success) {
       const firstError = result.error.issues[0];
       setError(`${firstError.path.join('.')}: ${firstError.message}`);
@@ -108,74 +122,15 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
     }
   };
 
+  // Determine if fields are required based on display location
+  const isBusinessOnly = formData.displayLocation === 'business';
+  const fieldsRequired = !isBusinessOnly;
+
   return (
     <form onSubmit={handleSubmit} className="form">
       {error && <div className="form__error">{error}</div>}
 
-      {/* Row 1: Brand & Size */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="brand">Brand *</label>
-          <input
-            id="brand"
-            name="brand"
-            value={formData.brand}
-            onChange={(e) => handleChange('brand', e.target.value)}
-            placeholder="e.g. Bridgestone"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="size">Size *</label>
-          <input
-            id="size"
-            name="size"
-            value={formData.size}
-            onChange={(e) => handleChange('size', e.target.value)}
-            placeholder="e.g. 205/55R16"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Row 2: Price & Condition */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="price">Price (¥) *</label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={(e) => handleNumberChange('price', e.target.value)}
-            placeholder="e.g. 150"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="condition">Condition *</label>
-          <select
-            id="condition"
-            name="condition"
-            value={formData.condition}
-            onChange={(e) => handleChange('condition', e.target.value)}
-            className="form__select"
-            disabled={isSubmitting}
-            required
-          >
-            <option value="new">New</option>
-            <option value="used">Used</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Row 3: Display Location */}
+      {/* Display Location - Show first so user can set it before filling fields */}
       <div className="form__group">
         <label className="form__label" htmlFor="displayLocation">Display Location *</label>
         <select
@@ -188,14 +143,82 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
           required
         >
           <option value="market">Market Only</option>
-          <option value="business">Business Only</option>
+          <option value="business">Business Only (Images Only)</option>
           <option value="both">Both Market & Business</option>
         </select>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+          {isBusinessOnly
+            ? '📸 Business Only: Only images are required. Other fields are optional.'
+            : '📋 Market/Both: All fields are required for customer listings.'}
+        </p>
       </div>
 
-      {/* Row 4: Image Upload */}
+      {/* Row 1: Brand & Size */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="brand">Brand {fieldsRequired && '*'}</label>
+          <input
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={(e) => handleChange('brand', e.target.value)}
+            placeholder="e.g. Bridgestone"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="size">Size {fieldsRequired && '*'}</label>
+          <input
+            id="size"
+            name="size"
+            value={formData.size}
+            onChange={(e) => handleChange('size', e.target.value)}
+            placeholder="e.g. 205/55R16"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+      </div>
+
+      {/* Row 2: Price & Condition */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="price">Price (¥) {fieldsRequired && '*'}</label>
+          <input
+            id="price"
+            name="price"
+            type="number"
+            value={formData.price}
+            onChange={(e) => handleNumberChange('price', e.target.value)}
+            placeholder="e.g. 150"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="condition">Condition {fieldsRequired && '*'}</label>
+          <select
+            id="condition"
+            name="condition"
+            value={formData.condition}
+            onChange={(e) => handleChange('condition', e.target.value)}
+            className="form__select"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          >
+            <option value="new">New</option>
+            <option value="used">Used</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Row 3: Image Upload */}
       <div className="form__group">
-        <label className="form__label" htmlFor="tire-images">Tire Images</label>
+        <label className="form__label" htmlFor="tire-images">Tire Images *</label>
         <div className="form__file-upload">
           <input
             id="tire-images"

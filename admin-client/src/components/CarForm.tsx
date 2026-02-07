@@ -3,18 +3,22 @@ import { z } from 'zod';
 import { compressImages } from '../utils/imageCompression';
 import type { Car, CarFormData } from '../types';
 
-// Zod schema for validation
-const carSchema = z.object({
-  brand: z.string().min(1, 'Brand is required'),
-  model: z.string().min(1, 'Model is required'),
-  year: z.number().min(1900).max(new Date().getFullYear() + 1),
-  price: z.number().min(0),
-  mileage: z.number().min(0),
-  fuel: z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
-  transmission: z.enum(['automatic', 'manual']),
-  images: z.array(z.string()),
-  displayLocation: z.enum(['market', 'business', 'both']),
-});
+// Dynamic Zod schema based on display location
+const getCarSchema = (displayLocation: 'market' | 'business' | 'both') => {
+  const isBusinessOnly = displayLocation === 'business';
+
+  return z.object({
+    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
+    model: isBusinessOnly ? z.string().min(1, 'Model must not be empty').optional() : z.string().min(1, 'Model is required'),
+    year: isBusinessOnly ? z.number().min(1900).max(new Date().getFullYear() + 1).optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
+    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
+    mileage: isBusinessOnly ? z.number().min(0, 'Mileage cannot be negative').optional() : z.number().min(0),
+    fuel: isBusinessOnly ? z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional() : z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
+    transmission: isBusinessOnly ? z.enum(['automatic', 'manual']).optional() : z.enum(['automatic', 'manual']),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
+    displayLocation: z.enum(['market', 'business', 'both']),
+  });
+};
 
 interface CarFormProps {
   car?: Car;
@@ -101,8 +105,20 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     e.preventDefault();
     setError('');
 
-    // Validate form using Zod
-    const result = carSchema.safeParse(formData);
+    // Preprocess data: convert empty/default values to undefined for optional fields
+    const isBusinessOnly = formData.displayLocation === 'business';
+    const dataToValidate = isBusinessOnly ? {
+      ...formData,
+      brand: formData.brand === '' ? undefined : formData.brand,
+      model: formData.model === '' ? undefined : formData.model,
+      year: formData.year === 0 ? undefined : formData.year,
+      price: formData.price === 0 ? undefined : formData.price,
+      mileage: formData.mileage === 0 ? undefined : formData.mileage,
+    } : formData;
+
+    // Validate form using dynamic Zod schema
+    const carSchema = getCarSchema(formData.displayLocation);
+    const result = carSchema.safeParse(dataToValidate);
     if (!result.success) {
       const firstError = result.error.issues[0];
       setError(`${firstError.path.join('.')}: ${firstError.message}`);
@@ -120,127 +136,15 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     }
   };
 
+  // Determine if fields are required based on display location
+  const isBusinessOnly = formData.displayLocation === 'business';
+  const fieldsRequired = !isBusinessOnly;
+
   return (
     <form onSubmit={handleSubmit} className="form">
       {error && <div className="form__error">{error}</div>}
 
-      {/* Row 1: Brand & Model */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="brand">Brand *</label>
-          <input
-            id="brand"
-            name="brand"
-            value={formData.brand}
-            onChange={(e) => handleChange('brand', e.target.value)}
-            placeholder="e.g. Toyota"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="model">Model *</label>
-          <input
-            id="model"
-            name="model"
-            value={formData.model}
-            onChange={(e) => handleChange('model', e.target.value)}
-            placeholder="e.g. Camry"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Row 2: Year & Price */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="year">Year *</label>
-          <input
-            id="year"
-            name="year"
-            type="number"
-            value={formData.year}
-            onChange={(e) => handleNumberChange('year', e.target.value)}
-            placeholder="e.g. 2023"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="price">Price (¥) *</label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={(e) => handleNumberChange('price', e.target.value)}
-            placeholder="e.g. 25000"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Row 3: Mileage */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="mileage">Mileage (km) *</label>
-          <input
-            id="mileage"
-            name="mileage"
-            type="number"
-            value={formData.mileage}
-            onChange={(e) => handleNumberChange('mileage', e.target.value)}
-            placeholder="e.g. 50000"
-            className="form__input"
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Row 4: Fuel & Transmission */}
-      <div className="form__row">
-        <div className="form__group">
-          <label className="form__label" htmlFor="fuel">Fuel Type *</label>
-          <select
-            id="fuel"
-            name="fuel"
-            value={formData.fuel}
-            onChange={(e) => handleChange('fuel', e.target.value)}
-            className="form__select"
-            disabled={isSubmitting}
-            required
-          >
-            <option value="petrol">Petrol</option>
-            <option value="diesel">Diesel</option>
-            <option value="electric">Electric</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
-        </div>
-        <div className="form__group">
-          <label className="form__label" htmlFor="transmission">Transmission *</label>
-          <select
-            id="transmission"
-            name="transmission"
-            value={formData.transmission}
-            onChange={(e) => handleChange('transmission', e.target.value)}
-            className="form__select"
-            disabled={isSubmitting}
-            required
-          >
-            <option value="automatic">Automatic</option>
-            <option value="manual">Manual</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Row 5: Display Location */}
+      {/* Display Location - Show first so user can set it before filling fields */}
       <div className="form__group">
         <label className="form__label" htmlFor="displayLocation">Display Location *</label>
         <select
@@ -253,14 +157,135 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
           required
         >
           <option value="market">Market Only</option>
-          <option value="business">Business Only</option>
+          <option value="business">Business Only (Images Only)</option>
           <option value="both">Both Market & Business</option>
         </select>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+          {isBusinessOnly
+            ? '📸 Business Only: Only images are required. Other fields are optional.'
+            : '📋 Market/Both: All fields are required for customer listings.'}
+        </p>
       </div>
 
-      {/* Row 6: Image Upload */}
+      {/* Row 1: Brand & Model */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="brand">Brand {fieldsRequired && '*'}</label>
+          <input
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={(e) => handleChange('brand', e.target.value)}
+            placeholder="e.g. Toyota"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="model">Model {fieldsRequired && '*'}</label>
+          <input
+            id="model"
+            name="model"
+            value={formData.model}
+            onChange={(e) => handleChange('model', e.target.value)}
+            placeholder="e.g. Camry"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+      </div>
+
+      {/* Row 2: Year & Price */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="year">Year {fieldsRequired && '*'}</label>
+          <input
+            id="year"
+            name="year"
+            type="number"
+            value={formData.year}
+            onChange={(e) => handleNumberChange('year', e.target.value)}
+            placeholder="e.g. 2023"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="price">Price (¥) {fieldsRequired && '*'}</label>
+          <input
+            id="price"
+            name="price"
+            type="number"
+            value={formData.price}
+            onChange={(e) => handleNumberChange('price', e.target.value)}
+            placeholder="e.g. 25000"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+      </div>
+
+      {/* Row 3: Mileage */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="mileage">Mileage (km) {fieldsRequired && '*'}</label>
+          <input
+            id="mileage"
+            name="mileage"
+            type="number"
+            value={formData.mileage}
+            onChange={(e) => handleNumberChange('mileage', e.target.value)}
+            placeholder="e.g. 50000"
+            className="form__input"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          />
+        </div>
+      </div>
+
+      {/* Row 4: Fuel & Transmission */}
+      <div className="form__row">
+        <div className="form__group">
+          <label className="form__label" htmlFor="fuel">Fuel Type {fieldsRequired && '*'}</label>
+          <select
+            id="fuel"
+            name="fuel"
+            value={formData.fuel}
+            onChange={(e) => handleChange('fuel', e.target.value)}
+            className="form__select"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          >
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+            <option value="electric">Electric</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div className="form__group">
+          <label className="form__label" htmlFor="transmission">Transmission {fieldsRequired && '*'}</label>
+          <select
+            id="transmission"
+            name="transmission"
+            value={formData.transmission}
+            onChange={(e) => handleChange('transmission', e.target.value)}
+            className="form__select"
+            disabled={isSubmitting}
+            required={fieldsRequired}
+          >
+            <option value="automatic">Automatic</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Row 5: Image Upload */}
       <div className="form__group">
-        <label className="form__label" htmlFor="car-images">Car Images</label>
+        <label className="form__label" htmlFor="car-images">Car Images *</label>
         <div className="form__file-upload">
           <input
             id="car-images"
