@@ -41,26 +41,91 @@ interface WheelDrum {
 export default function Business() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("cars");
-  const [cars, setCars] = useState<Car[]>([]);
-  const [newTires, setNewTires] = useState<Tire[]>([]);
-  const [usedTires, setUsedTires] = useState<Tire[]>([]);
-  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Initialize state from cache - use lazy initializer to read cache only once
+  const [cars, setCars] = useState<Car[]>(() => {
+    try {
+      const cached = sessionStorage.getItem('business-data');
+      return cached ? JSON.parse(cached).cars || [] : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [newTires, setNewTires] = useState<Tire[]>(() => {
+    try {
+      const cached = sessionStorage.getItem('business-data');
+      return cached ? JSON.parse(cached).newTires || [] : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [usedTires, setUsedTires] = useState<Tire[]>(() => {
+    try {
+      const cached = sessionStorage.getItem('business-data');
+      return cached ? JSON.parse(cached).usedTires || [] : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [wheelDrums, setWheelDrums] = useState<WheelDrum[]>(() => {
+    try {
+      const cached = sessionStorage.getItem('business-data');
+      return cached ? JSON.parse(cached).wheelDrums || [] : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('business-data');
+      return !cached;
+    } catch (e) {
+      return true;
+    }
+  });
 
   useEffect(() => {
     const fetchData = async () => {
+      // Check for cached data first
+      const cacheKey = 'business-data';
+      const cached = sessionStorage.getItem(cacheKey);
+
+      if (cached) {
+        try {
+          const cachedData = JSON.parse(cached);
+          setCars(cachedData.cars);
+          setNewTires(cachedData.newTires);
+          setUsedTires(cachedData.usedTires);
+          setWheelDrums(cachedData.wheelDrums);
+          setLoading(false);
+        } catch (e) {
+          console.error('Cache parse error:', e);
+        }
+      }
+
+      // Fetch fresh data in background
       try {
-        // Fetch only items that should be displayed on Business page (location=business or both)
         const [carsRes, newTiresRes, usedTiresRes, wheelDrumsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/cars?location=business`),
           axios.get(`${API_BASE_URL}/api/tires?condition=new&location=business`),
           axios.get(`${API_BASE_URL}/api/tires?condition=used&location=business`),
           axios.get(`${API_BASE_URL}/api/wheel-drums?location=business`),
         ]);
-        setCars(carsRes.data);
-        setNewTires(newTiresRes.data);
-        setUsedTires(usedTiresRes.data);
-        setWheelDrums(wheelDrumsRes.data);
+
+        const freshData = {
+          cars: carsRes.data,
+          newTires: newTiresRes.data,
+          usedTires: usedTiresRes.data,
+          wheelDrums: wheelDrumsRes.data,
+        };
+
+        setCars(freshData.cars);
+        setNewTires(freshData.newTires);
+        setUsedTires(freshData.usedTires);
+        setWheelDrums(freshData.wheelDrums);
+
+        // Cache the fresh data
+        sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
       } catch (error) {
         console.error("Error fetching business data:", error);
       } finally {
@@ -70,16 +135,16 @@ export default function Business() {
     fetchData();
   }, []);
 
-  // Preload first image from each item for faster tab switching
-  // Only preload images from non-active tabs to avoid bandwidth competition
+  // Preload first image from ALL items for instant tab switching
+  // Preload everything upfront to ensure images are cached before user clicks
   const imagesToPreload = useMemo(() => {
-    const images: string[] = [];
-    if (activeTab !== "cars") images.push(...extractFirstImages(cars));
-    if (activeTab !== "new-tires") images.push(...extractFirstImages(newTires));
-    if (activeTab !== "used-tires") images.push(...extractFirstImages(usedTires));
-    if (activeTab !== "wheel-drums") images.push(...extractFirstImages(wheelDrums));
-    return images;
-  }, [cars, newTires, usedTires, wheelDrums, activeTab]);
+    return [
+      ...extractFirstImages(cars),
+      ...extractFirstImages(newTires),
+      ...extractFirstImages(usedTires),
+      ...extractFirstImages(wheelDrums),
+    ];
+  }, [cars, newTires, usedTires, wheelDrums]);
 
   useImagePreloader(imagesToPreload, !loading);
 
@@ -90,12 +155,21 @@ export default function Business() {
     { id: "wheel-drums" as TabType, label: t.business.wheelDrums, icon: "⚙️", count: wheelDrums.length },
   ];
 
+  // Show loading spinner while fetching data
   if (loading) {
     return (
       <div className="business-page">
-        <div className="business-loading">
-          <div className="loading__spinner"></div>
-          <p>{t.market.loading}</p>
+        <section className="business-hero">
+          <div className="business-hero__content">
+            <h1 className="business-hero__title">{t.business.heroTitle}</h1>
+            <p className="business-hero__subtitle">
+              {t.business.heroSubtitle}
+            </p>
+          </div>
+        </section>
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>Loading products...</p>
         </div>
       </div>
     );

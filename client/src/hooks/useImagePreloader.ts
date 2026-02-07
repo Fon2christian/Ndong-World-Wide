@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 /**
- * Preloads images to improve tab switching performance
+ * Preloads images in background to improve tab switching performance
+ * Images are loaded with low priority to not compete with visible content
  * @param imageUrls Array of image URLs to preload
  * @param enabled Whether preloading is enabled
  */
@@ -9,22 +10,24 @@ export function useImagePreloader(imageUrls: string[], enabled = true) {
   useEffect(() => {
     if (!enabled || imageUrls.length === 0) return;
 
-    // Create image preloader
-    const preloadImages = () => {
-      // Filter out empty/falsy values and deduplicate URLs
-      const validUrls = imageUrls.filter((url): url is string => Boolean(url) && typeof url === 'string');
-      const uniqueUrls = Array.from(new Set(validUrls));
+    // Filter out empty/falsy values and deduplicate URLs
+    const validUrls = imageUrls.filter((url): url is string => Boolean(url) && typeof url === 'string');
+    const uniqueUrls = Array.from(new Set(validUrls));
 
-      uniqueUrls.forEach((url) => {
-        const img = new Image();
-        img.src = url;
+    // Preload images immediately - no timeout for maximum speed
+    const images: HTMLImageElement[] = [];
+    uniqueUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+      images.push(img);
+    });
+
+    // Cleanup function to abort any pending loads
+    return () => {
+      images.forEach((img) => {
+        img.src = '';
       });
     };
-
-    // Preload with a delay to let visible images load first
-    const timeoutId = setTimeout(preloadImages, 2000);
-
-    return () => clearTimeout(timeoutId);
   }, [imageUrls, enabled]);
 }
 

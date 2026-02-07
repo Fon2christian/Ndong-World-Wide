@@ -29,10 +29,19 @@ export default function OptimizedImage({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Reset state when src changes to allow loading new images after errors
+  // Check if image is already cached and skip loading state
   useEffect(() => {
-    setIsLoading(true);
-    setHasError(false);
+    const img = new Image();
+    img.src = src;
+
+    // If image is already cached/complete, don't show loading state
+    if (img.complete) {
+      setIsLoading(false);
+      setHasError(false);
+    } else {
+      setIsLoading(true);
+      setHasError(false);
+    }
   }, [src]);
 
   const handleLoad = () => {
@@ -70,8 +79,9 @@ export default function OptimizedImage({
       src={src}
       alt={alt}
       className={className}
-      loading="lazy"
+      loading="eager"
       decoding="async"
+      fetchPriority="high"
       onLoad={handleLoad}
       onError={handleError}
       onClick={onClick}
