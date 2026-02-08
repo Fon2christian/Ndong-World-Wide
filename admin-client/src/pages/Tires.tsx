@@ -128,11 +128,11 @@ export default function Tires() {
               {tires.map((tire) => (
                 <tr key={tire._id}>
                   <td>
-                    <strong>{tire.brand}</strong>
+                    <strong>{tire.brand || '-'}</strong>
                   </td>
-                  <td>{tire.size}</td>
-                  <td className="capitalize">{tire.condition}</td>
-                  <td>¥{tire.price.toLocaleString()}</td>
+                  <td>{tire.size || '-'}</td>
+                  <td className="capitalize">{tire.condition || '-'}</td>
+                  <td>{tire.price != null ? `¥${tire.price.toLocaleString()}` : '-'}</td>
                   <td className="capitalize">{tire.displayLocation}</td>
                   <td>
                     <div className="action-buttons">

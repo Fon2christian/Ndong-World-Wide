@@ -7,21 +7,28 @@ import { isValidObjectId, validDisplayLocations } from "../utils/validation.js";
 
 const router = Router();
 
-// Validation schemas
-const carSchema = z.object({
-  brand: z.string().min(1, "Brand is required"),
-  model: z.string().min(1, "Model is required"),
-  year: z.number().int().min(1900).refine(
-    (year) => year <= new Date().getFullYear() + 1,
-    { message: `Year must not exceed ${new Date().getFullYear() + 1}` }
-  ),
-  price: z.number().positive("Price must be positive"),
-  mileage: z.number().nonnegative("Mileage must be non-negative"),
-  fuel: z.enum(["petrol", "diesel", "hybrid", "electric"]),
-  transmission: z.enum(["automatic", "manual"]),
-  images: z.array(z.string()).default([]),
-  displayLocation: z.enum(["market", "business", "both"]).default("market"),
-});
+// Dynamic Zod schema based on display location
+const getCarSchema = (displayLocation: 'market' | 'business' | 'both') => {
+  const isBusinessOnly = displayLocation === 'business';
+
+  return z.object({
+    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
+    model: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Model is required'),
+    year: isBusinessOnly ? z.number().optional() : z.number().int().min(1900).refine(
+      (year) => year <= new Date().getFullYear() + 1,
+      { message: `Year must not exceed ${new Date().getFullYear() + 1}` }
+    ),
+    price: isBusinessOnly ? z.number().optional() : z.number().positive("Price must be positive"),
+    mileage: isBusinessOnly ? z.number().optional() : z.number().nonnegative("Mileage must be non-negative"),
+    fuel: isBusinessOnly ? z.enum(["petrol", "diesel", "hybrid", "electric"]).optional() : z.enum(["petrol", "diesel", "hybrid", "electric"]),
+    transmission: isBusinessOnly ? z.enum(["automatic", "manual"]).optional() : z.enum(["automatic", "manual"]),
+    images: z.array(z.string()).min(1, 'At least one image is required'),
+    displayLocation: z.enum(["market", "business", "both"]),
+  });
+};
+
+// Static schema for backward compatibility (uses market validation)
+const carSchema = getCarSchema('market');
 
 const updateCarSchema = carSchema
   .omit({ images: true, displayLocation: true })
@@ -34,7 +41,10 @@ const updateCarSchema = carSchema
 // CREATE car (protected)
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
-    const validation = carSchema.safeParse(req.body);
+    // Use dynamic schema based on displayLocation
+    const displayLocation = req.body.displayLocation ?? 'market';
+    const schema = getCarSchema(displayLocation);
+    const validation = schema.safeParse({ ...req.body, displayLocation });
     if (!validation.success) {
       return res.status(400).json({
         message: "Validation failed",

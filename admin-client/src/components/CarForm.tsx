@@ -8,11 +8,12 @@ const getCarSchema = (displayLocation: 'market' | 'business' | 'both') => {
   const isBusinessOnly = displayLocation === 'business';
 
   return z.object({
-    brand: isBusinessOnly ? z.string().min(1, 'Brand must not be empty').optional() : z.string().min(1, 'Brand is required'),
-    model: isBusinessOnly ? z.string().min(1, 'Model must not be empty').optional() : z.string().min(1, 'Model is required'),
-    year: isBusinessOnly ? z.number().min(1900).max(new Date().getFullYear() + 1).optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
-    price: isBusinessOnly ? z.number().min(0, 'Price cannot be negative').optional() : z.number().min(0),
-    mileage: isBusinessOnly ? z.number().min(0, 'Mileage cannot be negative').optional() : z.number().min(0),
+    // For business-only: accept any value (including empty/default) or undefined
+    brand: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Brand is required'),
+    model: isBusinessOnly ? z.string().optional() : z.string().min(1, 'Model is required'),
+    year: isBusinessOnly ? z.number().optional() : z.number().min(1900).max(new Date().getFullYear() + 1),
+    price: isBusinessOnly ? z.number().optional() : z.number().min(0),
+    mileage: isBusinessOnly ? z.number().optional() : z.number().min(0),
     fuel: isBusinessOnly ? z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional() : z.enum(['petrol', 'diesel', 'hybrid', 'electric']),
     transmission: isBusinessOnly ? z.enum(['automatic', 'manual']).optional() : z.enum(['automatic', 'manual']),
     images: z.array(z.string()).min(1, 'At least one image is required'),
@@ -81,11 +82,20 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
 
   // Handle image file upload - compresses and adds to existing images
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    // Capture files immediately before any async operations
     const files = Array.from(e.target.files);
+    const fileCount = files.length;
+
+    // Reset the input to allow selecting the same files again
+    e.target.value = '';
 
     try {
       const compressedImages = await compressImages(files);
+      if (compressedImages.length < fileCount) {
+        console.warn(`Only ${compressedImages.length} of ${fileCount} images were processed successfully`);
+      }
       setFormData((prev) => ({ ...prev, images: [...prev.images, ...compressedImages] }));
     } catch (error) {
       console.error('Error compressing images:', error);
@@ -128,7 +138,7 @@ export default function CarForm({ car, onSubmit, onCancel }: CarFormProps) {
     setIsSubmitting(true);
 
     try {
-      await onSubmit(formData);
+      await onSubmit(result.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to save car');
     } finally {
