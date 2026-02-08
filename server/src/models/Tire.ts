@@ -9,15 +9,26 @@ export interface TireAttrs {
   displayLocation: "market" | "business" | "both";
 }
 
+// Fields are conditionally required based on displayLocation
+// For business-only items, only images are required
 const TireSchema = new Schema<TireAttrs>(
   {
-    // Fields are optional for business-only items (validated by Zod based on displayLocation)
-    brand: { type: String },
-    size: { type: String },
-    price: { type: Number },
+    brand: {
+      type: String,
+      required: function(this: TireAttrs) { return this.displayLocation !== 'business'; }
+    },
+    size: {
+      type: String,
+      required: function(this: TireAttrs) { return this.displayLocation !== 'business'; }
+    },
+    price: {
+      type: Number,
+      required: function(this: TireAttrs) { return this.displayLocation !== 'business'; }
+    },
     condition: {
       type: String,
       enum: ["new", "used"],
+      required: function(this: TireAttrs) { return this.displayLocation !== 'business'; }
     },
     images: { type: [String], default: [] },
     displayLocation: {

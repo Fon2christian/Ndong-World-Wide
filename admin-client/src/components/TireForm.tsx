@@ -75,14 +75,12 @@ export default function TireForm({ tire, onSubmit, onCancel }: TireFormProps) {
     // Capture files immediately before any async operations
     const files = Array.from(e.target.files);
     const fileCount = files.length;
-    console.log(`Selected ${fileCount} files:`, files.map(f => f.name));
 
     // Reset the input to allow selecting the same files again
     e.target.value = '';
 
     try {
       const compressedImages = await compressImages(files);
-      console.log(`Compressed ${compressedImages.length} of ${fileCount} images`);
       if (compressedImages.length < fileCount) {
         console.warn(`Only ${compressedImages.length} of ${fileCount} images were processed successfully`);
       }

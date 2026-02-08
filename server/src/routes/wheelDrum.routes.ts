@@ -30,9 +30,9 @@ const updateWheelDrumSchema = wheelDrumSchema.partial();
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
     // Use dynamic schema based on displayLocation
-    const displayLocation = req.body.displayLocation || 'market';
+    const displayLocation = req.body.displayLocation ?? 'market';
     const schema = getWheelDrumSchema(displayLocation);
-    const validation = schema.safeParse(req.body);
+    const validation = schema.safeParse({ ...req.body, displayLocation });
     if (!validation.success) {
       return res.status(400).json({
         message: "Validation failed",

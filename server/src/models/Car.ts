@@ -15,21 +15,39 @@ export interface CarAttrs {
 }
 
 // Create schema
-// Fields are optional for business-only items (validated by Zod based on displayLocation)
+// Fields are conditionally required based on displayLocation
+// For business-only items, only images are required
 const CarSchema = new Schema<CarAttrs>(
   {
-    brand: { type: String },
-    model: { type: String },
-    year: { type: Number },
-    price: { type: Number },
-    mileage: { type: Number },
+    brand: {
+      type: String,
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
+    },
+    model: {
+      type: String,
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
+    },
+    year: {
+      type: Number,
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
+    },
+    price: {
+      type: Number,
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
+    },
+    mileage: {
+      type: Number,
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
+    },
     fuel: {
       type: String,
       enum: ["petrol", "diesel", "hybrid", "electric"],
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
     },
     transmission: {
       type: String,
       enum: ["automatic", "manual"],
+      required: function(this: CarAttrs) { return this.displayLocation !== 'business'; }
     },
     images: { type: [String], default: [] },
     displayLocation: {

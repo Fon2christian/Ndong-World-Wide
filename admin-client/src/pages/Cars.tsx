@@ -130,7 +130,7 @@ export default function Cars() {
               {cars.map((car) => (
                 <tr key={car._id}>
                   <td>
-                    <strong>{car.brand || '-'} {car.model || ''}</strong>
+                    <strong>{car.brand && car.model ? `${car.brand} ${car.model}` : car.brand || car.model || '-'}</strong>
                   </td>
                   <td>{car.year ?? '-'}</td>
                   <td>{car.price != null ? `¥${car.price.toLocaleString()}` : '-'}</td>
